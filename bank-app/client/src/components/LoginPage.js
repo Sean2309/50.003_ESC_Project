@@ -6,7 +6,7 @@ class LoginPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
+            loginId: '',
             password: '',
             authenticated: false
         };
@@ -14,9 +14,9 @@ class LoginPage extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-        const { email, password } = this.state;
+        const { loginId, password } = this.state;
       
-        axios.post('http://localhost:3001/Login', { email, password })
+        axios.post('http://localhost:3001/Login', { loginId, password })
           .then(response => {
             // Handle the successful login response
             console.log(response.data);
@@ -38,22 +38,22 @@ class LoginPage extends Component {
     }
 
     render() {
-        const { email, password } = this.state;
+        const { loginId, password } = this.state;
 
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
-                    <label htmlFor="email">EMAIL ID: </label>
+                    <label htmlFor="loginId">User ID: </label>
                     <input
                         type="text"
-                        id="email"
-                        name="email"
-                        value={email}
+                        id="loginId"
+                        name="loginId"
+                        value={loginId}
                         onChange={this.handleChange}
                     />
                     <br />
 
-                    <label htmlFor="password">PASSWORD: </label>
+                    <label htmlFor="password">Password: </label>
                     <input
                         type="password"
                         id="password"
