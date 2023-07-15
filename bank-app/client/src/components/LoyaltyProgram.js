@@ -10,16 +10,17 @@ class LoyaltyProgram extends Component {
             <div style={loyaltyProgramStyle}>
                 <h3>{data.programName}</h3>
                 <p>Description: {data.description}</p>
-                <p>Currency: {data.currencyName}</p>
                 <p>Processing Time: {data.processingTime}</p>
+                {/* Display exchange rate */}
+                <p>1000 ABC Points = {data.currencyRate * 1000} {data.currencyName}</p>
                 <p>
                     <a href={data.enrollmentLink}>Enrollment Link</a>
                 </p>
                 <p>
                     <a href={data.tncLink}>Terms and Conditions</a>
                 </p>
-            {/* pass currencyRate and formatting to TransferForm */}
-                <TransferForm membershipFormat={data.membershipFormat} currencyRate={data.currencyRate}/>
+                {/* pass currencyRate and formatting to TransferForm */}
+                <TransferForm membershipFormat={data.membershipFormat} currencyRate={data.currencyRate} />
             </div>
         );
     }
