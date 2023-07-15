@@ -11,6 +11,13 @@ class TransferForm extends Component {
             transferAmount: '',
             isOpen: false // to render form as popup
         };
+        // Format string is always given by e.g. 7digit2letter, number followed by string
+        this.digits = "0123456789";
+        this.letters = "abcdefghijklmnopqrstuvwxyz";
+        this.formatIdentifiers = {
+            'd': this.digits,
+            'l': this.letters
+        };
     }
 
     openModal = () => {
@@ -35,9 +42,51 @@ class TransferForm extends Component {
 
     // Returns true if membershipId is of correct format
     membershipValidation = (membershipId) => {
-        // TODO 
         // Grab validation format 
-        const format = this.props.membershipFormat;
+        let formatString = this.props.membershipFormat;
+
+        // Scan string from left to right, get number followed by format
+        let idxStart = 0;
+        let idxEnd = 1;
+        let num = 0;
+        let membershipIdIdx = 0;
+        console.log(this.formatIdentifiers);
+        while (idxEnd !== formatString.length) {
+            // Since we know that the formatString always goes by number followed by a (digit/letter)
+            
+            if (!(num)) {
+                while (this.digits.includes(formatString[idxEnd])) {
+                    idxEnd += 1;
+                }
+                num = parseInt(formatString.substring(idxStart, idxEnd));
+                idxStart = idxEnd;
+            }
+            
+            // In this block we figure out if num corresponds to digits or letters and check against membershipId
+            for (let format of Object.keys(this.formatIdentifiers)) {
+                if (format === formatString[idxEnd]) {
+                    let acceptableChars = this.formatIdentifiers[format];
+
+                    // Actively check if the membershipId is short of characters
+                    let end = num + membershipIdIdx;
+                    if (end > membershipId.length) {
+                        return false;
+                    }
+                    
+                    // Check for this current block if there are exactly x number of digit/letters
+                    for (; membershipIdIdx < end; membershipIdIdx++) {
+                        if (!(acceptableChars.includes(membershipId[membershipIdIdx]))) {
+                            return false;
+                        }
+                    }
+
+                    num = 0;
+                    idxEnd += 1;
+                    break;
+                }
+            } 
+        }
+        
         return true;
     };
 
