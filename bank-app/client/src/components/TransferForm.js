@@ -36,7 +36,8 @@ class TransferForm extends Component {
     // Returns true if membershipId is of correct format
     membershipValidation = (membershipId) => {
         // TODO 
-        // Grab validation format from DB (After LoyaltyProgramQuery API is implemented)
+        // Grab validation format 
+        const format = this.props.membershipFormat;
         return true;
     };
 

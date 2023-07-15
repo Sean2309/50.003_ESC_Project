@@ -6,8 +6,6 @@ class LoyaltyProgram extends Component {
     render() {
         const { data } = this.props;
 
-        console.log(data);
-
         return (
             <div style={loyaltyProgramStyle}>
                 <h3>{data.programName}</h3>
@@ -20,9 +18,8 @@ class LoyaltyProgram extends Component {
                 <p>
                     <a href={data.tncLink}>Terms and Conditions</a>
                 </p>
-                <p>
-                    <TransferForm />
-                </p>
+            {/* pass currencyRate and formatting to TransferForm */}
+                <TransferForm membershipFormat={data.membershipFormat} currencyRate={data.currencyRate}/>
             </div>
         );
     }
