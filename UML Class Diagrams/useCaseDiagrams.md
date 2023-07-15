@@ -1,7 +1,6 @@
 
 ```mermaid
 graph LR
-    subgraph transfer file usecase
         style TF fill-opacity:0, stroke-opacity:0;
         direction LR  %%
         
@@ -11,9 +10,11 @@ graph LR
         TF([fa:fa-user TransferConnect App]) --- E([send accrual file via SFTP server])
 
 
-    end
+```
 
-    subgraph login system
+```mermaid
+graph LR
+
         style LU fill-opacity:0, stroke-opacity:0;
         style LS fill-opacity:0, stroke-opacity:0;
         style LI fill-opacity:0, stroke-opacity:0;
@@ -31,9 +32,10 @@ graph LR
         LS([fa:fa-user Login Backend]) --- childLS_4([verify inputted credentials])
         LS([fa:fa-user Login Backend]) --- childLS_5([generate authentication token])
         LS([fa:fa-user Login Backend]) --- childLS_6([hash and provide security features to user information like name and password])
-    end
+```
+```mermaid
+graph LR
 
-    subgraph notification system
         style NS fill-opacity:0, stroke-opacity:0;
         direction LR  %%
         NS([fa:fa-user Notification System]) --- childNS_0([receive transaction status update])
@@ -41,9 +43,10 @@ graph LR
         NS([fa:fa-user Notification System]) --- childNS_2([get user mode of notification])
         NS([fa:fa-user Notification System]) --- childNS_3([notify Bank App about transaction status])
         NS([fa:fa-user Notification System]) --- childNS_4([notify registered bank customer about transaction status])
-    end
+```
+```mermaid
+graph LR
 
-    subgraph reward center
         style RC fill-opacity:0, stroke-opacity:0;
         direction LR  %%
         RC([fa:fa-user Bank App User]) --- childRC_2([browse loyalty program list])
@@ -63,9 +66,10 @@ graph LR
 
 
         
-    end
+```
+```mermaid
+graph LR
 
-    subgraph credit transfer form
 
         style PTC fill-opacity:0, stroke-opacity:0;
         
@@ -82,9 +86,9 @@ graph LR
         CF([fa:fa-user Form Backend]) --- childCF_2([fetch stored membership credentials if the customer had previously submitted them])
         CF([fa:fa-user Form Backend]) --- childCF_4([post transactions and store transaction into Bank Application Database])
         CF([fa:fa-user Form Backend]) --- childCF_3([query TransferConnect API])
-    end
-
-    subgraph loyalty program
+```
+```mermaid
+graph LR
 
         style LP_A fill-opacity:0, stroke-opacity:0;
         style LP_B fill-opacity:0, stroke-opacity:0;
@@ -99,7 +103,6 @@ graph LR
         LP_A([fa:fa-user Bank Application]) --- childLP_E1([update loyalty program details and bank point exchange rates in database])
         LP_D([fa:fa-user TransferConnect Database]) --- childLP_F1([provided requested loyalty program information to TransferConnect app])
         LP_B([fa:fa-user TransferConnect]) --- childLP_E2([provide partnership loyalty program details and bank point exchange rates])
-    end
 
 
 
