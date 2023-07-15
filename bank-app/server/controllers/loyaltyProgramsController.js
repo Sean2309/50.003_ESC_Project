@@ -24,7 +24,7 @@ class LoyaltyProgramsController {
         description: "Feel free to adjust this",
         enrollmentLink: "https://www.gojet.com/member/",
         tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-        membershipFormat: "9digit1letter",
+        membershipFormat: "9d1l",
         currencyRate: 1
 
       },
@@ -36,7 +36,7 @@ class LoyaltyProgramsController {
         description: "Feel free to adjust this",
         enrollmentLink: "https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html",
         tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html",
-        membershipFormat: "11digit",
+        membershipFormat: "11d",
         currencyRate: 1.1
       }
     ]
