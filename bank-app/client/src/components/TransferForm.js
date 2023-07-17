@@ -50,10 +50,10 @@ class TransferForm extends Component {
         let idxEnd = 1;
         let num = 0;
         let membershipIdIdx = 0;
-        console.log(this.formatIdentifiers);
+
         while (idxEnd !== formatString.length) {
             // Since we know that the formatString always goes by number followed by a (digit/letter)
-            
+
             if (!(num)) {
                 while (this.digits.includes(formatString[idxEnd])) {
                     idxEnd += 1;
@@ -61,7 +61,7 @@ class TransferForm extends Component {
                 num = parseInt(formatString.substring(idxStart, idxEnd));
                 idxStart = idxEnd;
             }
-            
+
             // In this block we figure out if num corresponds to digits or letters and check against membershipId
             for (let format of Object.keys(this.formatIdentifiers)) {
                 if (format === formatString[idxEnd]) {
@@ -72,7 +72,7 @@ class TransferForm extends Component {
                     if (end > membershipId.length) {
                         return false;
                     }
-                    
+
                     // Check for this current block if there are exactly x number of digit/letters
                     for (; membershipIdIdx < end; membershipIdIdx++) {
                         if (!(acceptableChars.includes(membershipId[membershipIdIdx]))) {
@@ -84,15 +84,18 @@ class TransferForm extends Component {
                     idxEnd += 1;
                     break;
                 }
-            } 
+            }
         }
-        
+
         return true;
     };
 
     handleSubmit = (event) => {
         event.preventDefault();
         const { membershipId, memberName, membershipIdConfirmation, transferAmount } = this.state;
+        const { userProfile } = this.props;
+        // TODO: Should also unpack notification preference
+        const { emailAddress, phoneNumber, notificationMethod } = userProfile
 
         const transferDate = this.getDate();
 
@@ -101,7 +104,10 @@ class TransferForm extends Component {
                 membershipId,
                 memberName,
                 transferDate,
-                transferAmount
+                transferAmount,
+                emailAddress,
+                phoneNumber,
+                notificationMethod
             };
 
             console.log(form);
@@ -123,7 +129,26 @@ class TransferForm extends Component {
 
     handleChange = (event) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value });
+
+        switch (name) {
+            case 'transferAmount':
+                const { abcPoints } = this.props.userProfile;
+                // Make sure that the value entered does not exceed user's number of points
+                if (parseInt(value) <= abcPoints || value === "") {
+                    this.setState({ [name]: value });
+                }
+                break;
+
+            default:
+                this.setState({ [name]: value });
+        }
+    }
+    
+    handleTransferAmountKeyPress = (event) => {
+        if (!"0123456789".includes(event.key)) {
+            // Prevent key from being entered
+            event.preventDefault();
+        }
     }
 
     renderForm = () => {
@@ -170,10 +195,13 @@ class TransferForm extends Component {
                         <label htmlFor="transferAmount">Transfer Amount: </label>
                         <input
                             type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             id="transferAmount"
                             name="transferAmount"
                             value={transferAmount}
                             onChange={this.handleChange}
+                            onKeyDown={this.handleTransferAmountKeyPress}
                         />
                         <br />
 
