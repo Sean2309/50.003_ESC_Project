@@ -1,5 +1,6 @@
 const express = require('express');
 const transactionController = require('../controllers/transactionEnquiryController.js');
+const messageNotification = require('../controllers/messageNotification.js');
 var router = express.Router();
 
 
@@ -16,6 +17,7 @@ router.get('/check/:bank_app/:loyalty_program/:referencenumber', async function(
 });
 
 router.get('/sendemail', async function(req, res, next) {
+  messageNotification.sendMessages();
   transactionController.sendingEmail();
 });
 
