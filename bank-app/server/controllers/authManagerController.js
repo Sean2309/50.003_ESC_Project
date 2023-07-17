@@ -3,7 +3,7 @@ const UserProfile = require('../models/userProfile');
 
 class AuthManagerController {
   constructor() {
-    this.createUser();
+    //this.createUser();
   }
 
   // Handle the POST request to authenticate a user
@@ -31,6 +31,7 @@ class AuthManagerController {
     }
   }
 
+  /*
   // createUser for easy debug and call it during instantiation
   createUser = async (request, response) => {
     await UserCredentials.deleteMany({});
@@ -54,7 +55,7 @@ class AuthManagerController {
     });
     
     await userProfile.save();
-  }
+  }*/
 }
 
 const authManagerController = new AuthManagerController();

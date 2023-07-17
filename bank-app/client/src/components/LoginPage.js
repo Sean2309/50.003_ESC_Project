@@ -41,7 +41,7 @@ class LoginPage extends Component {
         const { loginId, password } = this.state;
 
         return (
-            <div>
+            <div data-testid = 'login-1'>
                 <form onSubmit={this.handleSubmit}>
                     <label htmlFor="loginId">User ID: </label>
                     <input
@@ -50,6 +50,8 @@ class LoginPage extends Component {
                         name="loginId"
                         value={loginId}
                         onChange={this.handleChange}
+
+                        data-testid = "loginId"
                     />
                     <br />
 
@@ -60,12 +62,14 @@ class LoginPage extends Component {
                         name="password"
                         value={password}
                         onChange={this.handleChange}
+                        data-testid = "password"
                     />
                     <br />
 
                     <input
                         type="submit"
                         value="Submit"
+                        data-testid = "loginButton"
                     />
                 </form>
             </div>
