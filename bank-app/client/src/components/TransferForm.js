@@ -91,10 +91,10 @@ class TransferForm extends Component {
     };
 
     handleSubmit = (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission behaviour
+
         const { membershipId, memberName, membershipIdConfirmation, transferAmount } = this.state;
         const { userProfile } = this.props;
-        // TODO: Should also unpack notification preference
         const { emailAddress, phoneNumber, notificationMethod } = userProfile
 
         const transferDate = this.getDate();
@@ -155,7 +155,6 @@ class TransferForm extends Component {
         const { memberName, membershipId, membershipIdConfirmation, transferAmount, isOpen } = this.state;
         if (!isOpen) {
             return <button onClick={this.openModal}>Transfer</button>
-
         }
 
         return (
@@ -169,6 +168,7 @@ class TransferForm extends Component {
                             name="memberName"
                             value={memberName}
                             onChange={this.handleChange}
+                            required
                         />
                         <br />
 
@@ -179,6 +179,7 @@ class TransferForm extends Component {
                             name="membershipId"
                             value={membershipId}
                             onChange={this.handleChange}
+                            required
                         />
                         <br />
 
@@ -189,6 +190,7 @@ class TransferForm extends Component {
                             name="membershipIdConfirmation"
                             value={membershipIdConfirmation}
                             onChange={this.handleChange}
+                            required
                         />
                         <br />
 
@@ -202,6 +204,7 @@ class TransferForm extends Component {
                             value={transferAmount}
                             onChange={this.handleChange}
                             onKeyDown={this.handleTransferAmountKeyPress}
+                            required
                         />
                         <br />
 
