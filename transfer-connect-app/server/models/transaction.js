@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
-const transferFormSchema = new mongoose.Schema({
+const transactionSchema = new mongoose.Schema({
   membershipId: String,
   membershipName: String,
   transferDate: String,
   transferAmount: Number,
   referenceNumber: String,
+  partnerCode: String,
 });
 
-const TransferForm = mongoose.model('TransferForm', transferFormSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
 
-module.exports = TransferForm;
+module.exports = Transaction;

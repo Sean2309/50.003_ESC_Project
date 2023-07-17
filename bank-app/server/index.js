@@ -4,7 +4,8 @@ const config = require('./utils/config');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const transferFormController = require('./controllers/transferFormController');
+const transferFormRouter = require('./routes/transferFormRouter');
+const loyaltyProgramsRouter = require('./routes/loyaltyProgramsRouter');
 
 
 
@@ -20,9 +21,9 @@ app.use(cors());
 // for purpose of parsing incoming requests 
 app.use(express.json());
 
-
-
-app.use('/api/transferFormSubmit', transferFormController)
+// setup routes
+app.use('/api/transferFormSubmit', transferFormRouter)
+app.use('/api/loyaltyPrograms', loyaltyProgramsRouter);
 
 
 app.listen(config.PORT, () => {

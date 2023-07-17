@@ -4,18 +4,14 @@ const config = require('./utils/config');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const transactionRouter = require('./routes/transactionRouter');
 const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
-
 
 
 const app = express();
 
 // connect to mongoDB cloud
-
-// mongoose.connect('mongodb+srv://test:1234@test.j9ugyp5.mongodb.net/Dtest?retryWrites=true&w=majority') : Alternate DB for testing
-mongoose.connect('mongodb+srv://Daniel:vLfmoyUKJ3Fy8dzx@transferconnect.0papjri.mongodb.net/TransferConnectDB?retryWrites=true&w=majority')
-  .then((res) => console.log('connected'))
-  .catch((err) => console.error('error'));
+mongoose.connect(config.MONGODB_URL).then((res) => console.log('connected')).catch((err) => console.error('error'))
 
 // enable CORS for all routes
 // to allow request from different origins (domain, port etc)
@@ -24,7 +20,10 @@ app.use(cors());
 // for purpose of parsing incoming requests 
 app.use(express.json());
 
-// routes based on bankapp
+// setup routes
+app.use('/api/transactions', transactionRouter)
+
+// routes based on bankapp to to retrieve loyalty program information
 app.use('/api/loyaltyprograms/BankApp', loyaltyProgramQueryRouter('BankApp'));
 app.use('/api/loyaltyprograms/DBS', loyaltyProgramQueryRouter('DBS'));
 
