@@ -6,6 +6,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const transferFormRouter = require('./routes/transferFormRouter');
 const loyaltyProgramsRouter = require('./routes/loyaltyProgramsRouter');
+const userProfileRouter = require('./routes/userProfileRouter');
 
 
 
@@ -24,6 +25,7 @@ app.use(express.json());
 // setup routes
 app.use('/api/transferFormSubmit', transferFormRouter)
 app.use('/api/loyaltyPrograms', loyaltyProgramsRouter);
+app.use('/api/userprofile', userProfileRouter);
 
 
 app.listen(config.PORT, () => {
