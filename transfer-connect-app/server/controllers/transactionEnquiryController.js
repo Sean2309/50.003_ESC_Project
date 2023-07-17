@@ -1,7 +1,8 @@
 const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
 const transactionSchema = require('../models/transactionEnquiryModel.js');
 const mongoose  = require('mongoose');
-const sendEmail = require('./emailNotification.js');
+const emailNotification = require('./emailNotification.js');
+const messageNotification = require('./messageNotification.js');
 
 
 //can improve code by using caching for faster data retrieval
@@ -41,18 +42,13 @@ async function getOutcomeCode(collection_connection, id_list){
     console.log(id);
     //use .lean().exec() to return an obj instead of document
     //check if referenceNumber has outcomeCode field + not empty
-    await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1 }).lean().exec()
+    await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "email" : 1 }).lean().exec()
     .then(user => {
       if (user[0] != null) {
+        let user1 = user[0];
         console.log('Found transactions:', user);
         outcomeCodes.push(user[0]);
-        if (isNaN(user[0].notificationMethod)){
-
-          //notify user
-          console.log('sendemailed');
-          console.log(user[0].notificationMethod)
-          sendEmail.main(user[0].notificationMethod).catch(console.error);}
-
+        sendNotification(user1.phoneNumber, user1.email, user1.notificationMethod);
       } else {
         console.log('Outcome code not updated or transaction not found.');
       }
@@ -68,13 +64,33 @@ async function getOutcomeCode(collection_connection, id_list){
     const collection_connection = database_connection.model('DBS', transactionSchema, 'DBS');
 
     //pass in reference numbers
-    const id_list = ["0000"];
+    const id_list = ["0001"];
     console.log("sendingEmail function")
     const transactions = await getOutcomeCode(collection_connection, id_list);
 
     return;
   }
 
+  async function sendNotification(phoneNumber, email, notificationMethod){
+    if (notificationMethod == 0){
+      //only email
+      console.log('sent email');
+      emailNotification.main(email).catch(console.error);
+    }
+    else if (notificationMethod == 1){
+      //only phone number
+      console.log("sent message")
+      messageNotification.sendMessages();
+    }
+    else{
+      //both
+      console.log('sent email');
+      emailNotification.main(email).catch(console.error);
+
+      console.log("sent message")
+      messageNotification.sendMessages();
+    }
+  }
   
 
 module.exports = {processRoute, sendingEmail};
