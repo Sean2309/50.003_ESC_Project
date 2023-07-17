@@ -25,6 +25,8 @@ const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list 
 const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
 const testDate = `20200812`; // TODO: Change this to current date on final implementation
 
+
+// START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async() => {
   for (const lp of sftpLPList ) {
     // Config Details
@@ -33,7 +35,7 @@ const retrieveFromServer = async() => {
 
     // Downloading the handback file from the server
     const fileName = `${lp}_HANDBACK_${testDate}.csv`;
-    const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`);
+    const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
     if (!isBrowser()) {
@@ -123,6 +125,8 @@ const uploadFilesToMongoDB = async() => {
   mongoose.connection.close();
 }
 
+// END OF MAIN FUNCTIONS ======================
+
 // Running the functions
 const main = async () => {
   // await retrieveFromServer();
@@ -131,3 +135,10 @@ const main = async () => {
 }
 
 main().catch(console.error);
+
+
+module.exports = {
+  retrieveFromServer, 
+  extractDataFromCsv, 
+  uploadFilesToMongoDB
+};
