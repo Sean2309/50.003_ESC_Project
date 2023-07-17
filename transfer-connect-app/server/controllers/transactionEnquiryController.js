@@ -33,7 +33,6 @@ async function processRoute(req, res){
 }
 
 
-
 async function getOutcomeCode(collection_connection, id_list){
   console.log(id_list);
   let outcomeCodes = [];
@@ -49,11 +48,11 @@ async function getOutcomeCode(collection_connection, id_list){
         console.log('Found transactions:', user);
         outcomeCodes.push(user[0]);
         sendNotification(user1.phoneNumber, user1.email, user1.notificationMethod);
-      } else {
+      } 
+      else {
         console.log('Outcome code not updated or transaction not found.');
       }
-    })
-    .catch(error => {
+    }).catch(error => {
       console.error('Error finding transaction:', error);
   });}
   return outcomeCodes;

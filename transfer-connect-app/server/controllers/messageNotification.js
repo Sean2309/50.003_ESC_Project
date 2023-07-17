@@ -5,7 +5,7 @@ const authToken = 'b1ced07d76098bad606cd6e043c7e8a1';
 const client = twilio(accountSid, authToken);
 
 
-async function sendMessages(){
+async function sendMessages(phoneNumber){
     client.messages
     .create({
         body: 'Hello from Twilio!',

@@ -10,8 +10,8 @@ const transactionSchema = new mongoose.Schema({
   "partnerCode": String,
   "outcomeCode": String,
   "notificationMethod": Number,
-  "email": String,
-  "phoneNumber": Number
+  "emailAddress": String,
+  "phoneNumber": String
 });
 
 
