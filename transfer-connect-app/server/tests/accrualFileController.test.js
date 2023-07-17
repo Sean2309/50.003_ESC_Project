@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 require('dotenv').config({path: __dirname + '/../.env'});
+const csv = require('csv-parser');
+const fs = require('fs');
+const path = require('path');
 
 
 describe('MongoDB Connectivity', () => {
@@ -14,5 +17,24 @@ describe('MongoDB Connectivity', () => {
   it('successfully connects to the MongoDB database', async () => {
     const connected = mongoose.connection.readyState;
     expect(connected).toBe(1);
+  });
+});
+
+describe('CSV headers check', () => {
+
+  const expectedHeaders = ['Membership ID', 'Membership name', 'Transfer date', 'Transfer Amount', 'Reference number', 'Partner code'];
+  const directoryPath = path.join(__dirname, '../controllers/accrual_files');
+
+  fs.readdirSync(directoryPath).forEach(file => {
+    if(file.startsWith('testaccruals_') && file.endsWith('.csv')) {
+      it(`file ${file} should have the correct headers`, (done) => {
+        fs.createReadStream(path.join(directoryPath, file))
+          .pipe(csv())
+          .on('headers', (headers) => {
+            expect(headers).toEqual(expectedHeaders);
+            done();
+          });
+      });
+    }
   });
 });
