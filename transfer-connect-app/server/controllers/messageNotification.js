@@ -1,7 +1,7 @@
 const twilio = require('twilio');
 
 const accountSid = 'AC3dbfa982e8235525cb238a8c21650a51';
-const authToken = '21b9fa87ca36f738904b0a6397cc3718';
+const authToken = 'b1ced07d76098bad606cd6e043c7e8a1';
 const client = twilio(accountSid, authToken);
 
 
@@ -13,8 +13,7 @@ async function sendMessages(){
         to: '+6588669619'
     })
     .then(message => console.log('Message sent:', message.sid))
-    .catch(error => console.error('Error:', error))
-    .done();
+    .catch(error => console.error('Error:', error));
 }
 
     module.exports = {sendMessages};

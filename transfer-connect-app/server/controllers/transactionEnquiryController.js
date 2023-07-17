@@ -75,4 +75,6 @@ async function getOutcomeCode(collection_connection, id_list){
     return;
   }
 
+  
+
 module.exports = {processRoute, sendingEmail};

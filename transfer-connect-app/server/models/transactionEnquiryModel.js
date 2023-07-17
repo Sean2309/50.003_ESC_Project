@@ -9,7 +9,9 @@ const transactionSchema = new mongoose.Schema({
   "referenceNumber": String,
   "partnerCode": String,
   "outcomeCode": String,
-  "notificationMethod": String
+  "notificationMethod": Number,
+  "email": String,
+  "phoneNumber": Number
 });
 
 
