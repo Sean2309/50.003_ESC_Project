@@ -8,7 +8,8 @@ const transactionSchema = new mongoose.Schema({
   "transferAmount": Number,
   "referenceNumber": String,
   "partnerCode": String,
-  "outcomeCode": String
+  "outcomeCode": String,
+  "notificationMethod": String
 });
 
 

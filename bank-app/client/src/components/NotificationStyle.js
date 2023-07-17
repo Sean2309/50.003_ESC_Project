@@ -19,15 +19,17 @@ class NotificationStyle extends Component{
     }
 
     showNotification() {
-        new Notification('Status message');
-    }
+        new Notification('Status message', {
+            body: "You have received a new message."
+            //icon: "path/to/icon.png",
+          });
+    };
 
     render() {
-        return (
-        <div>
-            <button onClick={this.showNotification}>Show notification</button></div>
-        );
+        return null;
     }
+    
+    
 }
 
 export default NotificationStyle;

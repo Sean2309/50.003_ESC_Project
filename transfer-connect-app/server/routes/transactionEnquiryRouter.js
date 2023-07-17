@@ -1,5 +1,5 @@
 const express = require('express');
-const transactionmodel = require('../controllers/transactionEnquiryController.js');
+const transactionController = require('../controllers/transactionEnquiryController.js');
 var router = express.Router();
 
 
@@ -12,7 +12,11 @@ router.get('/check/:bank_app/:loyalty_program/:referencenumber', async function(
   console.log(id.loyalty_program);
   console.log(id.bank_app);
   console.log(id.referencenumber);
-    transactionmodel.processRoute(req, res);
+    transactionController.processRoute(req, res);
+});
+
+router.get('/sendemail', async function(req, res, next) {
+  transactionController.sendingEmail();
 });
 
 

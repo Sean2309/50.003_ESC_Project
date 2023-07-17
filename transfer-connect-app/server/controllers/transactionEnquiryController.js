@@ -1,7 +1,7 @@
 const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
 const transactionSchema = require('../models/transactionEnquiryModel.js');
 const mongoose  = require('mongoose');
-
+const sendEmail = require('./emailNotification.js');
 
 
 //can improve code by using caching for faster data retrieval
@@ -41,11 +41,18 @@ async function getOutcomeCode(collection_connection, id_list){
     console.log(id);
     //use .lean().exec() to return an obj instead of document
     //check if referenceNumber has outcomeCode field + not empty
-    await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0 }).lean().exec()
+    await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1 }).lean().exec()
     .then(user => {
       if (user[0] != null) {
         console.log('Found transactions:', user);
         outcomeCodes.push(user[0]);
+        if (isNaN(user[0].notificationMethod)){
+
+          //notify user
+          console.log('sendemailed');
+          console.log(user[0].notificationMethod)
+          sendEmail.main(user[0].notificationMethod).catch(console.error);}
+
       } else {
         console.log('Outcome code not updated or transaction not found.');
       }
@@ -56,5 +63,16 @@ async function getOutcomeCode(collection_connection, id_list){
   return outcomeCodes;
   };
 
+  async function sendingEmail(){
+    const database_connection = mongoose.connection.useDb('GoJet');
+    const collection_connection = database_connection.model('DBS', transactionSchema, 'DBS');
 
-module.exports = {processRoute};
+    //pass in reference numbers
+    const id_list = ["0000"];
+    console.log("sendingEmail function")
+    const transactions = await getOutcomeCode(collection_connection, id_list);
+
+    return;
+  }
+
+module.exports = {processRoute, sendingEmail};
