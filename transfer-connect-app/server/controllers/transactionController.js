@@ -1,4 +1,5 @@
 const Transaction = require('../models/transaction');
+const LoyaltyProgramProvider = require('../models/loyaltyProgramQueryModel')
 
 /* 
   sample data format
@@ -32,32 +33,29 @@ class TransactionController {
     response.json(submittedForms);
   }
 
-  // validateTransactionData = async(transactionData) => {
-  //   if (!transactionData) {
-  //     console.log("Empty request.body")
-  //     return { error: 'request.body cannot be found' };
-  //   }
+  validateTransactionData = (transactionData) => {
+    if (!transactionData) {
+      console.log("Empty request.body")
+      return { error: 'request.body cannot be found' };
+    }
 
-
-  //   if (transactionData.membershipId === '' || transactionData.transferAmount === null) {
-  //     console.log("Invalid request.body")
-  //     return { error: 'Membership ID or Transfer Amount is invalid' };
-  //   }
-  // }
+    if (transactionData.membershipId === '' || transactionData.transferAmount === null) {
+      console.log("Invalid request.body")
+      return { error: 'Membership ID or Transfer Amount is invalid' };
+    }
+    
+  }
   
     submitTransaction = async (request, response) => {
 
     const transactionData = request.body;
     console.log(transactionData + "*************"); 
 
-    // const validationResult= this.validateTransactionData(transactionData);
-    // if(validationResult.error){
-    //   return response.status(400).json({ error: validationResult.error });
-    // }
+    const validationResult= this.validateTransactionData(transactionData);
 
-    if (transactionData.membershipId === '' || transactionData.transferAmount === null || !transactionData) {
-      return response.status(400).json({ error: 'Membership ID or Transfer Amount is invalid' });
-    }  
+    if(validationResult.error){
+      return response.status(400).json({ error: validationResult.error });
+    }
   
     transactionData.referenceNumber = this.generateReferenceNumber();
     transactionData.partnerCode = this.getPartnerCode();
@@ -75,8 +73,6 @@ class TransactionController {
         console.error('Error saving transfer form data:', error);
         response.sendStatus(500);
       });
-
-    
   }
 
 };
