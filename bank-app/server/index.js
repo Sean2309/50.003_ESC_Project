@@ -21,8 +21,8 @@ app.use(cors());
 app.use(express.json());
 
 // setup routes
-app.use('/api/transferFormSubmit', transferFormRouter)
-app.use('/api/loyaltyPrograms', loyaltyProgramsRouter);
+app.use('/api/transferformsubmit', transferFormRouter)
+app.use('/api/loyaltyprograms', loyaltyProgramsRouter);
 app.use('/api/userprofile', userProfileRouter);
 app.use('/login', authManagerRouter);
 

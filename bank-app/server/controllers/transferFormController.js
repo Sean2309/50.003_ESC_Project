@@ -1,17 +1,6 @@
-const TransferForm = require('../models/transferForm');
+const createTransferForm = require('../models/transferForm');
 const { TRANSFER_CONNECT_API_URL } = require('../utils/config');
 const axios = require('axios');
-
-/* 
-  sample data format  
-  {
-    "membershipId": "1021030213",
-    "memberName": "keith low",
-    "transferDate", "23-10-2000"
-    "transferAmount": "2000"    
-  }
-
-*/
 
 class TransferFormController {
 
@@ -21,34 +10,46 @@ class TransferFormController {
     console.log(TRANSFER_CONNECT_API_URL);
   }
 
-  // this function posts transaction details to TransferConnect transaction submission API endpoint
-  postTransaction = async (transactionData) => {
-    const response = await axios.post(this.submissionRoute, transactionData);
-    return response.data;
-  }
-
   // get handler for easy debugging
   getAllForms = async (request, response) => {
     const submittedForms = await TransferForm.find({});
     response.json(submittedForms);
+  }
+
+  // this function posts transaction details to TransferConnect transaction submission API endpoint
+  postTransaction = async (transactionData, loyaltyProgramId) => {
+    const response = await axios.post(this.submissionRoute + `${loyaltyProgramId}`, transactionData);
+    return response.data;
+  }
+  
+  generateReferenceNumber = () => {
+    // TODO: unique reference number generator
+    
+    // generate some random number for now
+    return Math.floor((Math.random() * 9999999));
   }
   
   // submit to TransferConnect app, then save to db
   submitTransferForm = async (request, response) => {
     try {
 
-      console.log( "Submit transfer form **********")
       const transferFormData = request.body; // see sample data comments above 
-
-      const postTransactionResponse = await this.postTransaction(transferFormData);
       
-      //adding reference Number to transaction data
-      transferFormData.referenceNumber = postTransactionResponse.referenceNumber;
-
-      const transferForm = new TransferForm(transferFormData);
+      const loyaltyProgramId = request.params.loyaltyProgramId; // grab loyaltyProgramId from path params
+      
+      // add referenceNumber to transaction data
+      transferFormData.referenceNumber = this.generateReferenceNumber();
+      
+      // submit Transaction to TransferConnect
+      // TODO: appropriate handling of systemCode given by TransferConnect, then save to our own DB
+      const postTransactionResponse = await this.postTransaction(transferFormData, loyaltyProgramId);
 
       console.log('Transaction submitted to TransferConnect');
-      console.log(transferForm, transferForm.referenceNumber);
+      
+      // point the model to the specific loyaltyProgram's collection
+      const TransferForm = createTransferForm(loyaltyProgramId);
+
+      const transferForm = new TransferForm(transferFormData);
 
       transferForm.save()
         .then(() => {
