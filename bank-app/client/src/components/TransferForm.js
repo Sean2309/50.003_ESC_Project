@@ -95,8 +95,9 @@ class TransferForm extends Component {
         const { membershipId, memberName, membershipIdConfirmation, transferAmount } = this.state;
 
         const transferDate = this.getDate();
-
-        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)) {
+        
+        
+        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)){
             const form = {
                 membershipId,
                 memberName,
