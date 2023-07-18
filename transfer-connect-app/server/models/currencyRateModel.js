@@ -3,14 +3,21 @@ const mongoose = require('mongoose');
 
 //Schema tells Mongoose how loyaltyProgramQueryModel objects are stored in Db
 const currencyRateSchema = new mongoose.Schema({
-  currencyRate: String,
-  programID: String,
-  partnerCode: String
-},{ collection: 'CurrencyRates' });
+  partnerCode: {
+    type: String,
+    ref: 'loyaltyProgramQueryModel'
+  },
+  currencyRates: [
+    {
+      programId: String,
+      currencyRate: Number
+    }
+  ]
+}, { collection: 'currencyRates' });
 
 
 
-const currencyRateModel = mongoose.model('currencyRateModel', currencyRateSchema);
-module.exports = currencyRateModel;
+const CurrencyRateModel = mongoose.model('currencyRateModel', currencyRateSchema);
+module.exports = CurrencyRateModel;
 
 

@@ -1,106 +1,99 @@
-const loyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
-const currencyRateModel = require('../models/currencyRateModel');
-
-/* 
-
-  sample data format :LoyaltyProgramQuery Model 
-  { 
-  {programID: "GOPOINTS"
-  programName: "GoJet Points"
-  currencyName: "GoPoints"
-  processingTime: "Instant"
-  description: "YOL"
-  enrollmentLink: "https://www.gojet.com/member/"
-  tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html"
-  membershipFormat:9digits1letter  
-  }
-
-    sample data format :CurrencyRate Model 
-  { 
-    partnerCode: "BankApp"
-    programID: "GOPOINTS,KRISFLYER"
-    currencyRate: "1.0,1.5"
-  }
-    
-
-*/
+const LoyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
+const CurrencyRateModel = require('../models/currencyRateModel');
 
 class LoyaltyProgramQueryController {
 
+  constructor() {
+    // Populate db with mock loyalty programs and currencyRates
+    this.populateDb();
+  }
+
   getLoyaltyPrograms = async (request, response) => {
 
-    // grab partnerCode from path params
+    // Grab partnerCode from path params
     const partnerCode = request.params.partnerCode;
-
-    console.log(`getLoyaltyPrograms() reads the partnerCode:`, partnerCode);
 
     try {
 
-      const loyaltyProgramsPromise = loyaltyProgramQueryModel.find(); // Fetch all oyaltyProgramProviders
+      const loyaltyPrograms = await LoyaltyProgramQueryModel.find({}); // Fetch all loyaltyProgramProviders
 
-      // Fetch the document correspond to the partnerCode, which contains all loyalty programs and currency rates
-      const currencyRatesPromise = currencyRateModel.find({ partnerCode: partnerCode });
+      // Fetch the document correspond to the partnerCode, which contains a nested document of programIds and currencyRates specific to the bank
+      const currencyRates = await CurrencyRateModel.findOne({ partnerCode: partnerCode });
 
-      const [loyaltyPrograms, currencyRates_LPPs] = await Promise.all([
-        loyaltyProgramsPromise,
-        currencyRatesPromise
-      ]);
+      const currencyRatesArray = currencyRates.currencyRates;
 
-      const programRates = {};
-      const programIDs = currencyRates_LPPs[0].programID.split(','); // Split the programID string into an array of individual program IDs
-      const currencyRates = currencyRates_LPPs[0].currencyRate.split(','); // Split the currencyRate string into an array of individual currency rates
+      const loyaltyProgramsWithRates = [];
 
+      for (const currencyRateObject of currencyRatesArray) {
+        const { programId, currencyRate } = currencyRateObject;
 
+        const loyaltyProgram = loyaltyPrograms.find(obj => obj.programId === programId);
 
-      programIDs.forEach((programID, index) => {
-        programRates[programID] = parseFloat(currencyRates[index]);
-        // Store each program ID with its corresponding currency rate in the programRates object
-        // Eg: programRates = { GOPOINTS: 1.0, KRISFLYER: 1.5};
-      });
+        // add currencyRate key to document
+        loyaltyProgram.set('currencyRate', currencyRate);
 
-      console.log("########")
-      console.log(`Extracted Loyalty Program Providers and exchange rates`)
-      console.log(programRates)
-      console.log("########")
+        loyaltyProgramsWithRates.push(loyaltyProgram);
+      }
 
-      // return respective loyalty program providers with currency rates
-      const combinedData = loyaltyPrograms.map((document) => {
-        const programID = document.programID;
-        const currencyRate = programRates[programID];
+      response.status(200).json(loyaltyProgramsWithRates);
 
-        // Check if the program ID exists in programRates
-        if (currencyRate !== undefined) {
-          return {
-            programID: document.programID,
-            programName: document.programName,
-            currencyName: document.currencyName,
-            processingTime: document.processingTime,
-            description: document.description,
-            enrollmentLink: document.enrollmentLink,
-            tncLink: document.tncLink,
-            membershipFormat: document.membershipFormat,
-            currencyRate: currencyRate,
-          };
-        }
-      });
-
-      // Transform the data before sending the response
-      const transformedData = combinedData.map((document) => {
-        const transformedDocument = { ...document };
-        delete transformedDocument._id;
-        return transformedDocument;
-      });
-
-      console.log(transformedData); // Output transformed data to the terminal
-
-      // Send the transformed data as the response
-      response.status(200).json(transformedData);
     }
     catch (error) {
       response.status(500).json({ message: error.message });
     }
   };
 
+
+  populateDb = async () => {
+    const mockLoyaltyPrograms = [
+      {
+        programId: "GOPOINTS",
+        programName: "GoJet Points",
+        currencyName: "GoPoints",
+        processingTime: "Instant",
+        description: "Feel free to adjust this",
+        enrollmentLink: "https://www.gojet.com/member/",
+        tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
+        membershipFormat: "^\\d{9}[a-zA-Z]$",
+      },
+      {
+        programId: "ASIAMILES",
+        programName: "Asia Miles",
+        currencyName: "Asia Miles",
+        processingTime: "Instant",
+        description: "Feel free to adjust this",
+        enrollmentLink: "https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html",
+        tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html",
+        membershipFormat: "^\\d{11}$",
+      }
+    ];
+
+    const mockCurrencyRates = {
+      partnerCode: "DBSSG",
+      currencyRates: [
+        {
+          programId: "GOPOINTS",
+          currencyRate: 1.1
+        },
+        {
+          programId: "ASIAMILES",
+          currencyRate: 1
+        }
+      ]
+    }
+
+    await LoyaltyProgramQueryModel.deleteMany({});
+
+    await LoyaltyProgramQueryModel.create(mockLoyaltyPrograms);
+
+    await CurrencyRateModel.deleteMany({});
+
+    await CurrencyRateModel.create(mockCurrencyRates);
+
+  }
+
 }
 
-module.exports = new LoyaltyProgramQueryController();
+const loyaltyProgramQueryController = new LoyaltyProgramQueryController();
+
+module.exports = loyaltyProgramQueryController;
