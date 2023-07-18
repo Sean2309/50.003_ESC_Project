@@ -32,13 +32,4 @@ class LoyaltyProgram extends Component {
 
 }
 
-// // CSS style for the loyalty program box
-// const loyaltyProgramStyle = {
-//     border: '1px solid #ccc',
-//     padding: '10px',
-//     margin: '10px',
-//     borderRadius: '5px',
-//     backgroundColor: '#f9f9f9',
-// };
-
 export default LoyaltyProgram;
