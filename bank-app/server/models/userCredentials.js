@@ -8,6 +8,8 @@ const userCredentialsSchema = new mongoose.Schema({
   userId: String
 });
 
+
+// Hash Password before storing into Database
 userCredentialsSchema.pre('save',function(next){
   const user = this
 
@@ -32,6 +34,7 @@ userCredentialsSchema.pre('save',function(next){
   }
 })
 
+//Compare password using bcrypt
 userCredentialsSchema.methods.comparePassword = async function (password) {
   try {
     return await bcrypt.compare(password, this.password);
