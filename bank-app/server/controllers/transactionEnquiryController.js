@@ -48,15 +48,18 @@ class TransactionEnquiryController {
     console.log(url);
     try {
       response = await axios.get(url); // Await the API response
-      if(response == null){
+      if(response.data == null || response.data == undefined){
         console.log("API request response is null");
         return;
       }
+      else{
+        return response.data;
+      }
+      
     } catch (error) {
       // Handle any errors
       console.error(error);
     };
-    return response.data;
   }
 
   startEnquiry = () => {
