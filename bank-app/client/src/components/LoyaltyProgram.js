@@ -25,6 +25,7 @@ class LoyaltyProgram extends Component {
                 membershipFormat={loyaltyProgramData.membershipFormat} 
                 currencyRate={loyaltyProgramData.currencyRate} 
                 userProfile={userProfile}
+                loyaltyProgramId={loyaltyProgramData.programId}
                 />
             </div>
     );
