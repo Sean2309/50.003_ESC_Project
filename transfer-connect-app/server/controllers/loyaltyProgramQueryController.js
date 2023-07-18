@@ -1,4 +1,3 @@
-
 const loyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 const currencyRateModel = require('../models/currencyRateModel');
 
@@ -18,7 +17,7 @@ const currencyRateModel = require('../models/currencyRateModel');
 
     sample data format :CurrencyRate Model 
   { 
-    appName: "BankApp"
+    partnerCode: "BankApp"
     programID: "GOPOINTS,KRISFLYER"
     currencyRate: "1.0,1.5"
   }
@@ -26,46 +25,50 @@ const currencyRateModel = require('../models/currencyRateModel');
 
 */
 
-  class LoyaltyProgramQueryController {
-    async getLoyaltyPrograms (request, response, appName)  {
-      
-      console.log(`getLoyaltyPrograms() reads the appName:` , appName);
-      
-      try {
-      
-        const loyaltyProgramsPromise = loyaltyProgramQueryModel.find(); // Fetch all oyaltyProgramProviders
+class LoyaltyProgramQueryController {
 
-        // Fetch the document correspond to the appName, which contains all loyalty programs and currency rates
-        const currencyRatesPromise = currencyRateModel.find({appName:appName});
-  
-        const [loyaltyPrograms, currencyRates_LPPs] = await Promise.all([
-          loyaltyProgramsPromise,
-          currencyRatesPromise
-        ]);
-        
-        const programRates ={};
-        const programIDs= currencyRates_LPPs[0].programID.split(','); // Split the programID string into an array of individual program IDs
-        const currencyRates = currencyRates_LPPs[0].currencyRate.split(','); // Split the currencyRate string into an array of individual currency rates
-       
-        
+  getLoyaltyPrograms = async (request, response) => {
 
-        programIDs.forEach((programID, index) => {
-          programRates[programID] = parseFloat(currencyRates[index]); 
-          // Store each program ID with its corresponding currency rate in the programRates object
-          // Eg: programRates = { GOPOINTS: 1.0, KRISFLYER: 1.5};
-        });
+    // grab partnerCode from path params
+    const partnerCode = request.params.partnerCode;
 
-        console.log("########")
-        console.log(`Extracted Loyalty Program Providers and exchange rates`)
-        console.log(programRates)
-        console.log("########")
+    console.log(`getLoyaltyPrograms() reads the partnerCode:`, partnerCode);
 
-        // return respective loyalty program providers with currency rates
-        const combinedData = loyaltyPrograms.map((document) => {
-          const programID = document.programID;
-          const currencyRate = programRates[programID];
+    try {
 
-          // Check if the program ID exists in programRates
+      const loyaltyProgramsPromise = loyaltyProgramQueryModel.find(); // Fetch all oyaltyProgramProviders
+
+      // Fetch the document correspond to the partnerCode, which contains all loyalty programs and currency rates
+      const currencyRatesPromise = currencyRateModel.find({ partnerCode: partnerCode });
+
+      const [loyaltyPrograms, currencyRates_LPPs] = await Promise.all([
+        loyaltyProgramsPromise,
+        currencyRatesPromise
+      ]);
+
+      const programRates = {};
+      const programIDs = currencyRates_LPPs[0].programID.split(','); // Split the programID string into an array of individual program IDs
+      const currencyRates = currencyRates_LPPs[0].currencyRate.split(','); // Split the currencyRate string into an array of individual currency rates
+
+
+
+      programIDs.forEach((programID, index) => {
+        programRates[programID] = parseFloat(currencyRates[index]);
+        // Store each program ID with its corresponding currency rate in the programRates object
+        // Eg: programRates = { GOPOINTS: 1.0, KRISFLYER: 1.5};
+      });
+
+      console.log("########")
+      console.log(`Extracted Loyalty Program Providers and exchange rates`)
+      console.log(programRates)
+      console.log("########")
+
+      // return respective loyalty program providers with currency rates
+      const combinedData = loyaltyPrograms.map((document) => {
+        const programID = document.programID;
+        const currencyRate = programRates[programID];
+
+        // Check if the program ID exists in programRates
         if (currencyRate !== undefined) {
           return {
             programID: document.programID,
@@ -90,13 +93,14 @@ const currencyRateModel = require('../models/currencyRateModel');
 
       console.log(transformedData); // Output transformed data to the terminal
 
-        // Send the transformed data as the response
-        response.status(200).json(transformedData);
-      } 
-      catch (error) {
-        response.status(500).json({ message: error.message });
-      }
-    };
-  }
+      // Send the transformed data as the response
+      response.status(200).json(transformedData);
+    }
+    catch (error) {
+      response.status(500).json({ message: error.message });
+    }
+  };
+
+}
 
 module.exports = new LoyaltyProgramQueryController();

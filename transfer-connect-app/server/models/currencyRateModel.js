@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const currencyRateSchema = new mongoose.Schema({
   currencyRate: String,
   programID: String,
-  appName: String
+  partnerCode: String
 },{ collection: 'CurrencyRates' });
 
 
