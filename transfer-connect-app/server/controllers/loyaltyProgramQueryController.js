@@ -101,6 +101,4 @@ const currencyRateModel = require('../models/currencyRateModel');
     };
   }
 
-const loyaltyProgramQueryController = new LoyaltyProgramQueryController();
-
-module.exports = loyaltyProgramQueryController;
+module.exports = LoyaltyProgramQueryController;

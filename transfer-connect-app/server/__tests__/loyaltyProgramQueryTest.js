@@ -1,5 +1,5 @@
 // Import necessary dependencies and modules
-const LoyaltyProgramQueryController = require('./loyaltyProgramQueryController');
+const loyaltyProgramQueryController = require('../controllers/loyaltyProgramQueryController');
 const loyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 const currencyRateModel = require('../models/currencyRateModel');
 
@@ -21,11 +21,10 @@ jest.mock('../models/currencyRateModel', () => ({
 // =========== Test Suite and Cases ======== //
 
 describe('LoyaltyProgramQueryController', () => {
-  let controller;
 
   // Create a new instance of the LoyaltyProgramQueryController before each test
   beforeEach(() => {
-    controller = new LoyaltyProgramQueryController();
+    controller = new loyaltyProgramQueryController();
   });
 
   // Clear all mock data after each test
@@ -36,14 +35,14 @@ describe('LoyaltyProgramQueryController', () => {
 
 
   /*
-Correct data returned from db  (integration test) 
-Sending correct data over to bank-app  
-
-
+  Unit Test: 
+  Integration test: Correct data returned from db  
   */
+
   // ======Unit Test ===== // 
   describe('getLoyaltyPrograms()', () => {
-    test('should return loyalty programs with transformed data', async () => {
+    test('return serialized JSON file with loyalty program details', async () => {
+
       // Mock the data returned by the find methods
       const loyaltyProgramsPromise = Promise.resolve([
         {
@@ -103,6 +102,7 @@ Sending correct data over to bank-app
     });
 
     test('should return an error response when an exception occurs', async () => {
+      
       // Mock the find methods to throw an error
       loyaltyProgramQueryModel.find.mockRejectedValue(new Error('Database error'));
 
