@@ -8,7 +8,7 @@ class LoyaltyProgram extends Component {
         const { loyaltyProgramData, userProfile } = this.props;
 
         return (
-            <div style={loyaltyProgramStyle}>
+            <div className='loyalty-box'>
                 <h3>{loyaltyProgramData.programName}</h3>
                 <p>Description: {loyaltyProgramData.description}</p>
                 <p>Processing Time: {loyaltyProgramData.processingTime}</p>
@@ -31,5 +31,14 @@ class LoyaltyProgram extends Component {
 }
 
 }
+
+// // CSS style for the loyalty program box
+// const loyaltyProgramStyle = {
+//     border: '1px solid #ccc',
+//     padding: '10px',
+//     margin: '10px',
+//     borderRadius: '5px',
+//     backgroundColor: '#f9f9f9',
+// };
 
 export default LoyaltyProgram;

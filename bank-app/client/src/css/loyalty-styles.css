@@ -2,8 +2,8 @@
     background-image: url("../img/Transfer-bg.png");
     background-size: cover;
     /* viewport width */
-    width: 100vw;
-    height: 100vh;
+    /* width: 100vw;
+    height: 100vh; */
     /* align-items: center;
     display: flex;
     flex-direction: column;
@@ -12,10 +12,10 @@
 }
 
 .loyalty-box {
-    color:#253A5E;
-    border: '1px solid #ccc';
-    padding: '10px';
-    margin: '10px';
-    border-radius: '5px';
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #253A5E;
+    margin: 10px;
+    padding: 10px;
     background-color: aliceblue;
 }

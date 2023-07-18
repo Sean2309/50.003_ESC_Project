@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import '../css/transfer-styles.css';
 
 class TransferForm extends Component {
     constructor(props) {
@@ -165,7 +166,7 @@ class TransferForm extends Component {
         }
 
         return (
-            <div>
+            <div className='overlay'>
                 <dialog open={isOpen}>
                     <form onSubmit={this.handleSubmit}>
                         <label htmlFor="memberName">Primary Cardholder Name: </label>
