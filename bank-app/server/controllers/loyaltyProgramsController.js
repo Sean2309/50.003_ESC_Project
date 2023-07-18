@@ -14,7 +14,6 @@ class LoyaltyProgramsController {
   }
 
   // to populate db 
-  // I can adjust this later
   populateDb = async () => {
     const mockLoyaltyPrograms = [
       {
@@ -24,7 +23,10 @@ class LoyaltyProgramsController {
         processingTime: "Instant",
         description: "Feel free to adjust this",
         enrollmentLink: "https://www.gojet.com/member/",
-        tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html"
+        tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
+        membershipFormat: "9d1l",
+        currencyRate: 1
+
       },
       {
         programID: "ASIAMILES",
@@ -33,7 +35,9 @@ class LoyaltyProgramsController {
         processingTime: "Instant",
         description: "Feel free to adjust this",
         enrollmentLink: "https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html",
-        tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html"
+        tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html",
+        membershipFormat: "11d",
+        currencyRate: 1.1
       }
     ]
 
@@ -53,6 +57,9 @@ class LoyaltyProgramsController {
       await LoyaltyPrograms.create(data);
 
       console.log('Data updated successfully');
+      
+      this.getLoyaltyPrograms();
+
     } catch (error) {
       console.error('Error updating data:', error);
     }

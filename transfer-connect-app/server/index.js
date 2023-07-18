@@ -5,6 +5,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const transactionRouter = require('./routes/transactionRouter');
+const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
+
 
 const app = express();
 
@@ -20,6 +22,13 @@ app.use(express.json());
 
 // setup routes
 app.use('/api/transactions', transactionRouter)
+
+// routes based on bankapp to to retrieve loyalty program information
+app.use('/api/loyaltyprograms/BankApp', loyaltyProgramQueryRouter('BankApp'));
+app.use('/api/loyaltyprograms/DBS', loyaltyProgramQueryRouter('DBS'));
+
+
+  
 
 app.listen(config.PORT, () => {
     console.log(`Server running on port ${config.PORT}`);

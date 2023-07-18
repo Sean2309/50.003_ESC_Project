@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import LoyaltyProgram from './LoyaltyProgram';
-import '../css/loyalty-styles.css';
 
 class LoyaltyPrograms extends Component {
     constructor(props) {
@@ -34,17 +33,18 @@ class LoyaltyPrograms extends Component {
         }
         
         return loyaltyProgramsData.map((data, index) => (
-            // call LoyaltyProgram.js as a card, populate with this data
             <LoyaltyProgram key={index} data={data} />
         ));
     }
 
     render() {
         return (
-            <div className='marketplace-page-bg'>
-                {/* apply style here */}
-                <h2>Loyalty Programs</h2>
-                {this.renderLoyaltyPrograms()}
+            <div>
+                <div className='marketplace-page-bg'>
+                    <h2>Loyalty Programs</h2>
+                    {this.renderLoyaltyPrograms()}
+                </div>
+
             </div>
         );
     }
