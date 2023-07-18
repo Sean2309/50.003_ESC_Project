@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 class LoginPage extends Component {
@@ -23,6 +22,7 @@ class LoginPage extends Component {
             if(response.data ==="Success"){
                 console.log("Redirect to specified page")
                 this.setState({ authenticated: true });
+                window.location.href = 'http://localhost:3000/marketplace'; // Replace with your marketplace URL
             }
           })
           .catch(error => {
