@@ -7,24 +7,12 @@ const csvParser = require(`csv-parser`);
 const Files = require('files.com/lib/Files').default;
 const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
-const { resolve } = require('path');
-
-// Datetime
-function getDate(date) {
-  const day = date.getDate(); // Get the day (1-31)
-  const month = date.getMonth() + 1; // Get the month (0-11), add 1 to match the human-readable month (1-12)
-  const year = date.getFullYear(); // Get the four-digit year
-  const date_out = `${year}${month}${day}`;
-  return date_out;
-}
-// Getting Current Date
-const currentDate = getDate(new Date()); // to change into testDate after final implementation
+const path  = require('path');
 
 // Defining Collection Names
 const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list and transform the other to match 
 const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
 const testDate = `20200812`; // TODO: Change this to current date on final implementation
-
 
 // START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async() => {
@@ -34,13 +22,15 @@ const retrieveFromServer = async() => {
     Files.setApiKey('d823bcf8852f7259262f425a839a05f88f51fa57e9cddb8c3d1493d10c04192e');
 
     // Downloading the handback file from the server
+    console.log("Retrieving the files from the SFTP server");
     const fileName = `${lp}_HANDBACK_${testDate}.csv`;
     const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
     if (!isBrowser()) {
       // Download to a file on disk
-      await downloadableFile.downloadToFile(`./sftp_handback_downloads/${fileName}`);
+      await downloadableFile.downloadToFile(path.join(__dirname, `sftp_handback_downloads/${fileName}`));
+      console.log(`File ${fileName} downloaded!\n`);
     }
   };
 }
@@ -53,7 +43,7 @@ const extractDataFromCsv = async(filePath) => {
     // Randomly pick an outcomeCode
     const random_outcomeCode = outcomeCodeList[Math.floor(Math.random() * outcomeCodeList.length)];
 
-    const str1 = filePath.split('/');
+    const str1 = filePath.split('\\');
     const splitStr = str1[str1.length-1].split(/_/);
     const partnerCode = splitStr[0];
 
@@ -80,16 +70,18 @@ const extractDataFromCsv = async(filePath) => {
 
 const uploadFilesToMongoDB = async() => {
   // Connecting to MongoDB
-  mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
   // Iterating through each LP
   for (let i = 0; i < sftpLPList.length; i++) {
     // Getting the file path
-    const filePath = `./sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${testDate}.csv`;
+    const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${testDate}.csv`);
     
     try {
       // Extracting the data from the csv file
+      
       const [partnerCode, results] = await extractDataFromCsv(filePath);
+      console.log(`Extracting data from ${partnerCode} Handback File`);
 
       // Getting the Model for this iteration
       const Model = await mongoose.model(mongoLPList[i], handbackFileFormSchema);
@@ -104,6 +96,7 @@ const uploadFilesToMongoDB = async() => {
         };
         
         // Search for an existing document with the same referenceNumber
+        console.log(`Updating ${partnerCode} Database in Mongo\n`);
         let doc = await Model.findOne({ referenceNumber: mappedResult.referenceNumber });
 
         if (doc) {
@@ -116,7 +109,7 @@ const uploadFilesToMongoDB = async() => {
         }
       }
 
-      console.log("Data inserted/updated successfully");
+      console.log(`Data updated for ${partnerCode} successfully\n`);
     } catch (error) {
       console.log(error);
     }
@@ -129,16 +122,17 @@ const uploadFilesToMongoDB = async() => {
 
 // Running the functions
 const main = async () => {
-  // await retrieveFromServer();
+  await retrieveFromServer();
   await uploadFilesToMongoDB();
   console.log("Done!");
 }
 
-main().catch(console.error);
+// main().catch(console.error);
 
 
-module.exports = {
-  retrieveFromServer, 
-  extractDataFromCsv, 
-  uploadFilesToMongoDB
+const downloadfromSFTPandUpload = async () => {
+  await retrieveFromServer();
+  await uploadFilesToMongoDB(); 
 };
+
+module.exports.downloadfromSFTPandUpload = downloadfromSFTPandUpload;
