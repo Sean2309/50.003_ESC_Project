@@ -1,37 +1,38 @@
 const UserCredentials = require('../models/userCredentials');
 const UserProfile = require('../models/userProfile');
+const bcrypt = require("bcryptjs")
 
 class AuthManagerController {
   constructor() {
-    //this.createUser();
+    this.createUser();
   }
 
   // Handle the POST request to authenticate a user
   userAuthentication = async (request, response) => {
     try {
       const { loginId, password } = request.body;
-
-      // Find the user by email
-      // TODO: Implement security features, e.g. hash password
-      UserCredentials.findOne({ loginId: loginId })
-        .then(user => {
-          if (user) {
-            if (user.password == password) {
-              response.json("Success")
-            } else {
-              response.json("The password is incorrect")
-            }
-          } else {
-            response.json("User not found")
-          }
-        })
+  
+      // Find the user by loginId
+      const user = await UserCredentials.findOne({ loginId: loginId });
+  
+      if (user) {
+        const isMatch = await user.comparePassword(password);
+  
+        if (isMatch) {
+          response.json("Success");
+        } else {
+          response.json("The password is incorrect");
+        }
+      } else {
+        response.json("User not found");
+      }
     } catch (error) {
       console.error(error);
       response.status(500).json({ message: 'Server error' });
     }
   }
 
-  /*
+  
   // createUser for easy debug and call it during instantiation
   createUser = async (request, response) => {
     await UserCredentials.deleteMany({});
@@ -55,7 +56,7 @@ class AuthManagerController {
     });
     
     await userProfile.save();
-  }*/
+  }
 }
 
 const authManagerController = new AuthManagerController();
