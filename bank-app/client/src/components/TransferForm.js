@@ -106,8 +106,9 @@ class TransferForm extends Component {
         const { emailAddress, phoneNumber, notificationMethod } = userProfile
 
         const transferDate = this.getDate();
-
-        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)) {
+        
+        
+        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)){
             const form = {
                 membershipId,
                 memberName,

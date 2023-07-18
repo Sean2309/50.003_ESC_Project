@@ -1,7 +1,7 @@
 const transferFormRouter = require('express').Router();
 const transferFormController = require('../controllers/transferFormController');
 
-// Easy debug GET
+// // Easy debug GET
 transferFormRouter.get('/', transferFormController.getAllForms);
 
 // Route for creating a new transfer form

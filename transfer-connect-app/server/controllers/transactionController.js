@@ -1,4 +1,5 @@
 const Transaction = require('../models/transaction');
+const LoyaltyProgramProvider = require('../models/loyaltyProgramQueryModel')
 
 /* 
   sample data format
@@ -14,7 +15,7 @@ const Transaction = require('../models/transaction');
 class TransactionController {
   
   generateReferenceNumber = () => {
-    // TODO: generate Reference Number
+    // TODO: generate Reference Number 
     return "101";
   }
   
@@ -31,18 +32,38 @@ class TransactionController {
     const submittedForms = await Transaction.find({});
     response.json(submittedForms);
   }
-  
-  submitTransaction = async (request, response) => {
-    const transactionData = request.body;
+
+  validateTransactionData = (transactionData) => {
+    if (!transactionData) {
+      console.log("Empty request.body")
+      return { error: 'request.body cannot be found' };
+    }
+
+    if (transactionData.membershipId === '' || transactionData.transferAmount === null) {
+      console.log("Invalid request.body")
+      return { error: 'Membership ID or Transfer Amount is invalid' };
+    }
     
+  }
+  
+    submitTransaction = async (request, response) => {
 
+    const transactionData = request.body;
+    console.log(transactionData + "*************"); 
+
+    const validationResult= this.validateTransactionData(transactionData);
+
+    if(validationResult.error){
+      return response.status(400).json({ error: validationResult.error });
+    }
+  
     transactionData.referenceNumber = this.generateReferenceNumber();
-
     transactionData.partnerCode = this.getPartnerCode();
-
     const transaction = new Transaction(transactionData);
 
-    transaction.save()
+   console.log(transaction); 
+
+   await transaction.save()
       .then(() => {
         console.log('Transfer form data saved to MongoDB');
         // send referenceNumber to bank app
@@ -52,8 +73,7 @@ class TransactionController {
         console.error('Error saving transfer form data:', error);
         response.sendStatus(500);
       });
-
-    }
+  }
 
 };
 

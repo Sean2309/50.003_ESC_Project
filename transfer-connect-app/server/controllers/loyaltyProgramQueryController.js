@@ -1,8 +1,6 @@
-// const express = require('express');
-// const loyaltyProgramQueryController = express.Router();
+
 const loyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 const currencyRateModel = require('../models/currencyRateModel');
-
 
 /* 
 
@@ -29,7 +27,7 @@ const currencyRateModel = require('../models/currencyRateModel');
 */
 
   class LoyaltyProgramQueryController {
-    getLoyaltyPrograms = async (request, response, appName) => {
+    async getLoyaltyPrograms (request, response, appName)  {
       
       console.log(`getLoyaltyPrograms() reads the appName:` , appName);
       
@@ -101,4 +99,4 @@ const currencyRateModel = require('../models/currencyRateModel');
     };
   }
 
-module.exports = LoyaltyProgramQueryController;
+module.exports = new LoyaltyProgramQueryController();
