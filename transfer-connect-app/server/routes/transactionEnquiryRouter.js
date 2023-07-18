@@ -15,9 +15,6 @@ router.get('/check/:bank_app/:loyalty_program/:referencenumber', async function(
     transactionController.processRoute(req, res);
 });
 
-router.get('/sendemail', async function(req, res, next) {
-  transactionController.sendingEmail();
-});
 
 
 module.exports = {router};
