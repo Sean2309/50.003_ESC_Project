@@ -29,3 +29,5 @@ class LoyaltyProgram extends Component {
 }
 
 }
+
+export default LoyaltyProgram;
