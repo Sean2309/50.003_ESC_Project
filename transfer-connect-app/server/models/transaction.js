@@ -7,11 +7,14 @@ const transactionSchema = new mongoose.Schema({
   transferAmount: Number,
   referenceNumber: String,
   partnerCode: String,
+  outcomeCode: String,
   notificationMethod: String,
   emailAddress: String,
   phoneNumber: String
 });
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+const createTransactionModel = (loyaltyProgramId) => {
+  return mongoose.model('transaction', transactionSchema, loyaltyProgramId);
+}
 
-module.exports = Transaction;
+module.exports = createTransactionModel;
