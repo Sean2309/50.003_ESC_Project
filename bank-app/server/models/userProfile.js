@@ -7,6 +7,7 @@ const userProfileSchema = new mongoose.Schema({
     abcPoints: Number,
     emailAddress: String,
     phoneNumber: String,
+    notificationMethod: String,
     userId: {
         type: String,
         ref: 'UserCredentials'

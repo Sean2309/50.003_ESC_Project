@@ -4,7 +4,8 @@ function Marketplace() {
   return (
     <div>
       <h1>Marketplace</h1>
-      <LoyaltyPrograms />
+      {/* temporarily put userId = 1*/}
+      <LoyaltyPrograms userId={1}/>
     </div>
   );
 }

@@ -7,6 +7,7 @@ class LoyaltyPrograms extends Component {
         super(props);
         this.state = {
             loyaltyProgramsData: [],
+            userProfile: {}
         };
     }
 
@@ -16,25 +17,48 @@ class LoyaltyPrograms extends Component {
         this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
     }
 
+    getUserProfile = async () => {
+        const { userId } = this.props;
+        const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } });
+        const userProfileQueryData = userProfileQueryResponse.data;
+
+        this.setState({ userProfile: userProfileQueryData });
+    }
+
     componentDidMount() {
         this.getLoyaltyPrograms();
+        this.getUserProfile();
     }
-    
-    /* 
-        logic to pass on to actual render: if getLoyaltyPrograms is not yet successful,
-        render Loading... else pass each data to a LoyaltyProgram component
-    */ 
-    
+
+
     renderLoyaltyPrograms() {
-        const { loyaltyProgramsData } = this.state;
-        
-        if (loyaltyProgramsData === undefined) {
-            return <p>Loading...</p>;
+        const { loyaltyProgramsData, userProfile } = this.state;
+
+        const componentsArray = [];
+
+        // Add in header sentence for number of points
+        componentsArray.push(<p key={'pointsHeader'}>You currently have {userProfile.abcPoints} abcPoints </p>)
+
+        /* 
+            logic to pass on to actual render: if getLoyaltyPrograms is not yet successful,
+            render Loading... else pass each data to a LoyaltyProgram component
+        */
+        if (loyaltyProgramsData === [] || userProfile === {}) {
+            return (<p>Loading...</p>);
         }
-        
-        return loyaltyProgramsData.map((data, index) => (
-            <LoyaltyProgram key={index} data={data} />
+
+        loyaltyProgramsData.map((loyaltyProgramData, index) => (
+            componentsArray.push(
+                <LoyaltyProgram
+                    key={`loyaltyProgram${index}`}
+                    loyaltyProgramData={loyaltyProgramData}
+                    userProfile={userProfile}
+                />
+            )
         ));
+
+        return componentsArray;
+
     }
 
     render() {
