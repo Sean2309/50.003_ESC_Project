@@ -110,15 +110,17 @@ const uploadFilesToServer = async () => {
   }
 }
 
-const main = async () => {
-  await writeCollectionsToCsv();
-  await uploadFilesToServer();
-};
+// const main = async () => {
+//   await writeCollectionsToCsv();
+//   await uploadFilesToServer();
+// };
 
-main().catch(console.error);
+// main().catch(console.error);
 
 
 const queryFromDBandUpload = async () =>{
-  writeCollectionsToCsv();
+  await writeCollectionsToCsv();
   await uploadFilesToServer();
 }
+
+module.exports.queryFromDBandUpload = queryFromDBandUpload;
