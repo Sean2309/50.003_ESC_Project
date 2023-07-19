@@ -32,7 +32,7 @@ class TransactionController {
       console.log("Invalid request.body")
       return { error: 'Membership ID or Transfer Amount is invalid' };
     }
-
+    return {transactionData}; 
   }
 
   submitTransaction = async (request, response) => {
@@ -43,12 +43,12 @@ class TransactionController {
     const validationResult = this.validateTransactionData(transactionData);
 
     if (validationResult.error) {
-      return response.status(400).json({ error: validationResult.error });
+      return response.status(400).json({ error: validationResult.error});
     }
 
     const TransactionModel = createTransactionModel(loyaltyProgramId);
     
-    const transaction = new TransactionModel(loyaltyProgramId);
+    const transaction = new TransactionModel(validationResult);
 
     await transaction.save()
       .then(() => {
