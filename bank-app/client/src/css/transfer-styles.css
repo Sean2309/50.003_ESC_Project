@@ -1,0 +1,20 @@
+.overlay {
+    background-image: url("../img/Transfer-bg.png");
+    background-size: cover;
+    /* viewport width */
+
+    /* try to apply this to the login page */
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    /* https://dev.to/franciscomendes10866/how-to-create-a-modal-in-react-3coc */
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* ensures other cards are not clickable */
+    position: fixed;
+}

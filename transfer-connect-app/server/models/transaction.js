@@ -1,14 +1,20 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
+  memberName: String,
   membershipId: String,
-  membershipName: String,
   transferDate: String,
   transferAmount: Number,
   referenceNumber: String,
   partnerCode: String,
+  outcomeCode: String,
+  notificationMethod: String,
+  emailAddress: String,
+  phoneNumber: String
 });
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+const createTransactionModel = (loyaltyProgramId) => {
+  return mongoose.model('transaction', transactionSchema, loyaltyProgramId);
+}
 
-module.exports = Transaction;
+module.exports = createTransactionModel;

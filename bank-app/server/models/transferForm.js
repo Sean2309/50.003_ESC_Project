@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
 
 const transferFormSchema = new mongoose.Schema({
+  memberName:String,
   membershipId: String,
-  membershipName: String,
   transferDate: String,
   transferAmount: Number,
   referenceNumber: String,
+  partnerCode: String,
+  notificationMethod: String,
+  emailAddress: String,
+  phoneNumber: String,
+  
 });
 
-const TransferForm = mongoose.model('TransferForm', transferFormSchema);
+const createTransferForm = (loyaltyProgramId) => {
+  return mongoose.model('transferform', transferFormSchema, loyaltyProgramId);
+}
 
-module.exports = TransferForm;
+module.exports = createTransferForm;
