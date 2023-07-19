@@ -37,18 +37,21 @@ class TransactionController {
 
   submitTransaction = async (request, response) => {
     const transactionData = request.body;
-    
+
     const loyaltyProgramId = request.params.loyaltyProgramId;
 
-    const validationResult = this.validateTransactionData(transactionData);
 
+    const validationResult = this.validateTransactionData(transactionData);
     if (validationResult.error) {
       return response.status(400).json({ error: validationResult.error});
     }
 
     const TransactionModel = createTransactionModel(loyaltyProgramId);
     
-    const transaction = new TransactionModel(validationResult);
+
+    const transaction = new TransactionModel(validationResult.transactionData);
+
+
 
     await transaction.save()
       .then(() => {

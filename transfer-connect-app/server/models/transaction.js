@@ -11,7 +11,9 @@ const transactionSchema = new mongoose.Schema({
   notificationMethod: String,
   emailAddress: String,
   phoneNumber: String
-});
+} ,
+{collection: '${partnerCode}'} 
+);
 
 const createTransactionModel = (loyaltyProgramId) => {
   return mongoose.model('transaction', transactionSchema, loyaltyProgramId);
