@@ -67,7 +67,7 @@ class LoyaltyProgramsController {
       console.error('Error updating data:', error);
     }
   }
-}
+}}
 
 const loyaltyProgramsController = new LoyaltyProgramsController();
 
