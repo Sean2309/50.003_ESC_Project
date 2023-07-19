@@ -10,12 +10,6 @@ class TransferFormController {
     console.log(TRANSFER_CONNECT_API_URL);
   }
 
-  // get handler for easy debugging
-  getAllForms = async (request, response) => {
-    const submittedForms = await TransferForm.find({});
-    response.json(submittedForms);
-  }
-
   // this function posts transaction details to TransferConnect transaction submission API endpoint
   postTransaction = async (transactionData, loyaltyProgramId) => {
     const response = await axios.post(this.submissionRoute + `${loyaltyProgramId}`, transactionData);

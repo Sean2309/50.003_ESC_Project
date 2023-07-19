@@ -17,4 +17,4 @@ const createTransferForm = (loyaltyProgramId) => {
   return mongoose.model('transferform', transferFormSchema, loyaltyProgramId);
 }
 
-export default createTransferForm 
+module.exports = createTransferForm;
