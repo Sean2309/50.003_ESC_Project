@@ -1,6 +1,7 @@
 const createTransferForm = require('../models/transferForm');
 const { TRANSFER_CONNECT_API_URL, PARTNERCODE } = require('../utils/config');
 const axios = require('axios');
+const validatetransferForm = require('./validatetransferForm');
 
 class TransferFormController {
 
@@ -30,6 +31,24 @@ class TransferFormController {
       
       const loyaltyProgramId = request.params.loyaltyProgramId; // grab loyaltyProgramId from path params
       
+
+      let hasMissingFields = false;
+
+    // Use the 'validatetransferForm' middleware to check for missing fields
+      validatetransferForm(request, response, (err) => {
+      if (err) {
+        hasMissingFields = true;
+        // The middleware has already sent the response for missing fields.
+        // No need to proceed further; return early.
+        return;
+      }
+    });
+
+    // If there are missing fields, return early
+      if (hasMissingFields) {
+        return;
+    }
+      
       // add referenceNumber to transaction data
       transferFormData.referenceNumber = this.generateReferenceNumber();
       
@@ -51,7 +70,7 @@ class TransferFormController {
         .then(() => {
           console.log('Transaction data saved to MongoDB');
           response.status(201).json(transferForm);
-        });
+        }); 
 
     } catch (error) {
       // TODO: appropriate error handling for when POST to TransferConnect fails and when .save() to db fails
