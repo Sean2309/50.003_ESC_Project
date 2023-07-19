@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const loyaltyProgramsSchema = new mongoose.Schema({
-    programID: String,
+    programId: String,
     programName: String,
     currencyName: String,
     processingTime: String,

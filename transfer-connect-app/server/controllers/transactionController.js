@@ -1,35 +1,25 @@
-const Transaction = require('../models/transaction');
+const createTransactionModel = require('../models/transaction');
 
 /* 
   sample data format
   {
     "membershipId": "1021030213",
     "memberName": "keith low",
-    "transferDate", "23-10-2000"
-    "transferAmount": "2000"    
+    "transferDate", "23-10-2000",
+    "transferAmount": 2000,
+    "referenceNumber": 230203041,
+    "partnerCode": "DBSSG",
+    "notificationMethod": 2,
+    "emailAddress": "keeve@gmail.com",
+    "phoneNumber": "81231292"
   }
-
 */
-  
-class TransactionController {
-  
-  generateReferenceNumber = () => {
-    // TODO: generate Reference Number
-    return "101";
-  }
-  
-  getPartnerCode = () => {
-    // TODO: figure out how we will implement partner code. 
-    // will we give banks exclusive API links? make them write their partnercode in the query parameter? hmm
-    return "DBSSG";
-  }
 
-  
-  // Arrow functions do not have their own this binding and inherit the this value from the enclosing lexical scope. 
-  // So they preserve the 'this' instance from the surrounding scope 
-  getAllForms = async (request, response) => {
-    const submittedForms = await Transaction.find({});
-    response.json(submittedForms);
+class TransactionController {
+
+  generateSystemCode = () => {
+    // TODO: generate systemCode to notify successful/unsuccessful submission 
+    return "101";
   }
 
   validateTransactionData = (transactionData) => {
@@ -42,30 +32,29 @@ class TransactionController {
       console.log("Invalid request.body")
       return { error: 'Membership ID or Transfer Amount is invalid' };
     }
+
   }
-  
-    submitTransaction = async (request, response) => {
 
+  submitTransaction = async (request, response) => {
     const transactionData = request.body;
-    console.log(transactionData + "*************"); 
+    
+    const loyaltyProgramId = request.params.loyaltyProgramId;
 
-    const validationResult= this.validateTransactionData(transactionData);
+    const validationResult = this.validateTransactionData(transactionData);
 
-    if(validationResult.error){
+    if (validationResult.error) {
       return response.status(400).json({ error: validationResult.error });
     }
-  
-    transactionData.referenceNumber = this.generateReferenceNumber();
-    transactionData.partnerCode = this.getPartnerCode();
-    const transaction = new Transaction(transactionData);
 
-   console.log(transaction); 
+    const TransactionModel = createTransactionModel(loyaltyProgramId);
+    
+    const transaction = new TransactionModel(loyaltyProgramId);
 
-   await transaction.save()
+    await transaction.save()
       .then(() => {
         console.log('Transfer form data saved to MongoDB');
         // send referenceNumber to bank app
-        response.status(201).json({ referenceNumber: transaction.referenceNumber });
+        response.status(201).json({ systemCode: this.generateSystemCode() });
       })
       .catch((error) => {
         console.error('Error saving transfer form data:', error);

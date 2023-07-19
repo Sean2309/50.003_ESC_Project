@@ -64,8 +64,11 @@ class LoyaltyPrograms extends Component {
     render() {
         return (
             <div>
-                <h2>Loyalty Programs</h2>
-                {this.renderLoyaltyPrograms()}
+                <div className='marketplace-page-bg'>
+                    <h2>Loyalty Programs</h2>
+                    {this.renderLoyaltyPrograms()}
+                </div>
+
             </div>
         );
     }

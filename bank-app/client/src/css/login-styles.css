@@ -1,0 +1,54 @@
+.login-page-bg {
+    background-image: url("../img/Login-bg.png");
+    background-size: cover;
+    /* viewport width */
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* todo: redo with flexboxes etc  */
+/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+/* at least now I've become a fullstack dev /hs */
+
+.logo-box {
+    z-index: 1;
+    margin-bottom: 5%
+}
+
+.logo-box img {
+    position: relative;
+    z-index: 2;
+}
+
+/* controls form colors */
+.login-form {
+    color:aliceblue
+}
+
+/* .form-box {
+    width: 33%; 
+    height: 8%; 
+    left: 45vw;
+    top: 55vh;
+    border-radius: 4;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    margin-top: 2%;
+    border-left: 0.50vw white solid; 
+    border-top: 0.50vw white solid; 
+    border-right: 0.50vw white solid; 
+    border-bottom: 0.50vw white solid;
+}
+
+/* applies to images in the form box */
+.form-box img {
+    position: relative;
+    z-index: 2;
+} 
+
+
