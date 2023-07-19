@@ -1,5 +1,4 @@
 const Transaction = require('../models/transaction');
-const LoyaltyProgramProvider = require('../models/loyaltyProgramQueryModel')
 
 /* 
   sample data format
@@ -15,7 +14,7 @@ const LoyaltyProgramProvider = require('../models/loyaltyProgramQueryModel')
 class TransactionController {
   
   generateReferenceNumber = () => {
-    // TODO: generate Reference Number 
+    // TODO: generate Reference Number
     return "101";
   }
   
@@ -43,7 +42,6 @@ class TransactionController {
       console.log("Invalid request.body")
       return { error: 'Membership ID or Transfer Amount is invalid' };
     }
-    
   }
   
     submitTransaction = async (request, response) => {
