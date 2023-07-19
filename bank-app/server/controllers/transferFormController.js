@@ -29,6 +29,7 @@ class TransferFormController {
       const transferFormData = request.body; // see sample data comments above 
       
       const loyaltyProgramId = request.params.loyaltyProgramId; // grab loyaltyProgramId from path params
+
       
       // add referenceNumber to transaction data
       transferFormData.referenceNumber = this.generateReferenceNumber();
