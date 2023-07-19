@@ -8,25 +8,9 @@ const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const fs = require('fs');
 const csvParser = require('csv-parser');
-
+var getFormattedDate = require('./date').getFormattedDate;
 if (!fs.existsSync('accrual_files')) {
   fs.mkdirSync('accrual_files');
-}
-
-function getFormattedDate(format = "standard") {
-  const date = new Date();
-  date.setDate(date.getDate() - 1); // Subtract a day if requested
-  let month = date.getMonth() + 1; // getMonth() is zero-indexed
-  let day = date.getDate();
-
-  month = month < 10 ? '0' + month : month;
-  day = day < 10 ? '0' + day : day;
-
-  if (format === "compact") {
-    return `${date.getFullYear()}${month}${day}`;
-  } else { // "standard" format
-    return `${date.getFullYear()}-${month}-${day}`;
-  }
 }
 
 const collections = ["qflyers", "gojets", "testaccruals"]; // note please name your collection name in lowercase and add a "s" at the end
@@ -110,10 +94,10 @@ const uploadFilesToServer = async () => {
   }
 }
 
-// const main = async () => {
-//   await writeCollectionsToCsv();
-//   await uploadFilesToServer();
-// };
+const main = async () => {
+  await writeCollectionsToCsv();
+  await uploadFilesToServer();
+};
 
 // main().catch(console.error);
 

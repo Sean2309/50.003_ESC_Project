@@ -8,11 +8,13 @@ const Files = require('files.com/lib/Files').default;
 const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path  = require('path');
+var getFormattedDate = require('./date').getFormattedDate;
 
 // Defining Collection Names
 const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list and transform the other to match 
 const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
-const testDate = `20200812`; // TODO: Change this to current date on final implementation
+const testDate = `20200812`; 
+const formattedDate = getFormattedDate("compact");
 
 // START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async() => {
@@ -23,7 +25,7 @@ const retrieveFromServer = async() => {
 
     // Downloading the handback file from the server
     console.log("Retrieving the files from the SFTP server");
-    const fileName = `${lp}_HANDBACK_${testDate}.csv`;
+    const fileName = `${lp}_HANDBACK_${formattedDate}.csv`;
     const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
@@ -75,7 +77,7 @@ const uploadFilesToMongoDB = async() => {
   // Iterating through each LP
   for (let i = 0; i < sftpLPList.length; i++) {
     // Getting the file path
-    const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${testDate}.csv`);
+    const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${formattedDate}.csv`);
     
     try {
       // Extracting the data from the csv file
@@ -126,8 +128,7 @@ const main = async () => {
   await uploadFilesToMongoDB();
   console.log("Done!");
 }
-
-// main().catch(console.error);
+main().catch(console.error);
 
 
 const downloadfromSFTPandUpload = async () => {
