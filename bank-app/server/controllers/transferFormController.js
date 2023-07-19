@@ -1,5 +1,5 @@
 const createTransferForm = require('../models/transferForm');
-const { TRANSFER_CONNECT_API_URL } = require('../utils/config');
+const { TRANSFER_CONNECT_API_URL, PARTNERCODE } = require('../utils/config');
 const axios = require('axios');
 
 class TransferFormController {
@@ -39,6 +39,9 @@ class TransferFormController {
       
       // add referenceNumber to transaction data
       transferFormData.referenceNumber = this.generateReferenceNumber();
+      
+      // add partnerCode to transaction data
+      transferFormData.partnerCode = PARTNERCODE;
       
       // submit Transaction to TransferConnect
       // TODO: appropriate handling of systemCode given by TransferConnect, then save to our own DB

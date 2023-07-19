@@ -6,6 +6,7 @@ const transferFormSchema = new mongoose.Schema({
   transferDate: String,
   transferAmount: Number,
   referenceNumber: String,
+  partnerCode: String,
   notificationMethod: String,
   emailAddress: String,
   phoneNumber: String,
@@ -13,7 +14,7 @@ const transferFormSchema = new mongoose.Schema({
 });
 
 const createTransferForm = (loyaltyProgramId) => {
-  return mongoose.model('transferform', transferFormSchema, loyaltyProgramId)
+  return mongoose.model('transferform', transferFormSchema, loyaltyProgramId);
 }
 
 export default createTransferForm 
