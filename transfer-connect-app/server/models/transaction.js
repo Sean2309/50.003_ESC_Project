@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
+  memberName: String,
   membershipId: String,
-  membershipName: String,
   transferDate: String,
   transferAmount: Number,
   referenceNumber: String,
