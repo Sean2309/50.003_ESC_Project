@@ -6,8 +6,7 @@ class TransferFormController {
 
   // to route to transferConnect transaction submission API endpoint
   constructor() {
-    this.submissionRoute = TRANSFER_CONNECT_API_URL + '/api/transactions'; //localhost:3003/api/transactions 
-    console.log(TRANSFER_CONNECT_API_URL);
+    this.submissionRoute = TRANSFER_CONNECT_API_URL + '/api/transactions/'; //localhost:3003/api/transactions 
   }
 
   // this function posts transaction details to TransferConnect transaction submission API endpoint
@@ -51,7 +50,7 @@ class TransferFormController {
       transferForm.save()
         .then(() => {
           console.log('Transaction data saved to MongoDB');
-          response.sendStatus(201);
+          response.status(201).json(transferForm);
         });
 
     } catch (error) {
