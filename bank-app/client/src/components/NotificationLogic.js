@@ -1,16 +1,6 @@
 import NotificationStyle from "./NotificationStyle";
-import React, {Component} from "react";
-const membershipID = '1234568';
+const membershipID = '1234569';
 
-class NotificationLogic extends Component {
-    render() {
-        return (
-        <div>
-            <button onClick={() => new NotificationStyle().showNotification()}>Show notification</button></div>
-        );
-    }
-
-}
 
 const url = 'ws://localhost:8080?uuid=' + membershipID;
 const socket = new WebSocket(url);
@@ -37,5 +27,3 @@ socket.addEventListener('error', (event) => {
   console.error('WebSocket connection error:', event);
 });
 
-
-export default NotificationLogic;

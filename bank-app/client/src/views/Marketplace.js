@@ -6,7 +6,7 @@ function Marketplace() {
     <div>
       <h1>Marketplace</h1>
       <LoyaltyPrograms />
-      <NotificationLogic/>
+      <script src = "../components/NotificationLogic.js"></script>
     </div>
   );
 }

@@ -42,7 +42,7 @@ async function sendMessagetoClient(clients, membershipID){
   }
   else if (userConnection.readyState === WebSocket.OPEN){
     userConnection.send(message);
-    console.log(membershipID + "websocket connection found") }
+    console.log(membershipID + " websocket connection found") }
   else{
     console.log(membershipID + " websocket connection closed" )
   }
