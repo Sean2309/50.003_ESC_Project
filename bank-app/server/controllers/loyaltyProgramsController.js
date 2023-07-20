@@ -1,8 +1,17 @@
 const LoyaltyPrograms = require('../models/loyaltyPrograms');
 const axios = require('axios');
+const cron = require('node-cron');
+const { PARTNERCODE } = require('../utils/config');
 
 class LoyaltyProgramsController {
-  // easy debug GET
+  constructor() {
+    // cron scheduler to do a GET request from TransferConnect daily at 12am
+    cron.schedule('0 0 * * *', () => {
+      this.updateLoyaltyPrograms();
+    });
+  }
+  
+
   getLoyaltyPrograms = async (request, response) => {
     try {
       const loyaltyPrograms = await LoyaltyPrograms.find();
@@ -50,15 +59,13 @@ class LoyaltyProgramsController {
   // send GET request to transferConnect query API endpoint and store into db
   updateLoyaltyPrograms = async () => {
     try {
-      const response = await axios.get('http://localhost:3003/api/loyaltyprograms/bankapp');
+      const response = await axios.get(`http://localhost:3003/api/loyaltyprograms/${PARTNERCODE}`);
       const data = response.data;
 
       await LoyaltyPrograms.deleteMany({});
       await LoyaltyPrograms.create(data);
 
       console.log('Data updated successfully');
-      
-      this.getLoyaltyPrograms();
 
     } catch (error) {
       console.error('Error updating data:', error);
