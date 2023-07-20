@@ -39,5 +39,10 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.17.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
+    }
   }
 }

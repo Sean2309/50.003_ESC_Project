@@ -2,7 +2,7 @@ import LoyaltyPrograms from '../components/LoyaltyPrograms';
 
 function Marketplace() {
   return (
-    <div>
+    <div data-testid="marketplace-container-test">
       <h1>Marketplace</h1>
       {/* temporarily put userId = 1*/}
       <LoyaltyPrograms userId={1}/>
