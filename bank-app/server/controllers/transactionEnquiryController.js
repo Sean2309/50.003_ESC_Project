@@ -3,6 +3,9 @@ const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
 const { mongoose } = require('mongoose');
 const transactionSchema = require('../models/transactionEnquiryModel.js').transactionSchema;
 const loyaltyprograms = require('../models/transactionEnquiryModel.js').loyaltyprograms;
+const notificationMessage = require('../models/notificationMessage');
+const clients = require('./notificationServer.js').clients;
+const sendMessagetoClient = require('./notificationServer.js').sendMessagetoClient;
 
 
 class TransactionEnquiryController {
@@ -74,7 +77,7 @@ class TransactionEnquiryController {
           });
           console.log('\n');
       }
-    }, 5 * 1000); // 5 seconds
+    }, 5 * 1000); // 60 seconds
   }
 
 
@@ -83,6 +86,7 @@ class TransactionEnquiryController {
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
     if (response_data == null || response_data == undefined) {
       console.log(`response_data for ${loyaltyprogram} is null`)
+      this.sendNotificationMessage();
       return;
     }
     for (const data of response_data) {
@@ -94,6 +98,9 @@ class TransactionEnquiryController {
     return;
   }
 
+  sendNotificationMessage = async () => {
+    sendMessagetoClient(clients, '1234567');
+  }
 
 
 }
