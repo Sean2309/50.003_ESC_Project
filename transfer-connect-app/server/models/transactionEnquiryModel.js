@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 //edit fields according to handback file 
 const transactionSchema = new mongoose.Schema({
   "membershipId": String,
-  "membershipName": String,
+  "memberName": String,
   "transferDate": String,
   "transferAmount": Number,
   "referenceNumber": String,

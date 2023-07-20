@@ -64,7 +64,7 @@ async function getOutcomeCode(collection_connection, id_list, bank_name, loyalty
     if (notificationMethod == 0){
       //only email
       console.log('sent email');
-      emailNotification.main(email, bank_name, loyalty_program_name, outcomeCode, transferAmount).catch(console.error);
+      emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount).catch(console.error);
     }
     else if (notificationMethod == 1){
       //only phone number
@@ -74,7 +74,7 @@ async function getOutcomeCode(collection_connection, id_list, bank_name, loyalty
     else{
       //both
       console.log('sent email');
-      emailNotification.main(email, bank_name, loyalty_program_name, outcomeCode, transferAmount).catch(console.error);
+      emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount).catch(console.error);
 
       console.log("sent message")
       messageNotification.sendMessages(phoneNumber, bank_name,loyalty_program_name, outcomeCode, transferAmount);
