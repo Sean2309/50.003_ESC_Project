@@ -4,7 +4,8 @@
   "description": "enquire status of transaction",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "mongodb": "^5.5.0",
     "mongoose": "^7.3.1",
     "morgan": "~1.9.1",
+    "nodemon": "^3.0.1",
     "ws": "^8.13.0"
   }
 }
