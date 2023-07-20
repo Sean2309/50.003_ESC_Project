@@ -1,7 +1,7 @@
 import NotificationStyle from "./NotificationStyle";
 
 //assuming every user has unique membershipID in each bank
-const membershipID = '1234567'; //get this after user logs in 
+const membershipID = '1230oij'; //get this after user logs in 
 
 
 const url = 'ws://localhost:8080?uuid=' + membershipID;

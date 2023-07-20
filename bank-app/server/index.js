@@ -1,5 +1,6 @@
 const config = require('./utils/config');
 
+
 // import middlewares 
 const express = require('express');
 const cors = require('cors');
@@ -11,7 +12,7 @@ const app = express();
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL,  {
-    dbName: 'DBS', // Specify the database name, edit this accordingly
+    dbName: config.BANK_NAME, // Specify the database name, edit this accordingly
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then((res) => console.log('connected')).catch((err) => console.error('error'))

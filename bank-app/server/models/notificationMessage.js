@@ -1,3 +1,4 @@
+//unused for now, will be used to set notif after deciphering outcomeCode
 const successNotification ={
     title: 'Notification',
     message: 'Your transaction is successful!'
