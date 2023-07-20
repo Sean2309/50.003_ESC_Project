@@ -17,12 +17,18 @@ class LoginPage extends Component {
       
         axios.post('http://localhost:3001/Login', { loginId, password })
           .then(response => {
+
+            const { token } = response.data;
+        
             // Handle the successful login response
             console.log(response.data);
-            if(response.data ==="Success"){
-                console.log("Redirect to specified page")
-                this.setState({ authenticated: true });
-                window.location.href = 'http://localhost:3000/marketplace'; // Replace with your marketplace URL
+            if (token) {
+            console.log("Redirect to specified page");
+            // Save the token in local storage or a secure HTTP-only cookie
+            // Using local storage is not the most secure option. 
+            // Need to consider using cookies or a state management library like Redux later TODO
+            localStorage.setItem('token', token);
+            window.location.href = 'http://localhost:3000/marketplace'; // You can commemnt this out to check the token generated.
             }
           })
           .catch(error => {

@@ -1,6 +1,6 @@
 const UserCredentials = require('../models/userCredentials');
 const UserProfile = require('../models/userProfile');
-const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken");
 
 class AuthManagerController {
   constructor() {
@@ -19,7 +19,24 @@ class AuthManagerController {
         const isMatch = await user.comparePassword(password);
   
         if (isMatch) {
-          response.json("Success");
+          // If the email and password are correct, create a JWT token
+          // Secrete Key saved in .env file
+          const mysecretkey = process.env.SECRET_CODE;
+
+          // Payload to generate JWT
+          const payload = {
+            fullName: user.fullName,
+            email: user.email,
+            password: user.password,
+          };
+          // Create a jsonwebtoken that expires in 5 days
+          const token = jwt.sign(payload, mysecretkey, { expiresIn: '5d' });
+          // Send the token back to the client
+          response.status(200).json({
+            msg: "User is logged in",
+            token: token
+          });
+          
         } else {
           response.json("The password is incorrect");
         }
