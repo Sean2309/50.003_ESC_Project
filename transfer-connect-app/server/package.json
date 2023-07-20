@@ -30,32 +30,3 @@
     "files.com": "^1.0.291"
   }
 }
-{
-  "name": "bankapp",
-  "version": "1.0.0",
-  "description": "bank app ",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "aws-sdk": "^2.1407.0",
-    "axios": "^1.4.0",
-    "cors": "^2.8.5",
-    "cron": "^2.3.1",
-    "csv-writer": "^1.6.0",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "form-data": "^4.0.0",
-    "mongoose": "^7.3.1",
-    "nodemon": "^1.14.9",
-    "ssh2-sftp-client": "^9.1.0"
-  },
-  "devDependencies": {
-    "files.com": "^1.0.287"
-  }
-}
