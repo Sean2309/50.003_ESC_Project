@@ -86,7 +86,6 @@ class TransactionEnquiryController {
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
     if (response_data == null || response_data == undefined) {
       console.log(`response_data for ${loyaltyprogram} is null`)
-      this.sendNotificationMessage();
       return;
     }
     for (const data of response_data) {
@@ -94,12 +93,19 @@ class TransactionEnquiryController {
       let outcome_code = data["outcomeCode"];
       collection_connection.updateOne({ "referenceNumber": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
       console.log(`Updated ${reference_number} of ${loyaltyprogram} with outcomeCode ${outcome_code}`);
+      this.sendNotificationMessage(outcome_code, reference_number, collection_connection);
     };
     return;
   }
 
-  sendNotificationMessage = async () => {
-    sendMessagetoClient(clients, '1234567');
+  sendNotificationMessage = async (outcomeCode, reference_number, collection_connection) => {
+    await collection_connection.find({"referenceNumber": reference_number}, { "membershipId": 1, "_id": 0}).lean().exec()
+        .then(transaction => {
+        console.log(transaction);
+        let membershipId = transaction[0].membershipId;
+        console.log("membershipID: " + membershipId);
+        sendMessagetoClient(clients, membershipId, outcomeCode);
+      })
   }
 
 

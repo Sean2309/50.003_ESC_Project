@@ -1,7 +1,7 @@
 import NotificationStyle from "./NotificationStyle";
-import { useEffect } from "react";
+
 //assuming every user has unique membershipID in each bank
-const membershipID = '1234568'; //get this after user logs in 
+const membershipID = '1234567'; //get this after user logs in 
 
 
 const url = 'ws://localhost:8080?uuid=' + membershipID;

@@ -34,14 +34,14 @@ wss.on('connection', async (connection, req) => {
 
 
 
-async function sendMessagetoClient(clients, membershipID){
+async function sendMessagetoClient(clients, membershipID, outcomeCode){
   let userConnection = clients.get(membershipID);
   if (!userConnection){
     console.log("User Websocket Connection not found - not in clients")
     return;
   }
   else if (userConnection.readyState === WebSocket.OPEN){
-    userConnection.send(membershipID);
+    userConnection.send(outcomeCode);
     console.log(membershipID + " websocket connection found") }
   else{
     console.log(membershipID + " websocket connection closed" )
