@@ -8,6 +8,7 @@ import Home from './views/Home';
 import Marketplace from './views/Marketplace';
 
 
+
 function App() {
 
   
@@ -21,6 +22,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    
   );
 
 }

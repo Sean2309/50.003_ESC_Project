@@ -21,6 +21,7 @@ wss.on('connection', async (connection, req) => {
 
   // Example: Echo the received message back to the client
   connection.send(`You sent: ${message}`);
+
   });
 
   // Event listener for connection close
@@ -35,13 +36,12 @@ wss.on('connection', async (connection, req) => {
 
 async function sendMessagetoClient(clients, membershipID){
   let userConnection = clients.get(membershipID);
-  const message = ("hi i am " + membershipID);
   if (!userConnection){
     console.log("User Websocket Connection not found - not in clients")
     return;
   }
   else if (userConnection.readyState === WebSocket.OPEN){
-    userConnection.send(message);
+    userConnection.send(membershipID);
     console.log(membershipID + " websocket connection found") }
   else{
     console.log(membershipID + " websocket connection closed" )

@@ -18,9 +18,9 @@ class NotificationStyle extends Component{
     };
     }
 
-    showNotification() {
-        new Notification('Status message', {
-            body: "You have received a new message."
+    showNotification(message) {
+        new Notification('Transaction Outcome', {
+            body: "Transaction Outcome: " + message
             //icon: "path/to/icon.png",
           });
     };
