@@ -134,19 +134,28 @@ class NotifController{
 ### Loyalty Program Query
 ```mermaid
 classDiagram
-QueryModel <-- LoyaltyProgramModel
-QueryController -- QueryModel
+QueryModel "1" <-- "1" LoyaltyProgramModel
+QueryController"1" <-- "1"  QueryModel
+QueryModel "1" <-- "1"  CurrencyRatesModel
 
 class QueryModel{
     -loyaltyProgList: List<<LP>LoyaltyProgramModel>
+    -CurrencyRatesList: List <<LP>CurrencyRatesModel>
 }
 
 class LoyaltyProgramModel{
-    -loyaltyProgramId: String
-    -loyaltyProgramName: String
-    -loyaltyProgramRates: double
-    -loyaltyProgramDescription: String
-    -loyaltyProgramImg: url
+    -ProgramId: String
+    -ProgramName: String
+    -currencyName: String
+    -ProcessingTime: String
+    -description: String 
+    -enrollmentLink: String
+}
+ 
+
+class CurrencyRatesModel{
+    -ProgramId: String
+  -currencyRates: Number
 }
 
 class QueryController{

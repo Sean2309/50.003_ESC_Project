@@ -2,6 +2,7 @@ const loyaltyProgramQueryController = require('../controllers/loyaltyProgramQuer
 
 const loyaltyProgramQueryRouter = require('express').Router();
 
+
   // Router to handle GET request to /api/loyaltyprograms
 loyaltyProgramQueryRouter.get('/:partnerCode', loyaltyProgramQueryController.getLoyaltyPrograms)
 
