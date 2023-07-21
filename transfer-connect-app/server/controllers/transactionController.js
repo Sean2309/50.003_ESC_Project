@@ -31,7 +31,7 @@ class TransactionController {
     const loyaltyProgramId = request.params.loyaltyProgramId;
 
     // Use the validateTransaction middleware to validate the transactionData
-    validateTransaction(request, response, (error) => {
+    validateTransaction(request, response, loyaltyProgramId, (error) => {
       if (error) {
         return response.status(400).json({ error });
       }

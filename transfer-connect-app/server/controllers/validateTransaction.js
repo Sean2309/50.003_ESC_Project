@@ -1,6 +1,6 @@
 const LoyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 
-const validateTransaction = async (req, res, next) => {
+const validateTransaction = async (req, res, loyaltyProgramId, next) => {
   const reqBody = req.body;
   const requiredFields = ['membershipId', 'memberName', 'transferDate', 'emailAddress', 'phoneNumber', 'notificationMethod', 'referenceNumber', 'partnerCode'];
   const missingFields = requiredFields.filter(field => !reqBody[field]);
@@ -26,20 +26,14 @@ const validateTransaction = async (req, res, next) => {
   }
 
   // Retrieve the loyalty program by its identifier (e.g., programId) from the database
-  const loyaltyProgramId = req.params.loyaltyProgramId;
   try {
     const loyaltyProgram = await LoyaltyProgramQueryModel.findOne({ programId: loyaltyProgramId }).exec();
-    console.log("Inside validateTransaction(): LoyaltyProgram");
-    console.log(loyaltyProgram);
     if (!loyaltyProgram) {
       return res.status(404).json({ error: "Loyalty program not found." });
     }
-
     // Use the membershipFormat from the loyalty program to construct the regex for membershipId
     const membershipIdRegexFromDB = new RegExp(loyaltyProgram.membershipFormat);
-    console.log("Inside validateTransaction(): membershipIdRegexFromDB");
-    console.log(membershipIdRegexFromDB);
-
+   
     if (!membershipIdRegexFromDB.test(reqBody.membershipId)) {
       return res.status(400).json({ error: "Invalid membershipId format for this loyalty program." });
     }

@@ -29,7 +29,7 @@ class LoyaltyProgramQueryController {
 
         const loyaltyProgram = loyaltyPrograms.find(obj => obj.programId === programId);
 
-        // add currencyRate key to document
+        // add currencyRate key to document≠
         loyaltyProgram.set('currencyRate', currencyRate);
 
         loyaltyProgramsWithRates.push(loyaltyProgram);
