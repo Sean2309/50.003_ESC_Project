@@ -19,16 +19,21 @@ class LoginPage extends Component {
         axios.post('http://localhost:3001/login', { loginId, password }, { withCredentials: true })
             .then(response => {
 
+                console.log('Response status:', response.status);
+                console.log('Response data:', response.data);
                 // the cookie is handled by the browser, no storage of token required.
 
                 // Handle the successful login response
                 this.setState({ authenticated: true });
+                
+                
             })
             .catch(error => {
                 // Handle the error response
                 console.error(error);
             });
     }
+
 
 
     handleChange = (event) => {

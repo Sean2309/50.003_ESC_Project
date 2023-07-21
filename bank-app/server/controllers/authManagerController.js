@@ -38,11 +38,14 @@ class AuthManagerController {
           response.status(200).json({
             msg: "User is logged in"
           });
+
           
         } else {
+          response.clearCookie('token');
           response.json("The password is incorrect");
         }
       } else {
+        response.clearCookie('token');
         response.json("User not found");
       }
     } catch (error) {
