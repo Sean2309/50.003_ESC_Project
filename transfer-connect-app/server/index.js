@@ -8,12 +8,12 @@ var queryFromDBandUpload = require('./controllers/accrualFileController').queryF
 // * : every (e.g every minute)
 
 var gordanJob = new CronJob(
-    '0 49 * * * *',
+    '0 3 * * * *',
     queryFromDBandUpload,
 );
 
 var seanJob = new CronJob(
-    '0 50 * * * *', // Every day at 0000
+    '0 4 * * * *', // Every day at 0000
     downloadfromSFTPandUpload,
 );
 

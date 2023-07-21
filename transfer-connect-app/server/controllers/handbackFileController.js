@@ -18,14 +18,16 @@ const formattedDate = getFormattedDate("compact");
 
 // START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async() => {
+  let fileName;
   for (const lp of sftpLPList ) {
     // Config Details
     Files.setBaseUrl('https://kaligo.files.com');
     Files.setApiKey('d823bcf8852f7259262f425a839a05f88f51fa57e9cddb8c3d1493d10c04192e');
-
     // Downloading the handback file from the server
     console.log("Retrieving the files from the SFTP server");
-    const fileName = `${lp}_HANDBACK_${formattedDate}.csv`;
+
+    fileName = `${lp}_HANDBACK_${formattedDate}.csv`;
+    // fileName = `${lp}_HANDBACK_${testDate}.csv`;
     const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
