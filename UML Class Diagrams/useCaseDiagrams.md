@@ -18,6 +18,7 @@ graph LR
         style LU fill-opacity:0, stroke-opacity:0;
         style LS fill-opacity:0, stroke-opacity:0;
         style LI fill-opacity:0, stroke-opacity:0;
+        style LS_UP fill-opacity:0, stroke-opacity:0;
         direction LR  %%
         LU([fa:fa-user Bank App User]) --- childLU_1([enter user credentials])
         LU([fa:fa-user Bank App User]) --- childLU_3([press submit button])
@@ -33,6 +34,10 @@ graph LR
         LS([fa:fa-user Login Backend]) --- childLS_5([generate authentication token])
         LS([fa:fa-user Login Backend]) --- childLS_6([hash and provide security features to user information like name and password])
         LS([fa:fa-user Login Backend]) --- childLS_7([load in user profile])
+
+        LS_UP([fa:fa-user User Profile Backend]) --- childUP_1([store user email])
+        LS_UP([fa:fa-user User Profile Backend]) --- childUP_2([store user notification preferences])
+        LS_UP([fa:fa-user User Profile Backend]) --- childUP_3([store user phone number])
 ```
 ```mermaid
 graph LR
