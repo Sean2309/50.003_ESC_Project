@@ -32,6 +32,7 @@ graph LR
         LS([fa:fa-user Login Backend]) --- childLS_4([verify inputted credentials])
         LS([fa:fa-user Login Backend]) --- childLS_5([generate authentication token])
         LS([fa:fa-user Login Backend]) --- childLS_6([hash and provide security features to user information like name and password])
+        LS([fa:fa-user Login Backend]) --- childLS_7([load in user profile])
 ```
 ```mermaid
 graph LR
