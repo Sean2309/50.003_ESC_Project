@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Navigate } from 'react-router-dom';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -14,29 +15,21 @@ class LoginPage extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
         const { loginId, password } = this.state;
-      
-        axios.post('http://localhost:3001/Login', { loginId, password })
-          .then(response => {
 
-            const { token } = response.data;
-        
-            // Handle the successful login response
-            console.log(response.data);
-            if (token) {
-            console.log("Redirect to specified page");
-            // Save the token in local storage or a secure HTTP-only cookie
-            // Using local storage is not the most secure option. 
-            // Need to consider using cookies or a state management library like Redux later TODO
-            localStorage.setItem('token', token);
-            window.location.href = 'http://localhost:3000/marketplace'; // You can commemnt this out to check the token generated.
-            }
-          })
-          .catch(error => {
-            // Handle the error response
-            console.error(error);
-          });
-      }
-      
+        axios.post('http://localhost:3001/login', { loginId, password }, { withCredentials: true })
+            .then(response => {
+
+                // the cookie is handled by the browser, no storage of token required.
+
+                // Handle the successful login response
+                this.setState({ authenticated: true });
+            })
+            .catch(error => {
+                // Handle the error response
+                console.error(error);
+            });
+    }
+
 
     handleChange = (event) => {
         const { name, value } = event.target;
@@ -44,10 +37,11 @@ class LoginPage extends Component {
     }
 
     render() {
-        const { loginId, password } = this.state;
+        const { loginId, password, authenticated } = this.state;
 
         return (
             <div>
+                {authenticated && (<Navigate to="/marketplace/" />)}
                 <form onSubmit={this.handleSubmit}>
                     <label htmlFor="loginId">User ID: </label>
                     <input
