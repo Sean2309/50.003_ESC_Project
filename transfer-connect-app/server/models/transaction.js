@@ -11,7 +11,7 @@ const transactionSchema = new mongoose.Schema({
   notificationMethod: String,
   emailAddress: String,
   phoneNumber: String
-});
+} , );
 
 const createTransactionModel = (loyaltyProgramId) => {
   return mongoose.model('transaction', transactionSchema, loyaltyProgramId);

@@ -1,4 +1,5 @@
 const createTransactionModel = require('../models/transaction');
+const validateTransaction = require('./validateTransaction');
 
 /* 
   sample data format
@@ -22,48 +23,37 @@ class TransactionController {
     return "101";
   }
 
-  validateTransactionData = (transactionData) => {
-    if (!transactionData) {
-      console.log("Empty request.body")
-      return { error: 'request.body cannot be found' };
-    }
-
-    if (transactionData.membershipId === '' || transactionData.transferAmount === null) {
-      console.log("Invalid request.body")
-      return { error: 'Membership ID or Transfer Amount is invalid' };
-    }
-
-  }
-
   submitTransaction = async (request, response) => {
     const transactionData = request.body;
-    
+    console.log(transactionData)
+    console.log("*************")
+
     const loyaltyProgramId = request.params.loyaltyProgramId;
 
-    const validationResult = this.validateTransactionData(transactionData);
+    // Use the validateTransaction middleware to validate the transactionData
+    validateTransaction(request, response, loyaltyProgramId, (error) => {
+      if (error) {
+        return response.status(400).json({ error });
+      }
 
-    if (validationResult.error) {
-      return response.status(400).json({ error: validationResult.error });
-    }
+      const TransactionModel = createTransactionModel(loyaltyProgramId);
+      const transaction = new TransactionModel(transactionData);
 
-    const TransactionModel = createTransactionModel(loyaltyProgramId);
-    
-    const transaction = new TransactionModel(loyaltyProgramId);
+      console.log(transaction)
 
-    await transaction.save()
-      .then(() => {
-        console.log('Transfer form data saved to MongoDB');
-        // send referenceNumber to bank app
-        response.status(201).json({ systemCode: this.generateSystemCode() });
-      })
-      .catch((error) => {
-        console.error('Error saving transfer form data:', error);
-        response.sendStatus(500);
-      });
+      transaction.save()
+        .then(() => {
+          console.log('Transfer form data saved to MongoDB');
+          // send referenceNumber to bank app
+          response.status(201).json({ systemCode: this.generateSystemCode() });
+        })
+        .catch((error) => {
+          console.error('Error saving transfer form data:', error);
+          response.sendStatus(500);
+        });
+    });
   }
-
-};
-
+}
 const transactionController = new TransactionController();
 
 module.exports = transactionController;

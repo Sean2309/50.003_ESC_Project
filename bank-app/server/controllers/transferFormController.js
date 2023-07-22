@@ -30,6 +30,7 @@ class TransferFormController {
       const transferFormData = request.body; // see sample data comments above 
       
       const loyaltyProgramId = request.params.loyaltyProgramId; // grab loyaltyProgramId from path params
+
       
 
       let hasMissingFields = false;
@@ -54,6 +55,8 @@ class TransferFormController {
       
       // add partnerCode to transaction data
       transferFormData.partnerCode = PARTNERCODE;
+
+      console.log(transferFormData);
       
       // submit Transaction to TransferConnect
       // TODO: appropriate handling of systemCode given by TransferConnect, then save to our own DB
