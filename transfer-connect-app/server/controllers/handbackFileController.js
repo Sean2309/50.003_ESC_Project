@@ -1,5 +1,6 @@
 // Importing files/modules
 require('dotenv').config({path: __dirname + '/../.env'});
+const accrualFileFormSchema = require('../models/accrualFileForm');
 const handbackFileFormSchema = require('../models/handbackFileForm');
 const mongoose = require('mongoose');
 const fs = require(`fs`);
@@ -15,6 +16,19 @@ const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list 
 const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
 const testDate = `20200812`; 
 const formattedDate = getFormattedDate("compact");
+
+// Cache for storing the created models
+const modelCache = {};
+
+// Function to get the model for a given LP
+const getModelForLP = (lp) => {
+  if (!modelCache[lp]) {
+    const model = mongoose.models[lp] || mongoose.model(lp, handbackFileFormSchema);
+    modelCache[lp] = model;
+  }
+  return modelCache[lp];
+};
+
 
 // START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async() => {
@@ -72,43 +86,31 @@ const extractDataFromCsv = async(filePath) => {
   
 }
 
-const uploadFilesToMongoDB = async() => {
-  // Connecting to MongoDB
+const uploadFilesToMongoDB = async () => {
   await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // Iterating through each LP
   for (let i = 0; i < sftpLPList.length; i++) {
-    // Getting the file path
     const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${formattedDate}.csv`);
-    
     try {
-      // Extracting the data from the csv file
-      
       const [partnerCode, results] = await extractDataFromCsv(filePath);
       console.log(`Extracting data from ${partnerCode} Handback File`);
 
-      // Getting the Model for this iteration
-      const Model = await mongoose.model(mongoLPList[i], handbackFileFormSchema);
-      
-      // Iterating over the results
+      const Model = getModelForLP(mongoLPList[i]);
+
       for (const result of results) {
-        // Before we can insert or update data, we need to map the result's keys to match our schema
         let mappedResult = {
-          partnerCode: partnerCode, 
-          referenceNumber: result['Reference number'], 
+          partnerCode: partnerCode,
+          referenceNumber: result['Reference number'],
           outcomeCode: result['Outcome Code'],
         };
-        
-        // Search for an existing document with the same referenceNumber
+
         console.log(`Updating ${partnerCode} Database in Mongo\n`);
         let doc = await Model.findOne({ referenceNumber: mappedResult.referenceNumber });
 
         if (doc) {
-          // If the document exists, update it
           doc.set(mappedResult);
           await doc.save();
         } else {
-          // If the document does not exist, create it
           await Model.create(mappedResult);
         }
       }
@@ -120,7 +122,7 @@ const uploadFilesToMongoDB = async() => {
   }
 
   mongoose.connection.close();
-}
+};
 
 // END OF MAIN FUNCTIONS ======================
 

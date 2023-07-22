@@ -65,3 +65,55 @@ function getDataType(value) {
     //         done();
     //         });
     // }, 20000 );// increases the timeout to 10000ms = 10s
+
+
+    
+// const uploadFilesToMongoDB = async() => {
+//   // Connecting to MongoDB
+//   await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+
+//   // Iterating through each LP
+//   for (let i = 0; i < sftpLPList.length; i++) {
+//     // Getting the file path
+//     const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${formattedDate}.csv`);
+    
+//     try {
+//       // Extracting the data from the csv file
+      
+//       const [partnerCode, results] = await extractDataFromCsv(filePath);
+//       console.log(`Extracting data from ${partnerCode} Handback File`);
+
+//       // Getting the Model for this iteration
+//       const Model = await mongoose.model(mongoLPList[i], handbackFileFormSchema) || mongoose.model(mongoLPList[i], accrualFileFormSchema);
+      
+//       // Iterating over the results
+//       for (const result of results) {
+//         // Before we can insert or update data, we need to map the result's keys to match our schema
+//         let mappedResult = {
+//           partnerCode: partnerCode, 
+//           referenceNumber: result['Reference number'], 
+//           outcomeCode: result['Outcome Code'],
+//         };
+        
+//         // Search for an existing document with the same referenceNumber
+//         console.log(`Updating ${partnerCode} Database in Mongo\n`);
+//         let doc = await Model.findOne({ referenceNumber: mappedResult.referenceNumber });
+
+//         if (doc) {
+//           // If the document exists, update it
+//           doc.set(mappedResult);
+//           await doc.save();
+//         } else {
+//           // If the document does not exist, create it
+//           await Model.create(mappedResult);
+//         }
+//       }
+
+//       console.log(`Data updated for ${partnerCode} successfully\n`);
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
+
+//   mongoose.connection.close();
+// }

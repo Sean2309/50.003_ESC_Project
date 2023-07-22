@@ -6,7 +6,7 @@ const accrualFileFormSchema = new mongoose.Schema({
   memberID: String,
   memberFirstName: String,
   memberLastName: String,
-  transferDate: Date,
+  transferDate: String,
   amount: Number,
   referenceNumber: String,
   partnerCode: String
