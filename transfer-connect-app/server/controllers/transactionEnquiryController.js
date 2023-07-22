@@ -20,8 +20,8 @@ async function processRoute(req, res){
   //connections to specific DB and collection
   var bank_name = id.bank_app;
   var loyalty_program_name = id.loyalty_program;
-  const database_connection = mongoose.connection.useDb(loyalty_program_name);
-  const collection_connection = database_connection.model(bank_name, transactionSchema, bank_name);
+  //collection is loyaltyprogram
+  const collection_connection = mongoose.model(loyalty_program_name, transactionSchema, loyalty_program_name);
 
   //pass in reference numbers
   const id_list = id.referencenumber.split(",");
@@ -41,7 +41,7 @@ async function getOutcomeCode(collection_connection, id_list, bank_name, loyalty
     console.log(id);
     //use .lean().exec() to return an obj instead of document
     //check if referenceNumber has outcomeCode field + not empty
-    await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress" : 1, "transferAmount" : 1 }).lean().exec()
+    await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}, "partnerCode": bank_name}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress" : 1, "transferAmount" : 1 }).lean().exec()
     .then(user => {
       if (user[0] != null) {
         let user1 = user[0];
