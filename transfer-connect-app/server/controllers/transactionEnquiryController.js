@@ -20,9 +20,14 @@ async function processRoute(req, res){
   //connections to specific DB and collection
   var bank_name = id.bank_app;
   var loyalty_program_name = id.loyalty_program;
-  //collection is loyaltyprogram
-  const collection_connection = mongoose.model(loyalty_program_name, transactionSchema, loyalty_program_name);
+  var collection_connection;
 
+  if (mongoose.models[loyalty_program_name]) {
+    collection_connection = mongoose.model(loyalty_program_name);
+  } else {
+    collection_connection = mongoose.model(loyalty_program_name, transactionSchema, loyalty_program_name);
+  }
+  
   //pass in reference numbers
   const id_list = id.referencenumber.split(",");
   console.log(id_list);
