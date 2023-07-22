@@ -10,7 +10,7 @@ const loyaltyProgramsSchema = new mongoose.Schema({
   tncLink: String,
   membershipFormat: String,
   currencyRate: Number
-},{ collection: 'loyaltyProgramProviders' });
+},{ collection: 'loyaltyprograms' });
 
 const LoyaltyPrograms = mongoose.model('loyaltyprograms', loyaltyProgramsSchema);
 

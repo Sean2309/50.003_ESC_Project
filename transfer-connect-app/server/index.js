@@ -7,13 +7,18 @@ const mongoose = require('mongoose');
 const transactionRouter = require('./routes/transactionRouter');
 const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
 
+console.log("In index file");
 
 const app = express();
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL).then((res) => console.log('connected')).catch((err) => console.error('error'))
+// mongoose.connect('mongodb+srv://test:4321@test.j9ugyp5.mongodb.net/Dtest?retryWrites=true&w=majority').then((res) => console.log('connected')).catch((err) => console.error('error'))
+
 
 // enable CORS for all routes
+
+
 // to allow request from different origins (domain, port etc)
 app.use(cors());
 

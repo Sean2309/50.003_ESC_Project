@@ -3,6 +3,8 @@ const CurrencyRateModel = require('../models/currencyRateModel');
 
 class LoyaltyProgramQueryController {
 
+ 
+
   // constructor() {
   //   // Populate db with mock loyalty programs and currencyRates
   //   this.populateDb();
@@ -10,8 +12,11 @@ class LoyaltyProgramQueryController {
 
   getLoyaltyPrograms = async (request, response) => {
 
+  
+
     // Grab partnerCode from path params
     const partnerCode = request.params.partnerCode;
+
 
     try {
 
@@ -19,6 +24,8 @@ class LoyaltyProgramQueryController {
 
       // Fetch the document correspond to the partnerCode, which contains a nested document of programIds and currencyRates specific to the bank
       const currencyRates = await CurrencyRateModel.findOne({ partnerCode: partnerCode });
+
+      console.log("currencyRates from DB", currencyRates)
 
       const currencyRatesArray = currencyRates.currencyRates;
 
