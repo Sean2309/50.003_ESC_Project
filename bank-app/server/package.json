@@ -19,5 +19,8 @@
     "mongoose": "^7.3.0",
     "node-cron": "^3.0.2",
     "nodemon": "^2.0.22"
+  },
+  "devDependencies": {
+    "jest": "^29.6.1"
   }
 }
