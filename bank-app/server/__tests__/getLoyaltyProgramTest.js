@@ -49,24 +49,13 @@ describe('LoyaltyProgramsController', () => {
       // Mock the implementation of the find method
       loyaltyProgramsModel.find.mockReturnValue(loyaltyProgramsPromise);
 
-      /* 
-        Create mock request and response objects
-        jest.fn(): A jest mock function that sets a 'fake'/'mock'response code
-        mockReturnThis(): A method that makes the mock function chainable 
-          In JS, chaining refers to the technique of calling multiple methods on an object in a single chain, 
-          without the need to store intermediate results in variables. 
-          Each method in the chain operates on the object returned by the previous method.
-            Eg: response.status(200).json({ message: 'Success' }); is a chainable mock function
-      */
-      const partnerCode = 'DBSSG';
-      const request = { params: { partnerCode },};
       const response = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(), // simulate sending a JSON response
       };
 
       // Call the method to be tested
-      await controller.getLoyaltyPrograms(request, response);
+      await controller.getLoyaltyPrograms({}, response);
 
       expect(loyaltyProgramsModel.find).toHaveBeenCalledTimes(1);
       expect(response.json).toHaveBeenCalled();
