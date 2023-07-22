@@ -1,6 +1,7 @@
 const axios = require('axios');
 const transferFormController = require('../controllers/transferFormController');
 const createTransferForm = require('../models/transferForm');
+const { PARTNERCODE } = require('../utils/config');
 
 const loyaltyProgramId = 'mockId';
 
@@ -8,13 +9,23 @@ const loyaltyProgramId = 'mockId';
 // Mock axios module
 jest.mock('axios');
 
-/* Connecting to the database before each test. */
-beforeEach(async () => {
-});
+// Mock Response class to simulate responses
+class MockResponse {
+  constructor() {
+    this.status;
+    this.data;
+  }
 
-/* Closing database connection after each test. */
-afterEach(async () => {
-});
+  status(statusCode) {
+    this.status = statusCode;
+    return this;
+  }
+
+  json(data) {
+    this.data = data;
+    return this;
+  }
+}
 
 // =========== Test Suite and Cases ======== //
 
@@ -89,11 +100,11 @@ describe('transferFormController', () => {
     expect(axios.post).toHaveBeenCalledTimes(1);
 
   })
-})
 
-/*
-  test('submitTransaction POST handler correct retrieves and tags referenceNumber and partnerCode to transferFormData', async () => {
+  test('submitTransaction POST handler correctly retrieves and tags referenceNumber and partnerCode to transferFormData', async () => {
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
+
+    const referenceNumber = 9999;
 
     const mockRequest = {
       body: mockFormData,
@@ -102,21 +113,25 @@ describe('transferFormController', () => {
       }
     };
 
-    const mockResponse = {
-      status: jest.fn((statusCode) => statusCode).mockReturnThis(), // Return the response object itself for chaining
-      json: jest.fn((data) => {
-        this.body = data
-        return this;
-      }),
-    };
+    // simulate controller function to save transaction to db
+    jest.spyOn(transferFormController, 'saveTransactionToDb').mockResolvedValueOnce();
 
-    const mockSaveTransactionToDb = jest.spyOn(transferFormController, 'saveTransactionToDb').mockResolvedValueOnce();
+    // simulate controller functions to add additional fields to transferFormData
+    jest.spyOn(transferFormController, 'generateReferenceNumber').mockResolvedValueOnce(referenceNumber);
+
+    const mockResponse = new MockResponse();
+
+    const newMockFormData = { ...mockFormData };
+
+    // attached mock fields to new form
+    newMockFormData.partnerCode = PARTNERCODE;
+    newMockFormData.referenceNumber = referenceNumber;
 
     await transferFormController.submitTransferForm(mockRequest, mockResponse);
-    
-    console.log(mockResponse.body)
+
+    expect(mockResponse.status).toEqual(201);
+    expect(mockResponse.data).toEqual(mockFormData);
 
   })
 
 })
-*/
