@@ -57,14 +57,14 @@ const mockData = [
 // ============ getOutcomeCode Mock function =========== //
 
 const mockOutcomeCodes = {
-  "['0000'] , DBS, AirAsia ": [
+  "connection, ['0000'] , DBS, AirAsia ": [
     { outcomeCode: '0022', phoneNumber: '+6512345678', emailAddress: 'example@gmail.com', notificationMethod: 0, transferAmount: 10000 },
   ],
   // Add more entries as needed for other test cases
 };
 
-const getOutcomeCodeMock = jest.fn((id_list, bank_name, loyalty_program_name) => {
-    const key = `${id_list},${bank_name},${loyalty_program_name}`;
+const getOutcomeCodeMock = jest.fn((collection_connection, id_list, bank_name, loyalty_program_name) => {
+    const key = `${collection_connection},${id_list},${bank_name},${loyalty_program_name}`;
     return Promise.resolve(mockOutcomeCodes[key] || []);
   });
 
