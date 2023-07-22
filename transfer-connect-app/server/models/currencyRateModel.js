@@ -13,7 +13,7 @@ const currencyRateSchema = new mongoose.Schema({
       currencyRate: Number
     }
   ]
-}, { collection: 'currencyRates' });
+}, { collection: 'CurrencyRates' });
 
 
 

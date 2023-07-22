@@ -25,8 +25,6 @@ class LoyaltyProgramQueryController {
       // Fetch the document correspond to the partnerCode, which contains a nested document of programIds and currencyRates specific to the bank
       const currencyRates = await CurrencyRateModel.findOne({ partnerCode: partnerCode });
 
-      console.log("currencyRates from DB", currencyRates)
-
       const currencyRatesArray = currencyRates.currencyRates;
 
       const loyaltyProgramsWithRates = [];

@@ -12,8 +12,9 @@ class LoyaltyPrograms extends Component {
     }
 
     getLoyaltyPrograms = async () => {
-        const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyPrograms');
+        const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyprograms');
         const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data.loyaltyPrograms;
+        console.log(loyaltyProgramsQueryResponse);
         this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
     }
 

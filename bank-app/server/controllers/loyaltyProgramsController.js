@@ -5,8 +5,15 @@ class LoyaltyProgramsController {
   // easy debug GET
   getLoyaltyPrograms = async (request, response) => {
     try {
+      console.log("In getLoyaltyPrograms")
+
       const loyaltyPrograms = await LoyaltyPrograms.find();
+
+      console.log("loyaltyPrograms", loyaltyPrograms)
+
       response.json({ loyaltyPrograms });
+
+      
     } catch (error) {
       console.error(error);
       response.status(500).json({ error });
@@ -49,9 +56,19 @@ class LoyaltyProgramsController {
 
   // send GET request to transferConnect query API endpoint and store into db
   updateLoyaltyPrograms = async () => {
+    console.log("In updateLoyaltyPrograms")
+
+    
     try {
-      const response = await axios.get('http://localhost:3003/api/loyaltyprograms');
+      const response = await axios.get('http://localhost:3003/api/loyaltyprograms/DBSSG');
+
+   
+      
       const data = response.data;
+
+      console.log("data", data)
+
+ 
 
       await LoyaltyPrograms.deleteMany({});
       await LoyaltyPrograms.create(data);

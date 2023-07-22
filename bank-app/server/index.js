@@ -6,8 +6,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const transferFormRouter = require('./routes/transferFormRouter');
 const loyaltyProgramsRouter = require('./routes/loyaltyProgramsRouter');
-// const authManagerRouter = require('./routes/authManagerRouter');
-// const userProfileRouter = require('./routes/userProfileRouter');
+const updateLoyaltyProgramsRouter = require('./routes/updateLoyaltyProgramsRouter');
+const authManagerRouter = require('./routes/authManagerRouter');
+const userProfileRouter = require('./routes/userProfileRouter');
 const app = express();
 
 // connect to mongoDB cloud
@@ -21,10 +22,12 @@ app.use(cors());
 app.use(express.json());
 
 // setup routes
-app.use('/api/transferformsubmit', transferFormRouter)
+app.use('/api/transferformsubmit', transferFormRouter);
 app.use('/api/loyaltyprograms', loyaltyProgramsRouter);
-// app.use('/api/userprofile', userProfileRouter);
-// app.use('/login', authManagerRouter);
+app.use('/api/updateLoyaltyProgramsRouter',updateLoyaltyProgramsRouter);
+app.use('/api/userprofile', userProfileRouter);
+app.use('/login', authManagerRouter);
+
 
 app.listen(config.PORT, () => {
     console.log(`Server running on port ${config.PORT}`);
