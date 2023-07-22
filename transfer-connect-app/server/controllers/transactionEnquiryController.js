@@ -34,7 +34,7 @@ async function processRoute(req, res){
   const transactions = await getOutcomeCode(collection_connection, id_list, bank_name, loyalty_program_name);
 
   res.send(transactions);
-  return;
+  return [bank_name, loyalty_program_name, id_list];
 }
 
 
@@ -88,4 +88,6 @@ async function getOutcomeCode(collection_connection, id_list, bank_name, loyalty
 
 
 
-module.exports = {processRoute};
+
+
+module.exports = {processRoute, getOutcomeCode, sendNotification};

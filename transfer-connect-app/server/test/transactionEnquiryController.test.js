@@ -3,194 +3,119 @@ const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 
 
 
+
 // =========== Setting up Mock models ==========// 
-/* 
-  Mock loyaltyProgramQueryModel 
-  jest.mock() takes in 2 arguments. The path and a function that returns an object representing mocked implementation of the module
-  find:jest.fn() Find a new Jest mock function created by jest.fn(). jest.fn() simulates the behaviour of the original find function  from the module
-*/
-jest.mock('../models/loyaltyProgramQueryModel', () => ({
-  find: jest.fn(),
+
+//mock two functions in transactionEnquiryController to test each function separately
+jest.mock('../controllers/transactionEnquiryController', () => ({
+    ...jest.requireActual('../controllers/transactionEnquiryController'), // Copy all properties and methods from the original module
+    sendNotification: jest.fn(), // Mock sendNotification
+    getOutcomeCode: jest.fn(),
+
+  }));
+
+  jest.mock('mongoose', () => ({
+
+      models: jest.fn(),
+      Schema: jest.fn(),
+      model: jest.fn()
+    }));
+
+jest.mock('../models/transactionEnquiryModel', () => ({
+
 }));
 
-jest.mock('../models/currencyRateModel', () => ({
-  find: jest.fn(),
-}));
+  
+// ============= Mock Data ============== //
+const mockData = [
+{
+    "_id": {
+      "$oid": "64bbeba7bd474d999e38dd36"
+    },
+    "membershipId": "1230oij",
+    "transferDate": "2020-01-01",
+    "transferAmount": 10000,
+    "referenceNumber": "0000",
+    "partnerCode": "DBS",
+    "outcomeCode": "0022",
+    "notificationMethod": 0,
+    "emailAddress": "example@gmail.com",
+    "phoneNumber": "+6512345678",
+    "memberName": "DBS_AirAsia"
+  },
+
+  {
+    "_id": {
+      "$oid": "64bbebdebd474d999e38dd3e"
+    },
+    "membershipId": "1230oij",
+    "transferDate": "2020-01-01",
+    "transferAmount": 10000,
+    "referenceNumber": "0000",
+    "partnerCode": "UOB",
+    "outcomeCode": "00011",
+    "notificationMethod": 1,
+    "emailAddress": "example@gmail.com",
+    "phoneNumber": "+6512345678",
+    "memberName": "UOB_AirAsia"
+  }]
+
+  const mockgetOutcomeCodeSuccessData = [
+    {
+        "transferAmount": 10000,
+        "referenceNumber": "0000",
+        "outcomeCode": "0022",
+        "notificationMethod": 0,
+        "emailAddress": "example@gmail.com",
+        "phoneNumber": "+6512345678"
+      }]
+
+// ========== processRoute Mock Params ============= //
+
+    const req1 = { params: { loyalty_program: 'AirAsia', bank_app: 'DBS', referencenumber: '0000' } };
+    const res = { send: jest.fn() };
+
+// ============ getOutcomeCode Mock function =========== //
+
+const mockOutcomeCodes = {
+  "['0000'] , DBS, AirAsia ": [
+    { outcomeCode: '0022', phoneNumber: '+6512345678', emailAddress: 'example@gmail.com', notificationMethod: 0, transferAmount: 10000 },
+  ],
+  // Add more entries as needed for other test cases
+};
+
+const getOutcomeCodeMock = jest.fn((id_list, bank_name, loyalty_program_name) => {
+    const key = `${id_list},${bank_name},${loyalty_program_name}`;
+    return Promise.resolve(mockOutcomeCodes[key] || []);
+  });
+
+  transactionEnquiryController.getOutcomeCode.mockImplementation(getOutcomeCodeMock);
+
 // =========== Test Suite and Cases ======== //
 
-describe('LoyaltyProgramQueryController', () => {
-
-  let controller; 
-
+describe('TransactionEnquiryController', () => {
 
 
   // Create a new instance of the LoyaltyProgramQueryController before each test
   beforeEach(() => {
-    controller = loyaltyProgramQueryController;
   });
 
   // Clear all mock data after each test
   afterEach(() => {
-    jest.clearAllMocks();
   });
 
 
   // ====== Unit Test ====== // 
-  describe ('Unit Tests', () => {
+  describe ('Unit Tests for processRoute', () => {
 
-  //   test ('4.4. Established Server database connection', async() => {
-  //     const response = await request(app).get('/api/loyaltyprograms');
-    
-  //     // Assert that the necessary methods have been called
-  //     expect(response.status).toHaveBeenCalledWith(200);
-  //     expect(response.json).toHaveBeenCalled();
-  // });
+    test('getOutcomeCode retrieves data with valid parameters', async () => {
 
-    test ('4.5. Loyalty Program Data in JSON Format', async() => {
-       // Mocking the data returned by the find method
-       const loyaltyProgramsPromise = Promise.resolve([
-        {
-        programId: "GOPOINTS",
-        programName: "GoJet Points",
-        currencyName: "GoPoints",
-        processingTime: "Instant",
-        description: "Feel free to adjust this",
-        enrollmentLink: "https://www.gojet.com/member/",
-        tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-        membershipFormat: "^\\d{9}[a-zA-Z]$",
-        },
-
+        //mock collection_connection
+        const response = await transactionEnquiryController.processRoute(req1, res);
         
-      ]);
+        expect(transactionEnquiryController.getOutcomeCode).toHaveBeenCalledTimes(1);
+        expect(res.send).toHaveBeenCalled();
+    
+      })
 
-      // Mock the implementation of the find method
-      loyaltyProgramQueryModel.find.mockReturnValue(loyaltyProgramsPromise);
-
-      /* 
-        Create mock request and response objects
-        jest.fn(): A jest mock function that sets a 'fake'/'mock'response code
-        mockReturnThis(): A method that makes the mock function chainable 
-          In JS, chaining refers to the technique of calling multiple methods on an object in a single chain, 
-          without the need to store intermediate results in variables. 
-          Each method in the chain operates on the object returned by the previous method.
-            Eg: response.status(200).json({ message: 'Success' }); is a chainable mock function
-      */
-
-
-      const partnerCode = 'DBSSG';
-      const request = { params: { partnerCode },};
-      const response = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(), // simulate sending a JSON response
-      };
-
-      // Call the method to be tested
-      await controller.getLoyaltyPrograms(request, response);
-
-      expect(loyaltyProgramQueryModel.find).toHaveBeenCalledTimes(1);
-      expect(response.json).toHaveBeenCalled();
-    });
-
-
-  test ('4.6. CurrencyRate Data in JSON Format', async() => {
-    // Mocking the data returned by the find method
-    const currencyRatesPromise = Promise.resolve([
-     {
-      partnerCode: "DBSSG",
-          currencyRates: [
-            {
-              programId: "GOPOINTS",
-              currencyRate: 1.1
-            },
-            {
-              programId: "ASIAMILES",
-              currencyRate: 1
-            }
-          ]
-     },
-   ]);
-
- 
-   const partnerCode = 'DBSSG';  
-    // Mock the implementation of the find method with the mock data
-    currencyRateModel.findOne = jest.fn().mockResolvedValue({ partnerCode, ...currencyRatesPromise[0] });
- 
-   const request = { params: { partnerCode },};
-   const response = {
-     status: jest.fn().mockReturnThis(),
-     json: jest.fn(), 
-   };
-
-   await controller.getLoyaltyPrograms(request, response);
-
-   expect(currencyRateModel.findOne).toHaveBeenCalledTimes(1);
-   expect(response.json).toHaveBeenCalled();
-   });
-
-  //  test ('4.7. Combined loyalty program and currency rate data format', async() => {
-
-  //   const loyaltyProgramsPromise = Promise.resolve([
-  //     {
-  //       programId: "GOPOINTS",
-  //       programName: "GoJet Points",
-  //       currencyName: "GoPoints",
-  //       processingTime: "Instant",
-  //       description: "Feel free to adjust this",
-  //       enrollmentLink: "https://www.gojet.com/member/",
-  //       tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-  //       membershipFormat: "^\\d{9}[a-zA-Z]$",
-  //     },
-  //   ]);
-
-  //   const currencyRatesPromise = Promise.resolve([
-  //     {
-  //       partnerCode: "DBSSG",
-  //           currencyRates: [
-  //             {
-  //               programId: "GOPOINTS",
-  //               currencyRate: 1.1
-  //             },
-  //             {
-  //               programId: "ASIAMILES",
-  //               currencyRate: 1
-  //             }
-  //           ]
-  //      },
-  //  ]);
-
-
-
-  //  const partnerCode = 'DBSSG';  
-
-  //  loyaltyProgramQueryModel.find.mockReturnValue(loyaltyProgramsPromise); 
-  //   currencyRateModel.findOne = jest.fn().mockResolvedValue({ partnerCode, ...currencyRatesPromise[0] });
- 
-  //  const request = { params: { partnerCode },};
-  //  const response = {
-  //    status: jest.fn().mockReturnThis(),
-  //    json: jest.fn(), 
-  //  };
-
-
-
-  //  await controller.getLoyaltyPrograms(request, response);
-
-  //  // Assert the response data
-  //  const responseData = response.json.mock.calls[0][0];
-
-  //  expect(responseData[0]).toEqual({
-  //   programId: "GOPOINTS",
-  //   programName: "GoJet Points",
-  //   currencyName: "GoPoints",
-  //   processingTime: "Instant",
-  //   description: "Feel free to adjust this",
-  //   enrollmentLink: "https://www.gojet.com/member/",
-  //   tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-  //   membershipFormat: "^\\d{9}[a-zA-Z]$",
-  //   currencyRate: 1.0,
-  //    });
-  //   })
-
-
-});
-});
+  })});
