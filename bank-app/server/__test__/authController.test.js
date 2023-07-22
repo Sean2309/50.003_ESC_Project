@@ -1,88 +1,65 @@
-const authManagerController = require('../controllers/authManagerController');
-const userCredentials = require('../models/userCredentials');
-const userProfile = require('../models/userProfile');
-const authManagerRouter = require('express').Router();
+const request = require('supertest');
+const app = require('../index'); 
+const UserCredentials = require('../models/userCredentials');
 
+// Mock UserCredentials.findOne
+jest.mock('../models/userCredentials'); 
 
-jest.mock("../models/userCredentials", () => ({
-    findOne: jest.fn(),
-  }));
+describe('AuthManagerController - userAuthentication', () => {
+  it('should return "User is logged in" with correct login credentials', async () => {
+    // Mock the response from UserCredentials.findOne
+    UserCredentials.findOne.mockResolvedValueOnce({
+      loginId: 'john123',
+      comparePassword: jest.fn().mockResolvedValueOnce(true), // Mock the comparePassword function to return true for correct password
+    });
 
-describe('userAuthentication', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-  
-    test('should return "Success" when the user credentials are correct', async () => {
-      const mockRequest = {
-        body: {
-          loginId: 'testuser',
-          password: 'testpassword',
-        },
-      };
-  
-      const mockResponse = {
-        json: jest.fn(),
-      };
-  
-      // Mock the UserCredentials.findOne to return a user with matching credentials
-      userCredentials.findOne.mockResolvedValueOnce({
-        loginId: 'testuser',
-        password: 'testpassword',
-      });
-  
-      // Call the userAuthentication function
-      await authManagerController.userAuthentication(mockRequest, mockResponse);
-  
-      // Assertions
-      expect(mockResponse.json).toHaveBeenCalledWith('Success');
-    });
-  
-    test('should return "The password is incorrect" when the user credentials are incorrect', async () => {
-      const mockRequest = {
-        body: {
-          loginId: 'testuser',
-          password: 'wrongpassword',
-        },
-      };
-  
-      const mockResponse = {
-        json: jest.fn(),
-      };
-  
-      // Mock the UserCredentials.findOne to return a user with matching loginId but incorrect password
-      userCredentials.findOne.mockResolvedValueOnce({
-        loginId: 'testuser',
-        password: 'testpassword',
-      });
-  
-      // Call the userAuthentication function
-      await authManagerController.userAuthentication(mockRequest, mockResponse);
-  
-      // Assertions
-      expect(mockResponse.json).toHaveBeenCalledWith('The password is incorrect');
-    });
-  
-    test('should return "User not found" when the user is not found', async () => {
-      const mockRequest = {
-        body: {
-          loginId: 'nonexistentuser',
-          password: 'testpassword',
-        },
-      };
-  
-      const mockResponse = {
-        json: jest.fn(),
-      };
-  
-      // Mock the UserCredentials.findOne to return null (user not found)
-      userCredentials.findOne.mockResolvedValueOnce(null);
-  
-      // Call the userAuthentication function
-      await authManagerController.userAuthentication(mockRequest, mockResponse);
-  
-      // Assertions
-      expect(mockResponse.json).toHaveBeenCalledWith('User not found');
-    });
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: 'john123', password: 'correctpassword' })
+      .expect(200);
+
+    expect(response.body.msg).toBe('User is logged in');
+    expect(response.header['set-cookie']).toBeDefined();
   });
-  
+
+  it('should return "The password is incorrect" with incorrect password', async () => {
+    // Mock the response from UserCredentials.findOne
+    UserCredentials.findOne.mockResolvedValueOnce({
+      loginId: 'john123',
+      comparePassword: jest.fn().mockResolvedValueOnce(false), // Mock the comparePassword function to return false for incorrect password
+    });
+
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: 'john123', password: 'incorrectpassword' })
+      .expect(200);
+
+    expect(response.text).toBe("\"The password is incorrect\"");
+    //expect(response.header['set-cookie']).toBeUndefined();
+  });
+
+  it('should return "User not found" if the user does not exist', async () => {
+    // Mock the response from UserCredentials.findOne to return null (user not found)
+    UserCredentials.findOne.mockResolvedValueOnce(null);
+
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: 'nonexistentuser', password: 'password' })
+      .expect(200);
+
+    expect(response.text).toBe("\"User not found\"");
+    //expect(response.header['set-cookie']).toBeUndefined();
+  });
+
+  it('should return "Server error" if an error occurs during user authentication', async () => {
+    // Mock the response from UserCredentials.findOne to throw an error
+    UserCredentials.findOne.mockRejectedValueOnce(new Error('DB error'));
+
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: 'john123', password: 'password' })
+      .expect(500);
+
+    expect(response.body.message).toBe('Server error');
+  });
+});
