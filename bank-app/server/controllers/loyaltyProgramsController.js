@@ -17,44 +17,41 @@ class LoyaltyProgramsController {
   populateDb = async () => {
     const mockLoyaltyPrograms = [
       {
-        programID: "GOPOINTS",
+        programId: "GOPOINTS",
         programName: "GoJet Points",
         currencyName: "GoPoints",
         processingTime: "Instant",
         description: "Feel free to adjust this",
         enrollmentLink: "https://www.gojet.com/member/",
         tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-        membershipFormat: "9d1l",
+        membershipFormat: "^\\d{9}[a-zA-Z]$",
         currencyRate: 1
 
       },
       {
-        programID: "ASIAMILES",
+        programId: "ASIAMILES",
         programName: "Asia Miles",
         currencyName: "Asia Miles",
         processingTime: "Instant",
         description: "Feel free to adjust this",
         enrollmentLink: "https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html",
         tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html",
-        membershipFormat: "11d",
+        membershipFormat: "^\\d{11}$",
         currencyRate: 1.1
       }
     ]
 
-  //   await LoyaltyPrograms.deleteMany({});
+    await LoyaltyPrograms.deleteMany({});
 
-  //   await LoyaltyPrograms.create(mockLoyaltyPrograms);
+    await LoyaltyPrograms.create(mockLoyaltyPrograms);
 
-  // }
+  }
 
   // send GET request to transferConnect query API endpoint and store into db
   updateLoyaltyPrograms = async () => {
     try {
-      const response = await axios.get('http://example.com/api/loyalty-programs');
+      const response = await axios.get('http://localhost:3003/api/loyaltyprograms/bankapp');
       const data = response.data;
-      
-
-      console.log('Response from HTTP GET:', data);
 
       await LoyaltyPrograms.deleteMany({});
       await LoyaltyPrograms.create(data);
@@ -67,10 +64,8 @@ class LoyaltyProgramsController {
       console.error('Error updating data:', error);
     }
   }
-}}
+}
 
 const loyaltyProgramsController = new LoyaltyProgramsController();
 
 module.exports = loyaltyProgramsController;
-
-
