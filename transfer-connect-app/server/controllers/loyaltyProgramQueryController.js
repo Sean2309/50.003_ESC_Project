@@ -9,7 +9,7 @@ class LoyaltyProgramQueryController {
   //   // Populate db with mock loyalty programs and currencyRates
   //   this.populateDb();
   // }
-
+  
   getLoyaltyPrograms = async (request, response) => {
 
   

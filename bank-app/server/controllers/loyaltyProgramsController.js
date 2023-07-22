@@ -13,7 +13,7 @@ class LoyaltyProgramsController {
 
       response.json({ loyaltyPrograms });
 
-      
+
     } catch (error) {
       console.error(error);
       response.status(500).json({ error });
@@ -60,15 +60,9 @@ class LoyaltyProgramsController {
 
     
     try {
-      const response = await axios.get('http://localhost:3003/api/loyaltyprograms/DBSSG');
-
-   
-      
+      const response = await axios.get('http://localhost:3003/api/loyaltyprograms/DBSSG'); // Get Request to Transfer Connect server 
       const data = response.data;
-
       console.log("data", data)
-
- 
 
       await LoyaltyPrograms.deleteMany({});
       await LoyaltyPrograms.create(data);
