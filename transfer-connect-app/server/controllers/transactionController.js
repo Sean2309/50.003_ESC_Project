@@ -22,44 +22,29 @@ class TransactionController {
     return "101";
   }
 
-  validateTransactionData = (transactionData) => {
-    if (!transactionData) {
-      console.log("Empty request.body")
-      return { error: 'request.body cannot be found' };
-    }
+  saveTransactionToDb = async (loyaltyProgramId, transactionData) => {
+    const TransactionModel = createTransactionModel(loyaltyProgramId);
 
-    if (transactionData.membershipId === '' || transactionData.transferAmount === null) {
-      console.log("Invalid request.body")
-      return { error: 'Membership ID or Transfer Amount is invalid' };
-    }
-    return {transactionData}; 
+    const transaction = new TransactionModel(transactionData);
+
+    await transaction.save()
   }
 
   submitTransaction = async (request, response) => {
-    const transactionData = request.body;
-    
-    const loyaltyProgramId = request.params.loyaltyProgramId;
+    try {
+      const transactionData = request.body;
 
-    const validationResult = this.validateTransactionData(transactionData);
+      const loyaltyProgramId = request.params.loyaltyProgramId;
 
-    if (validationResult.error) {
-      return response.status(400).json({ error: validationResult.error});
+      // save Transaction to DB
+      this.saveTransactionToDb(loyaltyProgramId, transactionData);
+
+      response.status(201).json({ systemCode: this.generateSystemCode() });
     }
-
-    const TransactionModel = createTransactionModel(loyaltyProgramId);
-    
-    const transaction = new TransactionModel(validationResult);
-
-    await transaction.save()
-      .then(() => {
-        console.log('Transfer form data saved to MongoDB');
-        // send referenceNumber to bank app
-        response.status(201).json({ systemCode: this.generateSystemCode() });
-      })
-      .catch((error) => {
-        console.error('Error saving transfer form data:', error);
-        response.sendStatus(500);
-      });
+    catch (error) {
+      console.error('Error saving transfer form data:', error);
+      response.sendStatus(500);
+    }
   }
 
 };
