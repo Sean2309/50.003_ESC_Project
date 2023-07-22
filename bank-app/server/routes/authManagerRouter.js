@@ -1,9 +1,9 @@
-const authManagerController = require('../controllers/authManagerController');
+// const authManagerController = require('../controllers/authManagerController');
 
-const authManagerRouter = require('express').Router();
+// const authManagerRouter = require('express').Router();
 
 
-// Route to handle POST
-authManagerRouter.post('/', authManagerController.userAuthentication);
+// // Route to handle POST
+// authManagerRouter.post('/', authManagerController.userAuthentication);
 
-module.exports = authManagerRouter;
+// module.exports = authManagerRouter;

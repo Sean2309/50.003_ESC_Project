@@ -1,8 +1,8 @@
-const userProfileRouter = require('express').Router();
+// const userProfileRouter = require('express').Router();
 
-const userProfileController = require('../controllers/userProfileController');
+// const userProfileController = require('../controllers/userProfileController');
 
-// Route to get userProfile details
-userProfileRouter.get('/', userProfileController.authenticateToken, userProfileController.getUserProfile);
+// // Route to get userProfile details
+// userProfileRouter.get('/', userProfileController.authenticateToken, userProfileController.getUserProfile);
 
-module.exports = userProfileRouter;
+// module.exports = userProfileRouter;
