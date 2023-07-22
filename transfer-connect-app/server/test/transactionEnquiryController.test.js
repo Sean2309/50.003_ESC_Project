@@ -4,27 +4,6 @@ const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 
 
 
-// =========== Setting up Mock models ==========// 
-
-//mock two functions in transactionEnquiryController to test each function separately
-jest.mock('../controllers/transactionEnquiryController', () => ({
-    ...jest.requireActual('../controllers/transactionEnquiryController'), // Copy all properties and methods from the original module
-    sendNotification: jest.fn(), // Mock sendNotification
-    getOutcomeCode: jest.fn(),
-
-  }));
-
-  jest.mock('mongoose', () => ({
-
-      models: jest.fn(),
-      Schema: jest.fn(),
-      model: jest.fn()
-    }));
-
-jest.mock('../models/transactionEnquiryModel', () => ({
-
-}));
-
   
 // ============= Mock Data ============== //
 const mockData = [
@@ -90,6 +69,28 @@ const getOutcomeCodeMock = jest.fn((id_list, bank_name, loyalty_program_name) =>
   });
 
   transactionEnquiryController.getOutcomeCode.mockImplementation(getOutcomeCodeMock);
+
+
+// =========== Setting up Mock models ==========// 
+
+//mock two functions in transactionEnquiryController to test each function separately
+jest.mock('../controllers/transactionEnquiryController', () => ({
+    ...jest.requireActual('../controllers/transactionEnquiryController'), // Copy all properties and methods from the original module
+    sendNotification: jest.fn(), // Mock sendNotification
+    getOutcomeCode: jest.fn(),
+
+  }));
+
+  jest.mock('mongoose', () => ({
+
+      models: jest.fn(),
+      Schema: jest.fn(),
+      model: jest.fn()
+    }));
+
+jest.mock('../models/transactionEnquiryModel', () => ({
+
+}));
 
 // =========== Test Suite and Cases ======== //
 
