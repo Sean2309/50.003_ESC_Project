@@ -15,7 +15,8 @@ classDiagram
   class PromotionModel {
     - title: String
     - description: String
-    - category: String
+    - promotionCategory: String
+    - numberOfUses: String
     - exchangeRateModifier: String
     - startDate: Date
     - endDate: Date
