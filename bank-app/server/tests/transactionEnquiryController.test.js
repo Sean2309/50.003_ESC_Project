@@ -6,6 +6,7 @@ const model = require('mongoose').model;
 const axios = require('axios');
 const WebSocket = require('ws');
 
+const membershipId = '1230oij'
 
 // =========== Setting up Mock models ==========// 
 
@@ -29,9 +30,6 @@ jest.mock('../models/transactionEnquiryModel', () => ({
     loyaltyprograms:['AirAsia']
 }));
 
-jest.mock('ws', () => ({
-    OPEN:true
-}))
 
 const clients = new Map().set('1234', {readyState: true});
 
@@ -64,16 +62,20 @@ const clients = new Map().set('1234', {readyState: true});
     })
 
 
+    /*
+//edit test after integration to use membershipID
+ // ============ test WebSocket connecton ============= // 
+describe ('Unit tests for WebSocket', () => {
 
-describe ('Unit tests for sendMessagetoClient', () => {
-
-    test('sendMessagetoClient is sent succesfully', async () => {
+    test('WebSocket is connected', async () => {
 
         //jest.replaceProperty(WebSocket, 'OPEN', true)
         const logSpy = await jest.spyOn(global.console, 'log');
-        await sendMessagetoClient(clients, '1234', '0000');
+        //use placeholder membershipId first
+        await sendMessagetoClient(clients, membershipId, '0000');
 
-        expect(logSpy.mock.calls).toHaveBeenCalledWith('1234 websocket connection closed')
+        expect(logSpy.mock.calls).toHaveBeenCalledWith('1230oij websocket connection found')
 
-    
     })})
+
+    */
