@@ -238,17 +238,28 @@ classDiagram
 ```mermaid
 classDiagram
 HandbackController "1" --> "*" ConfirmationModel
+index "1"--> "1" HandbackController
+date "1" --> "1" HandbackController
+
+class date {
+    getFormattedDate(String format): Date
+}
+
+class index {
+    downloadfromSFTPandUpload(): void
+}
 
 class HandbackController{
     -confirmedTransactions: List<<list>ConfirmationModel>
-    -retrieveFromServer(): void
-    -extractDataFromCsv(String filePath): void
-    -uploadFilesToMongoDB(): void
+    -getModelForLP(String loyaltyProgram): mongoose.model[loyaltyProgram]
+    -retrieveFromServer(Date targetDate): void
+    -extractDataFromCsv(String filePath): String partnerCode, object results
+    -uploadFilesToMongoDB(Date targetDate): void
 }
 
 class ConfirmationModel{
-    -transferDate: Date
-    -transferAmount: int
+    -transferDate: String
+    -transferAmount: Number
     -referenceNumber: String
     -outcomeCode: String
 }

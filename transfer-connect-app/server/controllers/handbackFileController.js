@@ -21,12 +21,12 @@ const formattedDate = getFormattedDate("compact");
 const modelCache = {};
 
 // Function to get the model for a given LP
-const getModelForLP = (lp) => {
-  if (!modelCache[lp]) {
-    const model = mongoose.models[lp] || mongoose.model(lp, handbackFileFormSchema);
-    modelCache[lp] = model;
+const getModelForLP = (loyaltyProgram) => {
+  if (!modelCache[loyaltyProgram]) {
+    const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, handbackFileFormSchema);
+    modelCache[loyaltyProgram] = model;
   }
-  return modelCache[lp];
+  return modelCache[loyaltyProgram];
 };
 
 
@@ -104,7 +104,7 @@ const uploadFilesToMongoDB = async (targetDate) => {
         };
 
         console.log(`Updating ${partnerCode} Database in Mongo\n`);
-        let doc = await Model.findOne({ referenceNumber: mappedResult.referenceNumber });
+        let doc = await Model.findOne({ referenceNumber: mappedResult.referenceNumber }); // Must match the referenceNumber to update
 
         if (doc) {
           doc.set(mappedResult);
@@ -131,7 +131,7 @@ const main = async () => {
   await uploadFilesToMongoDB(formattedDate);
   console.log("Done!");
 }
-main().catch(console.error);
+// main().catch(console.error);
 
 
 const downloadfromSFTPandUpload = async () => {
