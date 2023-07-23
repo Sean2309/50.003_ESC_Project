@@ -29,7 +29,7 @@ function getFormattedDate(format = "standard") {
   }
 }
 
-const collections = ["qflyers", "gojets", "testaccruals"]; // note please name your collection name in lowercase and add a "s" at the end
+const collections = ["qflyers", "gojets", "testaccruals"]; // please name your collection name in lowercase and add a "s" at the end
 
 const writeCollectionsToCsv = async () => {
   mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -110,12 +110,12 @@ const uploadFilesToServer = async () => {
   }
 }
 
-// const main = async () => {
-//   await writeCollectionsToCsv();
-//   await uploadFilesToServer();
-// };
+const main = async () => {
+  await writeCollectionsToCsv();
+  await uploadFilesToServer();
+};
 
-// main().catch(console.error);
+main().catch(console.error);
 
 
 const queryFromDBandUpload = async () =>{
@@ -124,3 +124,5 @@ const queryFromDBandUpload = async () =>{
 }
 
 module.exports.queryFromDBandUpload = queryFromDBandUpload;
+module.exports.writeCollectionsToCsv = writeCollectionsToCsv;
+
