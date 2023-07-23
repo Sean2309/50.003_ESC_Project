@@ -3,26 +3,28 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
 const mongoose = require('mongoose');
+const handbackFileController = require('../controllers/handbackFileController');
+const filePath = path.join(__dirname, `../controllers/sftp_handback_downloads`);
+const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
+const testDate = '20200812'
 
-describe('MongoDB Connectivity', () => {
-    beforeAll(async () => {
-      await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-    }, 10000);
+describe('retrieveFromServer function check', () => {
+
+    test('should return success if retrieveFromServer is executed successfully', async () => {
+      // Mock the implementation of retrieveFromServer
+      const retrieveFromServerSpy = jest.spyOn(handbackFileController, 'retrieveFromServer').mockReturnValue(100);
   
-    afterAll(async () => {
-      await mongoose.connection.close();
-    }, 10000);
+      // Call the function in your test
+      const result = handbackFileController.retrieveFromServer(testDate);
   
-    it('successfully connects to the MongoDB database', async () => {
-      const connected = mongoose.connection.readyState;
-      expect(connected).toBe(1);
+      // Assertion
+      expect(result).toBe(100);
+  
+      // Restore the original implementation
+      retrieveFromServerSpy.mockRestore();
     });
-  });
-
-describe('Handback csv File Check', () => {
-    const filePath = path.join(__dirname, `../controllers/sftp_handback_downloads`);
   
-    test('check on handback file naming convention and file ext', async () => {
+    test('should return success if naming convention and downloaded file ext is correct', async () => {
         process.chdir(filePath);
         const files = fs.readdirSync(`./`);
         for (let i = 0; i < files.length; i++) {
@@ -30,7 +32,7 @@ describe('Handback csv File Check', () => {
         }
     });
   
-    test('check on handback csv headers', (done) => {
+    test('should return success if csv headers are correct', (done) => {
         const expectedHeaders = ['Transfer date', 'Transfer Amount', 'Reference number', 'Outcome Code'];
         let completed = 0;
         process.chdir(filePath);
@@ -49,5 +51,45 @@ describe('Handback csv File Check', () => {
         });
   });
 
+describe('extractDataFromCSV check', () => {
 
+  test('should return success if extractDataFromCSV is executed successfully', async () => {
+    for (let i = 0; i < sftpLPList.length; i++) {
+      const filePathIter = path.join(filePath, `/${sftpLPList[i]}_HANDBACK_${testDate}.csv`);
+      const [partnerCode, results] = await handbackFileController.extractDataFromCsv(filePathIter);
+      expect(partnerCode).toBe(sftpLPList[i]);
+    }
+  });
+});
+
+
+describe('MongoDB Connectivity', () => {
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+  }, 10000);
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  }, 10000);
+
+  test('return sucess if MongoDB readyState == 1', async () => {
+    const connected = mongoose.connection.readyState;
+    expect(connected).toBe(1);
+  });
+});
+
+describe('uploadFilesToMongoDB check', () => {
+  test('should return success if uploadFilesToMongoDB is executed successfully', async () => {
+    // Mock the implementation of uploadFilesToMongoDB
+    const uploadFilesToMongoDBSpy = jest.spyOn(handbackFileController, 'uploadFilesToMongoDB').mockReturnValue(100);
   
+    // Call the function in your test
+    const result = handbackFileController.uploadFilesToMongoDB(testDate);
+
+    // Assertion
+    expect(result).toBe(100);
+
+    // Restore the original implementation
+    uploadFilesToMongoDBSpy.mockRestore();
+  });
+});

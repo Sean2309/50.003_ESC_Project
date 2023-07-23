@@ -31,7 +31,7 @@ const getModelForLP = (lp) => {
 
 
 // START OF MAIN FUNCTIONS ======================
-const retrieveFromServer = async() => {
+const retrieveFromServer = async(targetDate) => {
   let fileName;
   for (const lp of sftpLPList ) {
     // Config Details
@@ -40,8 +40,7 @@ const retrieveFromServer = async() => {
     // Downloading the handback file from the server
     console.log("Retrieving the files from the SFTP server");
 
-    fileName = `${lp}_HANDBACK_${formattedDate}.csv`;
-    // fileName = `${lp}_HANDBACK_${testDate}.csv`;
+    fileName = `${lp}_HANDBACK_${targetDate}.csv`;
     const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
@@ -86,11 +85,11 @@ const extractDataFromCsv = async(filePath) => {
   
 }
 
-const uploadFilesToMongoDB = async () => {
+const uploadFilesToMongoDB = async (targetDate) => {
   await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
   for (let i = 0; i < sftpLPList.length; i++) {
-    const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${formattedDate}.csv`);
+    const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${targetDate}.csv`);
     try {
       const [partnerCode, results] = await extractDataFromCsv(filePath);
       console.log(`Extracting data from ${partnerCode} Handback File`);
@@ -128,16 +127,21 @@ const uploadFilesToMongoDB = async () => {
 
 // Running the functions
 const main = async () => {
-  await retrieveFromServer();
-  await uploadFilesToMongoDB();
+  await retrieveFromServer(formattedDate);
+  await uploadFilesToMongoDB(formattedDate);
   console.log("Done!");
 }
-// main().catch(console.error);
+main().catch(console.error);
 
 
 const downloadfromSFTPandUpload = async () => {
-  await retrieveFromServer();
-  await uploadFilesToMongoDB(); 
+  await retrieveFromServer(formattedDate);
+  await uploadFilesToMongoDB(formattedDate); 
 };
 
+module.exports = {
+  retrieveFromServer,
+  extractDataFromCsv,
+  uploadFilesToMongoDB,
+}
 module.exports.downloadfromSFTPandUpload = downloadfromSFTPandUpload;
