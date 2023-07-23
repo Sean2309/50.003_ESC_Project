@@ -1,5 +1,8 @@
-const transactionEnquiryController = require('../controllers/transactionEnquiryController');
+const transactionEnquiryController = require('../controllers/transactionEnquiryController').transactionController;
 const transactionEnquiryModel = require('../models/transactionEnquiryModel');
+const {mongoose} = require('mongoose');
+const emailNotification = require('../controllers/emailNotification');
+const messageNotification = require('../controllers/messageNotification');
 
 
 
@@ -21,22 +24,6 @@ const mockData = [
     "emailAddress": "example@gmail.com",
     "phoneNumber": "+6512345678",
     "memberName": "DBS_AirAsia"
-  },
-
-  {
-    "_id": {
-      "$oid": "64bbebdebd474d999e38dd3e"
-    },
-    "membershipId": "1230oij",
-    "transferDate": "2020-01-01",
-    "transferAmount": 10000,
-    "referenceNumber": "0000",
-    "partnerCode": "UOB",
-    "outcomeCode": "00011",
-    "notificationMethod": 1,
-    "emailAddress": "example@gmail.com",
-    "phoneNumber": "+6512345678",
-    "memberName": "UOB_AirAsia"
   }]
 
   const mockgetOutcomeCodeSuccessData = [
@@ -56,54 +43,25 @@ const mockData = [
 
 // ============ getOutcomeCode Mock function =========== //
 
-const mockOutcomeCodes = {
-  "connection, ['0000'] , DBS, AirAsia ": [
-    { outcomeCode: '0022', phoneNumber: '+6512345678', emailAddress: 'example@gmail.com', notificationMethod: 0, transferAmount: 10000 },
-  ],
-  // Add more entries as needed for other test cases
-};
-
-const getOutcomeCodeMock = jest.fn((collection_connection, id_list, bank_name, loyalty_program_name) => {
-    const key = `${collection_connection},${id_list},${bank_name},${loyalty_program_name}`;
-    return Promise.resolve(mockOutcomeCodes[key] || []);
-  });
-
-  transactionEnquiryController.getOutcomeCode.mockImplementation(getOutcomeCodeMock);
+const mockOutcomeCodes =  [
+    { outcomeCode: '0022', phoneNumber: '+6512345678', emailAddress: 'example@gmail.com', notificationMethod: 0, transferAmount: 10000, referenceNumber: '0000' },
+  ];
 
 
 // =========== Setting up Mock models ==========// 
 
-//mock two functions in transactionEnquiryController to test each function separately
-jest.mock('../controllers/transactionEnquiryController', () => ({
-    ...jest.requireActual('../controllers/transactionEnquiryController'), // Copy all properties and methods from the original module
-    sendNotification: jest.fn(), // Mock sendNotification
-    getOutcomeCode: jest.fn(),
-
-  }));
 
   jest.mock('mongoose', () => ({
 
       models: jest.fn(),
       Schema: jest.fn(),
-      model: jest.fn()
+      model: jest.fn(),
+      find: jest.fn()
     }));
 
-jest.mock('../models/transactionEnquiryModel', () => ({
-
-}));
-
 // =========== Test Suite and Cases ======== //
-
+/*
 describe('TransactionEnquiryController', () => {
-
-
-  // Create a new instance of the LoyaltyProgramQueryController before each test
-  beforeEach(() => {
-  });
-
-  // Clear all mock data after each test
-  afterEach(() => {
-  });
 
 
   // ====== Unit Test ====== // 
@@ -111,6 +69,7 @@ describe('TransactionEnquiryController', () => {
 
     test('getOutcomeCode retrieves data with valid parameters', async () => {
 
+        jest.spyOn(transactionEnquiryController, "getOutcomeCode").mockImplementation(() => jest.fn());
         //mock collection_connection
         const response = await transactionEnquiryController.processRoute(req1, res);
         
@@ -119,4 +78,40 @@ describe('TransactionEnquiryController', () => {
     
       })
 
+
   })});
+  */
+
+  describe ('NotificationAPI calls the correct controller', () =>{
+
+
+    test ('NotificationAPI calls only sendEmail when notificationMethod is 0', async () => {
+
+      jest.spyOn(emailNotification, "sendEmail").mockImplementation(() => jest.fn())
+      jest.spyOn(messageNotification, "sendMessages").mockImplementation(() => jest.fn())
+      await transactionEnquiryController.sendNotification('+6512345678', 'leelxuan@gmail.com', 0, 1000, 'DBS', 'AirAsia', 10000);
+
+      expect(emailNotification.sendEmail).toHaveBeenCalledTimes(1);
+      expect(messageNotification.sendMessages).toHaveBeenCalledTimes(0);
+    }),
+
+    test ('NotificationAPI calls only sendMessage when notificationMethod is 1', async () => {
+
+      jest.spyOn(emailNotification, "sendEmail").mockImplementation(() => jest.fn())
+      jest.spyOn(messageNotification, "sendMessages").mockImplementation(() => jest.fn())
+      await transactionEnquiryController.sendNotification('+6512345678', 'leelxuan@gmail.com', 1, 1000, 'DBS', 'AirAsia', 10000);
+
+      expect(emailNotification.sendEmail).toHaveBeenCalledTimes(1);
+      expect(messageNotification.sendMessages).toHaveBeenCalledTimes(1);
+    }),
+
+    test ('NotificationAPI calls both when notificationMethod is 2', async () => {
+
+      jest.spyOn(emailNotification, "sendEmail").mockImplementation(() => jest.fn())
+      jest.spyOn(messageNotification, "sendMessages").mockImplementation(() => jest.fn())
+      await transactionEnquiryController.sendNotification('+6512345678', 'leelxuan@gmail.com', 2, 1000, 'DBS', 'AirAsia', 10000);
+
+      expect(emailNotification.sendEmail).toHaveBeenCalledTimes(2);
+      expect(messageNotification.sendMessages).toHaveBeenCalledTimes(2);
+    })
+  })

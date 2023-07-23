@@ -12,7 +12,8 @@ router.get('/check/:bank_app/:loyalty_program/:referencenumber', async function(
   console.log(id.loyalty_program);
   console.log(id.bank_app);
   console.log(id.referencenumber);
-  transactionController.processRoute(req, res);
+  const transactionEnquiryController = new transactionController();
+  transactionEnquiryController.processRoute(req,res);
 });
 
 
