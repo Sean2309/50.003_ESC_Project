@@ -90,12 +90,11 @@ class TransactionEnquiryController {
 
   //finds membershipId of transaction that was just updated, and send push notification to user with that membershipId
   sendPushNotification = async (outcomeCode, reference_number, collection_connection) => {
-    await collection_connection.find({"referenceNumber": reference_number}, { "membershipId": 1, "_id": 0}).lean().exec()
-        .then(transaction => {
-        let membershipId = transaction[0].membershipId;
-        console.log("membershipID: " + membershipId);
-        sendMessagetoClient(clients, membershipId, outcomeCode);
-      })
+    //only returns membershipId which will be used as webSocket unique identifier for push notification
+    const transaction = await collection_connection.find({"referenceNumber": reference_number}, { "membershipId": 1, "_id": 0}).lean().exec();
+    let membershipId = transaction[0].membershipId;
+    console.log("membershipID: " + membershipId);
+    sendMessagetoClient(clients, membershipId, outcomeCode);
   }
 
   //trigger for setInterval
@@ -118,4 +117,4 @@ class TransactionEnquiryController {
 
 const transactionEnquiryController = new TransactionEnquiryController();
 
-module.exports = transactionEnquiryController;
+module.exports = {transactionEnquiryController};

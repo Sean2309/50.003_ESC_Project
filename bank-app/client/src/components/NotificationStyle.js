@@ -29,7 +29,6 @@ class NotificationStyle extends Component{
         return null;
     }
     
-    
 }
 
 export default NotificationStyle;

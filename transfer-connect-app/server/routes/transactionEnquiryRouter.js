@@ -1,5 +1,5 @@
 const express = require('express');
-const transactionController = require('../controllers/transactionEnquiryController.js');
+const transactionController = require('../controllers/transactionEnquiryController.js').transactionController;
 var router = express.Router();
 
 
@@ -12,8 +12,8 @@ router.get('/check/:bank_app/:loyalty_program/:referencenumber', async function(
   console.log(id.loyalty_program);
   console.log(id.bank_app);
   console.log(id.referencenumber);
-  const transactionEnquiryController = new transactionController();
-  transactionEnquiryController.processRoute(req,res);
+  //const transactionEnquiryController = new transactionController();
+  transactionController.processRoute(req,res);
 });
 
 

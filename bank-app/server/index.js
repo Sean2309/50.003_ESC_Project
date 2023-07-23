@@ -5,10 +5,11 @@ const config = require('./utils/config');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const transactionEnquiryController = require('./controllers/transactionEnquiryController');
+const transactionEnquiryController = require('./controllers/transactionEnquiryController').transactionEnquiryController;
 
 
 const app = express();
+
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL,  {
@@ -25,8 +26,7 @@ app.use(cors());
 // for purpose of parsing incoming requests 
 app.use(express.json());
 
-app.use(transactionEnquiryController.startEnquiry.bind(transactionEnquiryController));
-
+app.use(transactionEnquiryController.startEnquiry);
 
 app.listen(config.PORT, () => {
     console.log(`Server running on port ${config.PORT}`);
