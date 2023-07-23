@@ -35,7 +35,7 @@ class TransactionEnquiryController {
     //pass in reference numbers
     const id_list = id.referencenumber.split(",");
     console.log(id_list);
-    const transactions = await getOutcomeCode(collection_connection, id_list, bank_name, loyalty_program_name);
+    const transactions = await this.getOutcomeCode(collection_connection, id_list, bank_name, loyalty_program_name);
 
     res.send(transactions);
     return [bank_name, loyalty_program_name, id_list];
@@ -56,7 +56,7 @@ class TransactionEnquiryController {
           let user1 = user[0];
           console.log('Found transactions:', user);
           outcomeCodes.push(user[0]);
-          sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1. outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
+          this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1. outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
         } 
         else {
           console.log('Outcome code not updated or transaction not found.');
