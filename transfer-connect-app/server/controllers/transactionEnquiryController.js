@@ -24,7 +24,7 @@ class TransactionEnquiryController {
     //connections to specific DB and collection
     var bank_name = id.bank_app;
     var loyalty_program_name = id.loyalty_program;
-    var collection_connection;
+    let collection_connection;
 
     if (mongoose.models[loyalty_program_name]) {
       collection_connection = mongoose.model(loyalty_program_name);
@@ -48,25 +48,34 @@ class TransactionEnquiryController {
     //use of instead of in - in makes 0000 into 0 
     for (let id of id_list){
       console.log(id);
-      //use .lean().exec() to return an obj instead of document
-      //check if referenceNumber has outcomeCode field + not empty
-      await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}, "partnerCode": bank_name}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress" : 1, "transferAmount" : 1 }).lean().exec()
-      .then(user => {
-        if (user[0] != null) {
-          let user1 = user[0];
-          console.log('Found transactions:', user);
-          outcomeCodes.push(user[0]);
-          this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1. outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
-        } 
-        else {
-          console.log('Outcome code not updated or transaction not found.');
-        }
-      }).catch(error => {
-        console.error('Error finding transaction:', error);
-    });}
+      let user = await this.find_transaction(collection_connection, id, bank_name);
+      if (user[0] != null) {
+        let user1 = user[0];
+        console.log('Found transactions:', user);
+        outcomeCodes.push(user[0]);
+        this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1.outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
+      } 
+      else {
+        console.log('Outcome code not updated or transaction not found.');
+      }
+    }
     return outcomeCodes;
     };
 
+  find_transaction = async(collection_connection, id, bank_name) => {
+    //use .lean().exec() to return an obj instead of document
+    //check if referenceNumber has outcomeCode field + not empty
+    try {
+    console.log("find_transaction")
+    console.log(id)
+    let user = await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}, "partnerCode": bank_name}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress" : 1, "transferAmount" : 1 }).lean().exec()
+    return user;
+    } catch(error) {
+      //can change this to throw status code
+      console.log(error)
+      return error
+    }
+  }
 
 
   sendNotification = async (phoneNumber, email, notificationMethod, outcomeCode, bank_name, loyalty_program_name, transferAmount) =>{
