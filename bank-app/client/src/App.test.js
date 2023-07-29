@@ -25,6 +25,7 @@ test('renders loyalty program interaction', () => {
 
 // doesn't work yet due to button shenanigans
 // and axios testing has issues
+// I'll discuss later with transfer form people
 // https://stackoverflow.com/questions/74088726/react-testing-library-cant-find-an-element-with-a-text-even-though-its-in-the
 // https://stackoverflow.com/questions/57623153/getting-error-while-jest-the-module-factory-of-jest-mock-is-not-allowed-to
 // https://stackoverflow.com/questions/66465749/getting-axios-default-create-is-not-a-function-when-trying-to-test-a-componen
@@ -33,10 +34,10 @@ describe('TransferForm', () => {
     render(<TransferForm userProfile={{}} membershipFormat="" />);
     
     // Ensure that the input fields and submit button are present on the screen
-    expect(screen.getByLabelText('Primary Cardholder Name: '),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByLabelText('Membership ID: '),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByLabelText('Confirm Membership ID: '),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByLabelText('Transfer Amount: '),  {exact:false}).toBeInTheDocument();
+    expect(screen.getByTestId('member-name'),  {exact:false}).toBeInTheDocument();
+    expect(screen.getByTestId('member-id'),  {exact:false}).toBeInTheDocument();
+    expect(screen.getByTestId('member-confirm'),  {exact:false}).toBeInTheDocument();
+    expect(screen.getByTestId('transfer-amount'),  {exact:false}).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Transfer' }),  {exact:false}).toBeInTheDocument();
   });
 });
