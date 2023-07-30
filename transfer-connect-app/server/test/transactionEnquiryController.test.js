@@ -19,7 +19,8 @@ const mockgetOutcomeCodeSuccessData = [
         "outcomeCode": "0022",
         "notificationMethod": 0,
         "emailAddress": "example@gmail.com",
-        "phoneNumber": "+6512345678"
+        "phoneNumber": "+6512345678",
+        "membershipId": "12345678"
       }];
 
 // =========== Setting up Mock models ==========// 

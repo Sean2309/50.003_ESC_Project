@@ -20,22 +20,24 @@ class TransactionEnquiryController {
 
     //remember to define variables first
     let reference_numbers = [];
+    try{
     //find those that don't have outcomeCode declared or values are empty
-    await collection_connection.find({ "outcomeCode": { $exists: false} }, { "referenceNumber": 1, "_id": 0})
-      .then(transactions => {
-        if (transactions.length != 0) {
-          console.log(`Found reference numbers for ${loyaltyprogram}:`, transactions);
-          reference_numbers = (transactions.map(transaction => transaction['referenceNumber']));
-        } else {
-          console.log(`No reference numbers found for ${loyaltyprogram}`);
-        }
-      })
-      .catch(error => {
-        console.error(`Error finding reference numbers for ${loyaltyprogram}:`, error);
-      });
+    let transactions = await collection_connection.find({ "outcomeCode": { $exists: false} }, { "referenceNumber": 1, "_id": 0});
+      if (transactions.length != 0) {
+        console.log(`Found reference numbers for ${loyaltyprogram}:`, transactions);
+        reference_numbers = (transactions.map(transaction => transaction['referenceNumber']));
+      } else {
+        console.log(`No reference numbers found for ${loyaltyprogram}`);
+      }
+    }
+    catch (error) {
+      console.error(`Error finding reference numbers for ${loyaltyprogram}:`, error);
+      return error;
+    };
     return reference_numbers;
   }
 
+  
   //to TransferConnect to get outcomeCodes
   makeApiRequest = async (id_list, loyaltyprogram) => {
     
@@ -60,42 +62,53 @@ class TransactionEnquiryController {
         return;
       }
       else{
+        console.log("returning response.data");
+        console.log(response.data);
         return response.data;
       }
       
     } catch (error) {
       // Handle any errors
       console.error(error);
+      return error;
     };
   }
 
 
   //to update bank-app database
-  updateOutcomeCodes = async (response_data, loyaltyprogram) => {
+  updateData = async (response_data, loyaltyprogram) => {
     //select specific collection
-    const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
     if (response_data == null || response_data == undefined) {
       console.log(`response_data for ${loyaltyprogram} is null`)
       return;
     }
+    else{
     for (const data of response_data) {
       let reference_number = data["referenceNumber"];
       let outcome_code = data["outcomeCode"];
-      collection_connection.updateOne({ "referenceNumber": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
+      let membershipId = data["membershipId"];
+      this.updateOutcomeCodes(reference_number, outcome_code, loyaltyprogram);
       console.log(`Updated ${reference_number} of ${loyaltyprogram} with outcomeCode ${outcome_code}`);
-      this.sendPushNotification(outcome_code, reference_number, collection_connection);
+      //membershipId used for WebSocket connection
+      this.sendPushNotification(membershipId, outcome_code);
     };
     return;
   }
+  }
 
-  //finds membershipId of transaction that was just updated, and send push notification to user with that membershipId
-  sendPushNotification = async (outcomeCode, reference_number, collection_connection) => {
-    //only returns membershipId which will be used as webSocket unique identifier for push notification
-    const transaction = await collection_connection.find({"referenceNumber": reference_number}, { "membershipId": 1, "_id": 0}).lean().exec();
-    let membershipId = transaction[0].membershipId;
+
+  updateOutcomeCodes = async (reference_number, outcome_code, loyaltyprogram) => {
+    const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
+    collection_connection.updateOne({ "referenceNumber": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
+  }
+
+
+  //send web push notif to user whose transaction was just updated
+  sendPushNotification = async (membershipId, outcomeCode) => {
     console.log("membershipID: " + membershipId);
     sendMessagetoClient(clients, membershipId, outcomeCode);
   }
+
 
   //trigger for setInterval
   startEnquiry = () => {
@@ -103,10 +116,11 @@ class TransactionEnquiryController {
       for (const loyaltyprogram of loyaltyprograms) {
         this.getReferenceNumbers(loyaltyprogram)
           .then(id_list => this.makeApiRequest(id_list, loyaltyprogram))
-          .then(response_data => this.updateOutcomeCodes(response_data, loyaltyprogram))
+          .then(response_data => this.updateData(response_data, loyaltyprogram))
           .catch(error => {
             // Handle any errors that occur during the promise chain
             console.error(error);
+            return error;
           });
           console.log('\n');
       }

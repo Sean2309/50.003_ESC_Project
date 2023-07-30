@@ -36,7 +36,7 @@ const clients = new Map().set('1234', {readyState: true});
 // =========== Test Suite and Cases ======== //
 
   // ====== Unit Test ====== // 
-  describe ('Unit Tests for makeApiRequest', () => {
+describe ('Unit Tests for makeApiRequest', () => {
 
     test('makeApiRequest does API call successfully', async () => {
 
@@ -46,7 +46,7 @@ const clients = new Map().set('1234', {readyState: true});
         await transactionEnquiryController.makeApiRequest(['0000'], 'AirAsia');
         
         expect(axios.get).toHaveBeenCalledTimes(1);
-      }),
+      })
 
       test('makeApiRequest calls correct URL', async () => {
 
@@ -59,7 +59,32 @@ const clients = new Map().set('1234', {readyState: true});
         expect(axios.get).toHaveBeenCalledTimes(2);
       })
 
-    })
+})
+
+describe ('Unit Tests for updateData', () => {
+
+    test('makeApiRequest does API call successfully', async () => {
+
+        jest.spyOn(transactionEnquiryController, "startEnquiry").mockResolvedValueOnce();
+        const logSpy = await jest.spyOn(global.console, 'log');
+
+        await transactionEnquiryController.makeApiRequest(['0000'], 'AirAsia');
+        
+        expect(axios.get).toHaveBeenCalledTimes(1);
+      })
+
+      test('makeApiRequest calls correct URL', async () => {
+
+        jest.spyOn(transactionEnquiryController, "startEnquiry").mockResolvedValueOnce();
+        const logSpy = await jest.spyOn(global.console, 'log');
+
+        await transactionEnquiryController.makeApiRequest(['0000','0001'], 'AirAsia');
+        
+        expect(logSpy.mock.calls).toContainEqual(['localhost/transferconnect/check/DBS/AirAsia/0000,0001']);
+        expect(axios.get).toHaveBeenCalledTimes(2);
+      })
+
+})
 
 
     /*
