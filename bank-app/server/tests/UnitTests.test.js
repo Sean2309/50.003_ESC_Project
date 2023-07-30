@@ -19,7 +19,6 @@ jest.mock('../utils/config', () => ({
 }));
 
 
-const clients = new Map().set('1234', {readyState: true});
 
 // =========== Setting up Mock Data ==========// 
 
