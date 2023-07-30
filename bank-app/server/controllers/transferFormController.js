@@ -3,7 +3,7 @@ const { TRANSFER_CONNECT_API_URL } = require('../utils/config');
 const axios = require('axios');
 
 /* 
-  sample data format
+  sample data format  
   {
     "membershipId": "1021030213",
     "memberName": "keith low",
@@ -17,7 +17,7 @@ class TransferFormController {
 
   // to route to transferConnect transaction submission API endpoint
   constructor() {
-    this.submissionRoute = TRANSFER_CONNECT_API_URL + '/api/transactions';
+    this.submissionRoute = TRANSFER_CONNECT_API_URL + '/api/transactions'; //localhost:3003/api/transactions 
     console.log(TRANSFER_CONNECT_API_URL);
   }
 
@@ -36,10 +36,13 @@ class TransferFormController {
   // submit to TransferConnect app, then save to db
   submitTransferForm = async (request, response) => {
     try {
-      const transferFormData = request.body;
+
+      console.log( "Submit transfer form **********")
+      const transferFormData = request.body; // see sample data comments above 
 
       const postTransactionResponse = await this.postTransaction(transferFormData);
       
+      //adding reference Number to transaction data
       transferFormData.referenceNumber = postTransactionResponse.referenceNumber;
 
       const transferForm = new TransferForm(transferFormData);

@@ -7,6 +7,9 @@ const transactionSchema = new mongoose.Schema({
   transferAmount: Number,
   referenceNumber: String,
   partnerCode: String,
+  notificationMethod: String,
+  emailAddress: String,
+  phoneNumber: String
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);

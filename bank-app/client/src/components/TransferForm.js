@@ -12,6 +12,20 @@ class TransferForm extends Component {
             transferAmount: '',
             isOpen: false // to render form as popup
         };
+        // Format string is always given by e.g. 7digit2letter, number followed by string
+        this.digits = "0123456789";
+        this.letters = "abcdefghijklmnopqrstuvwxyz";
+        this.formatIdentifiers = {
+            'd': this.digits,
+            'l': this.letters
+        };
+        // Format string is always given by e.g. 7digit2letter, number followed by string
+        this.digits = "0123456789";
+        this.letters = "abcdefghijklmnopqrstuvwxyz";
+        this.formatIdentifiers = {
+            'd': this.digits,
+            'l': this.letters
+        };
     }
 
     openModal = () => {
@@ -36,23 +50,73 @@ class TransferForm extends Component {
 
     // Returns true if membershipId is of correct format
     membershipValidation = (membershipId) => {
-        // TODO 
-        // Grab validation format from DB (After LoyaltyProgramQuery API is implemented)
+        // Grab validation format 
+        let formatString = this.props.membershipFormat;
+
+        // Scan string from left to right, get number followed by format
+        let idxStart = 0;
+        let idxEnd = 1;
+        let num = 0;
+        let membershipIdIdx = 0;
+
+        while (idxEnd !== formatString.length) {
+            // Since we know that the formatString always goes by number followed by a (digit/letter)
+
+            if (!(num)) {
+                while (this.digits.includes(formatString[idxEnd])) {
+                    idxEnd += 1;
+                }
+                num = parseInt(formatString.substring(idxStart, idxEnd));
+                idxStart = idxEnd;
+            }
+
+            // In this block we figure out if num corresponds to digits or letters and check against membershipId
+            for (let format of Object.keys(this.formatIdentifiers)) {
+                if (format === formatString[idxEnd]) {
+                    let acceptableChars = this.formatIdentifiers[format];
+
+                    // Actively check if the membershipId is short of characters
+                    let end = num + membershipIdIdx;
+                    if (end > membershipId.length) {
+                        return false;
+                    }
+
+                    // Check for this current block if there are exactly x number of digit/letters
+                    for (; membershipIdIdx < end; membershipIdIdx++) {
+                        if (!(acceptableChars.includes(membershipId[membershipIdIdx]))) {
+                            return false;
+                        }
+                    }
+
+                    num = 0;
+                    idxEnd += 1;
+                    break;
+                }
+            }
+        }
+
         return true;
     };
 
     handleSubmit = (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission behaviour
+
         const { membershipId, memberName, membershipIdConfirmation, transferAmount } = this.state;
+        const { userProfile } = this.props;
+        const { emailAddress, phoneNumber, notificationMethod } = userProfile
 
         const transferDate = this.getDate();
-
-        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)) {
+        
+        
+        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)){
             const form = {
                 membershipId,
                 memberName,
                 transferDate,
-                transferAmount
+                transferAmount,
+                emailAddress,
+                phoneNumber,
+                notificationMethod
             };
 
             console.log(form);
@@ -74,59 +138,82 @@ class TransferForm extends Component {
 
     handleChange = (event) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value });
+
+        switch (name) {
+            case 'transferAmount':
+                const { abcPoints } = this.props.userProfile;
+                // Make sure that the value entered does not exceed user's number of points
+                if (parseInt(value) <= abcPoints || value === "") {
+                    this.setState({ [name]: value });
+                }
+                break;
+
+            default:
+                this.setState({ [name]: value });
+        }
+    }
+    
+    handleTransferAmountKeyPress = (event) => {
+        if (!"0123456789".includes(event.key)) {
+            // Prevent key from being entered
+            event.preventDefault();
+        }
     }
 
     renderForm = () => {
         const { memberName, membershipId, membershipIdConfirmation, transferAmount, isOpen } = this.state;
         if (!isOpen) {
             return <button onClick={this.openModal}>Transfer</button>
-
         }
 
         return (
-            // refers to the transfer-styles.css .overlay
-            // this is the background image controller
-            <div className= 'overlay'>
+            <div className='overlay' >
                 <dialog open={isOpen}>
                     <form onSubmit={this.handleSubmit}>
-                        <label htmlFor="memberName">Primary Cardholder Name: </label>
+                        <label htmlFor="memberName" data-testid = 'member-name'>Primary Cardholder Name: </label>
                         <input
                             type="text"
                             id="memberName"
                             name="memberName"
                             value={memberName}
                             onChange={this.handleChange}
+                            required
                         />
                         <br />
 
-                        <label htmlFor="membershipId">Membership ID: </label>
+                        <label htmlFor="membershipId" data-testid = 'member-id'>Membership ID: </label>
                         <input
                             type="text"
                             id="membershipId"
                             name="membershipId"
                             value={membershipId}
                             onChange={this.handleChange}
+                            required
                         />
                         <br />
 
-                        <label htmlFor="membershipIdConfirmation">Confirm Membership ID: </label>
+                        <label htmlFor="membershipIdConfirmation" data-testid = 'member-confirm'>Confirm Membership ID: </label>
                         <input
                             type="text"
                             id="membershipIdConfirmation"
                             name="membershipIdConfirmation"
                             value={membershipIdConfirmation}
                             onChange={this.handleChange}
+                            required
                         />
                         <br />
 
-                        <label htmlFor="transferAmount">Transfer Amount: </label>
+                        <label htmlFor="transferAmount" data-testid = 'transfer-amount'>Transfer Amount: </label>
                         <input
                             type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             id="transferAmount"
                             name="transferAmount"
                             value={transferAmount}
                             onChange={this.handleChange}
+                            onKeyDown={this.handleTransferAmountKeyPress}
+                            required
                         />
                         <br />
 

@@ -5,32 +5,34 @@ import '../css/loyalty-styles.css';
 class LoyaltyProgram extends Component {
 
     render() {
-        const { data } = this.props;
-
-        console.log(data);
+        const { loyaltyProgramData, userProfile } = this.props;
 
         return (
             <div className='loyalty-box'>
-                <h3>{data.programName}</h3>
-                <p>Description: {data.description}</p>
-                <p>Currency: {data.currencyName}</p>
-                <p>Processing Time: {data.processingTime}</p>
+                <h3>{loyaltyProgramData.programName}</h3>
+                <p>Description: {loyaltyProgramData.description}</p>
+                <p>Processing Time: {loyaltyProgramData.processingTime}</p>
+                {/* Display exchange rate */}
+                <p>1000 ABC Points = {loyaltyProgramData.currencyRate * 1000} {loyaltyProgramData.currencyName}</p>
                 <p>
-                    <a href={data.enrollmentLink}>Enrollment Link</a>
+                    <a href={loyaltyProgramData.enrollmentLink}>Enrollment Link</a>
                 </p>
                 <p>
-                    <a href={data.tncLink}>Terms and Conditions</a>
+                    <a href={loyaltyProgramData.tncLink}>Terms and Conditions</a>
                 </p>
-                <p>
-                    <TransferForm />
-                </p>
+                {/* pass currencyRate, membershipFormat, userProfile to TransferForm */}
+                <TransferForm 
+                membershipFormat={loyaltyProgramData.membershipFormat} 
+                currencyRate={loyaltyProgramData.currencyRate} 
+                userProfile={userProfile}
+                />
             </div>
-        );
-    }
+    );
+}
 
 }
 
-// CSS style for the loyalty program box
+// // CSS style for the loyalty program box
 // const loyaltyProgramStyle = {
 //     border: '1px solid #ccc',
 //     padding: '10px',
