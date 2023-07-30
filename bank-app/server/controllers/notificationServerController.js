@@ -4,7 +4,7 @@ let membershipId;
 const wss = new WebSocket.Server({ port: 8080 });
 
 
-// Keep track of connected clients 
+// Keep track of connected clients - multiple logged in users
 const clients = new Map();
 
 wss.on('connection', async (connection, req) => {
@@ -24,7 +24,7 @@ wss.on('connection', async (connection, req) => {
   connection.on('message', (message) => {
   console.log(`Received message from client ${membershipId}: ${message}`);
 
-  // Example: Echo the received message back to the client
+
   //used to send message to client, use this function to send push notification content
   connection.send(`You sent: ${message}`);
 

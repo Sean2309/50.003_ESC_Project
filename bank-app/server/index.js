@@ -5,7 +5,8 @@ const config = require('./utils/config');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const transactionEnquiryController = require('./controllers/transactionEnquiryController').transactionEnquiryController;
+const transactionEnquiryControllerClass = require('./controllers/transactionEnquiryController').TransactionEnquiryController;
+const transactionEnquiryController = new transactionEnquiryControllerClass(true);
 
 
 const app = express();

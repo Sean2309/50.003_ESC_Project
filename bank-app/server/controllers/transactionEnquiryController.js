@@ -10,10 +10,15 @@ const sendMessagetoClient = require('./notificationSendingController.js').sendMe
 
 class TransactionEnquiryController {
   
-  constructor() {
-    this.startEnquiry();
+  constructor(startInterval = true) {
+    this.IntervalId = null;
+    if (startInterval){
+      this.startEnquiry();
+    }
   }
 
+  //search through loyaltyprogram collection stored in bank app
+  //for transactions whose outcomeCode field isnt updated
   getReferenceNumbers = async (loyaltyprogram) => {
     //connect to specific collection
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
@@ -76,11 +81,9 @@ class TransactionEnquiryController {
 
 
   //to update bank-app database
-  updateData = async (response_data, loyaltyprogram) => {
-    //select specific collection
-    if (response_data == null || response_data == undefined) {
+  updateDBandNotifs = async (response_data, loyaltyprogram) => {
+    if (response_data == null || response_data == undefined || response_data.length == 0) {
       console.log(`response_data for ${loyaltyprogram} is null`)
-      return;
     }
     else{
     for (const data of response_data) {
@@ -92,12 +95,12 @@ class TransactionEnquiryController {
       //membershipId used for WebSocket connection
       this.sendPushNotification(membershipId, outcome_code);
     };
-    return;
   }
   }
 
-
+  //update bank app database if outcomeCode is updated
   updateOutcomeCodes = async (reference_number, outcome_code, loyaltyprogram) => {
+    //specific loyaltyprogram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
     collection_connection.updateOne({ "referenceNumber": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
   }
@@ -111,24 +114,32 @@ class TransactionEnquiryController {
 
 
   //trigger for setInterval
-  startEnquiry = () => {
-    setInterval(() => {
+  startEnquiry = async () => {
+    this.IntervalId = setInterval(async () => {
+      //repeat for every loyaltyprogram stored in bank app database
       for (const loyaltyprogram of loyaltyprograms) {
-        this.getReferenceNumbers(loyaltyprogram)
-          .then(id_list => this.makeApiRequest(id_list, loyaltyprogram))
-          .then(response_data => this.updateData(response_data, loyaltyprogram))
-          .catch(error => {
+        try{
+        const id_list = await this.getReferenceNumbers(loyaltyprogram);
+        const response_data = await this.makeApiRequest(id_list, loyaltyprogram);
+        await this.updateDBandNotifs(response_data, loyaltyprogram);
+        }
+        catch (error) {
             // Handle any errors that occur during the promise chain
             console.error(error);
             return error;
-          });
-          console.log('\n');
+          };
+        console.log('\n');
       }
     }, 5 * 1000); // 5 seconds
   }
 
+  //used for testing
+  stopEnquiry = () =>{
+    clearInterval(this.IntervalId);
+    this.IntervalId = null;
 }
 
-const transactionEnquiryController = new TransactionEnquiryController();
+}
 
-module.exports = {transactionEnquiryController};
+
+module.exports = {TransactionEnquiryController};
