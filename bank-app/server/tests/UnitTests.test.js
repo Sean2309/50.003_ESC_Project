@@ -1,12 +1,9 @@
 const transactionEnquiryControllerClass = require('../controllers/transactionEnquiryController').TransactionEnquiryController;
 const transactionEnquiryController = new transactionEnquiryControllerClass(false);
-const loyaltyprogram = require('../models/transactionEnquiryModel').loyaltyprograms;
-const sendMessagetoClient = require('../controllers/notificationSendingController').sendMessagetoClient;
 const axios = require('axios');
-const WebSocket = require('ws');
-const { TransactionEnquiryController } = require('../controllers/transactionEnquiryController');
 
-const membershipId = '1230oij'
+
+
 
 // =========== Setting up Mock models ==========// 
 
