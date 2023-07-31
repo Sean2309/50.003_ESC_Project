@@ -1,7 +1,6 @@
 // Importing files/modules
 require('dotenv').config({path: __dirname + '/../.env'});
-const accrualFileFormSchema = require('../models/accrualFileForm');
-const handbackFileFormSchema = require('../models/handbackFileForm');
+const sftpModel = require('../models/sftpModel');
 const mongoose = require('mongoose');
 const fs = require(`fs`);
 const csvParser = require(`csv-parser`);
@@ -23,7 +22,7 @@ const modelCache = {};
 // Function to get the model for a given LP
 const getModelForLP = (loyaltyProgram) => {
   if (!modelCache[loyaltyProgram]) {
-    const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, handbackFileFormSchema);
+    const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, sftpModel);
     modelCache[loyaltyProgram] = model;
   }
   return modelCache[loyaltyProgram];
@@ -41,6 +40,7 @@ const retrieveFromServer = async(targetDate) => {
     console.log("Retrieving the files from the SFTP server");
 
     fileName = `${lp}_HANDBACK_${targetDate}.csv`;
+    console.log(fileName);
     const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
@@ -127,8 +127,8 @@ const uploadFilesToMongoDB = async (targetDate) => {
 
 // Running the functions
 const main = async () => {
-  await retrieveFromServer(formattedDate);
-  await uploadFilesToMongoDB(formattedDate);
+  await retrieveFromServer(testDate);
+  await uploadFilesToMongoDB(testDate);
   console.log("Done!");
 }
 main().catch(console.error);

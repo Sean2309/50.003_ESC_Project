@@ -3,12 +3,14 @@ const mongoose = require('mongoose');
 
 const accrualFileFormSchema = new mongoose.Schema({
   index: Number,
-  membershipId: String,
-  membershipName: String,
+  memberID: String,
+  memberFirstName: String,
+  memberLastName: String,
   transferDate: String,
-  transferAmount: Number,
+  amount: Number,
   referenceNumber: String,
-  partnerCode: String
+  partnerCode: String,
+  outcomeCode: String
 });
 
 module.exports = accrualFileFormSchema;

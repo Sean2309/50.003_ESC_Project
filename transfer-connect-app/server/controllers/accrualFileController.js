@@ -1,6 +1,6 @@
 require('dotenv').config({path: __dirname + '/../.env'});
 const mongoose = require('mongoose');
-const accrualFileFormSchema = require('../models/accrualFileForm');
+const sftpModel = require('../models/sftpModel');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const Files = require('files.com/lib/Files').default;
 const File = require('files.com/lib/models/File').default;
@@ -37,7 +37,7 @@ const writeCollectionsToCsv = async () => {
   const stringToday = getFormattedDate();
 
   for (const collection of collections) {
-    const Model = mongoose.model(collection, accrualFileFormSchema);
+    const Model = mongoose.model(collection, sftpModel);
 
     try {
       const data = await Model.find(
