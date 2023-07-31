@@ -8,12 +8,28 @@ const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const fs = require('fs');
 const csvParser = require('csv-parser');
-var getFormattedDate = require('./date').getFormattedDate;
+
 if (!fs.existsSync('accrual_files')) {
   fs.mkdirSync('accrual_files');
 }
 
-const collections = ["qflyers", "gojets", "testaccruals"]; // note please name your collection name in lowercase and add a "s" at the end
+function getFormattedDate(format = "standard") {
+  const date = new Date();
+  date.setDate(date.getDate() - 1); // Subtract a day if requested
+  let month = date.getMonth() + 1; // getMonth() is zero-indexed
+  let day = date.getDate();
+
+  month = month < 10 ? '0' + month : month;
+  day = day < 10 ? '0' + day : day;
+
+  if (format === "compact") {
+    return `${date.getFullYear()}${month}${day}`;
+  } else { // "standard" format
+    return `${date.getFullYear()}-${month}-${day}`;
+  }
+}
+
+const collections = ["qflyers", "gojets", "testaccruals"]; // please name your collection name in lowercase and add a "s" at the end
 
 const writeCollectionsToCsv = async () => {
   mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -99,7 +115,7 @@ const main = async () => {
   await uploadFilesToServer();
 };
 
-// main().catch(console.error);
+main().catch(console.error);
 
 
 const queryFromDBandUpload = async () =>{
@@ -108,3 +124,4 @@ const queryFromDBandUpload = async () =>{
 }
 
 module.exports.queryFromDBandUpload = queryFromDBandUpload;
+module.exports.writeCollectionsToCsv = writeCollectionsToCsv;
