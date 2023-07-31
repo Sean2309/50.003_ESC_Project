@@ -11,8 +11,8 @@ const path  = require('path');
 var getFormattedDate = require('./date').getFormattedDate;
 
 // Defining Collection Names
-const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list and transform the other to match 
-const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
+// const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list and transform the other to match 
+// const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
 const testDate = `20200812`; 
 const formattedDate = getFormattedDate("compact");
 
