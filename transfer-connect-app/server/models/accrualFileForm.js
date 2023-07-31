@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 
 const accrualFileFormSchema = new mongoose.Schema({
   index: Number,
-  memberID: String,
-  memberFirstName: String,
-  memberLastName: String,
+  membershipId: String,
+  membershipName: String,
   transferDate: String,
-  amount: Number,
+  transferAmount: Number,
   referenceNumber: String,
   partnerCode: String
 });
