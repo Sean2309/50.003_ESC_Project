@@ -11,7 +11,8 @@ const transactionSchema = new mongoose.Schema({
   "outcomeCode": String,
   "notificationMethod": Number,
   "emailAddress": String,
-  "phoneNumber": String
+  "phoneNumber": String,
+  "systemId": String
 });
 
 

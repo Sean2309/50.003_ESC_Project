@@ -8,7 +8,11 @@ const transactionSchema = new mongoose.Schema({
   "transferAmount": Number,
   "referenceNumber": String,
   "partnerCode": String,
-  "outcomeCode": String
+  "outcomeCode": String,
+  "notificationMethod": Number,
+  "emailAddress": String,
+  "phoneNumber": String,
+  "systemId": String
 });
 
 //edit to add/remove loyaltyprograms available

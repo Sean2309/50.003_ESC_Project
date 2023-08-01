@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 
-async function sendMessagetoClient(clients, membershipId, outcomeCode){
+async function sendMessagetoClient(clients, membershipId, message, messageType){
     let userConnection = clients.get(membershipId);
     if (!userConnection){
       console.log("User Websocket Connection not found - not in clients")
@@ -8,7 +8,12 @@ async function sendMessagetoClient(clients, membershipId, outcomeCode){
     }
     else if (userConnection.readyState === WebSocket.OPEN){
     //send outcomeCode to frontend to display on notification
-      userConnection.send(outcomeCode);
+    //see if it is possible to send two params
+      const data_to_send = {
+        messageBody: message,
+        messageType: messageType
+      }
+      userConnection.send(JSON.stringify(data_to_send));
       console.log(membershipId + " websocket connection found") }
     else{
       console.log(membershipId + " websocket connection closed" )

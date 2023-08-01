@@ -19,11 +19,26 @@ class NotificationStyle extends Component{
     }
 
     showNotification(message) {
-        new Notification('Transaction Outcome', {
-            body: "Transaction Outcome: " + message
-            //icon: "path/to/icon.png",
-          });
+        let messageBody = message.messageBody;
+        let messageType = message.messageType;
+        this.notificationStyles(messageBody, messageType)
     };
+
+    notificationStyles(message, messageType) {
+        //0 for outcomeCode
+        if (messageType == 0){
+            new Notification('Transaction Outcome', {
+                body: "Transaction Outcome: " + message
+                //icon: "path/to/icon.png",
+              });
+        } 
+        else { 
+            new Notification('Transaction Outcome', {
+                body: message
+            });
+        };
+    }
+
 
     render() {
         return null;
