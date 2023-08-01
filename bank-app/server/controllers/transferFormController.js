@@ -15,65 +15,48 @@ class TransferFormController {
     const response = await axios.post(this.submissionRoute + `${loyaltyProgramId}`, transactionData);
     return response.data;
   }
-  
+
   generateReferenceNumber = () => {
     // TODO: unique reference number generator
-    
+
     // generate some random number for now
     return Math.floor((Math.random() * 9999999));
   }
-  
+
+  saveTransactionToDb = async (loyaltyProgramId, transferFormData) => {
+    // point the model to the specific loyaltyProgram's collection
+    const TransferForm = createTransferForm(loyaltyProgramId);
+
+    const transferForm = new TransferForm(transferFormData);
+
+    await transferForm.save()
+  }
+
   // submit to TransferConnect app, then save to db
   submitTransferForm = async (request, response) => {
     try {
 
       const transferFormData = request.body; // see sample data comments above 
-      
+
       const loyaltyProgramId = request.params.loyaltyProgramId; // grab loyaltyProgramId from path params
 
-      
-
-      let hasMissingFields = false;
-
-    // Use the 'validatetransferForm' middleware to check for missing fields
-      validatetransferForm(request, response, (err) => {
-      if (err) {
-        hasMissingFields = true;
-        // The middleware has already sent the response for missing fields.
-        // No need to proceed further; return early.
-        return;
-      }
-    });
-
-    // If there are missing fields, return early
-      if (hasMissingFields) {
-        return;
-    }
-      
       // add referenceNumber to transaction data
       transferFormData.referenceNumber = this.generateReferenceNumber();
-      
+
       // add partnerCode to transaction data
       transferFormData.partnerCode = PARTNERCODE;
 
-      console.log(transferFormData);
-      
       // submit Transaction to TransferConnect
       // TODO: appropriate handling of systemCode given by TransferConnect, then save to our own DB
       const postTransactionResponse = await this.postTransaction(transferFormData, loyaltyProgramId);
 
       console.log('Transaction submitted to TransferConnect');
-      
-      // point the model to the specific loyaltyProgram's collection
-      const TransferForm = createTransferForm(loyaltyProgramId);
 
-      const transferForm = new TransferForm(transferFormData);
+      this.saveTransactionToDb()
 
-      transferForm.save()
-        .then(() => {
-          console.log('Transaction data saved to MongoDB');
-          response.status(201).json(transferForm);
-        }); 
+      console.log('Transaction saved to BankApp DB');
+
+      response.status(201).json(transferFormData);
 
     } catch (error) {
       // TODO: appropriate error handling for when POST to TransferConnect fails and when .save() to db fails
