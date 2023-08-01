@@ -18,7 +18,7 @@ class TransferFormController {
   // TODO: unique reference number generator
 
     // generate some random number for now
-    Math.floor((Math.random() * 9999999));
+    return Math.floor((Math.random() * 9999999));
   };
 
   saveTransactionToDb = async (loyaltyProgramId, transferFormData) => {
@@ -61,7 +61,7 @@ class TransferFormController {
 
       response.status(201).json(transferFormData);
     } catch (error) {
-      response.error(500).json({ error: 'Internal server error ' });
+      response.status(500).json({ error: error.message });
     }
   };
 }

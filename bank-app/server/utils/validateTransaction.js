@@ -3,7 +3,7 @@ const LoyaltyPrograms = require('../models/loyaltyPrograms');
 const validateTransaction = async (request, response, next) => {
   const { loyaltyProgramId } = request.params; // grab loyaltyProgramId from path params
   const transactionData = request.body;
-
+  
   try {
     const loyaltyProgram = await LoyaltyPrograms.findOne({ programId: loyaltyProgramId });
     if (!loyaltyProgram) {
@@ -17,7 +17,7 @@ const validateTransaction = async (request, response, next) => {
       return response.status(400).json({ error: 'Invalid membership Id format for this loyalty program. ' });
     }
   } catch (error) {
-    return response.status(500).json({ error: 'Internal server error.' });
+    return response.status(500).json({ error: error.message });
   }
 
   next();
