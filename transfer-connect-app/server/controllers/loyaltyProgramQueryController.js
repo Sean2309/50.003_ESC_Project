@@ -2,55 +2,41 @@ const LoyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../models/currencyRateModel');
 
 class LoyaltyProgramQueryController {
-
- 
-
   // constructor() {
   //   // Populate db with mock loyalty programs and currencyRates
   //   this.populateDb();
   // }
-  
+
   getLoyaltyPrograms = async (request, response) => {
-
-  
-
     // Grab partnerCode from path params
-    const partnerCode = request.params.partnerCode;
-
+    const { partnerCode } = request.params;
 
     try {
-
       const loyaltyPrograms = await LoyaltyProgramQueryModel.find({}); // Fetch all loyaltyProgramProviders
 
       // Fetch the document correspond to the partnerCode, which contains a nested document of programIds and currencyRates specific to the bank
-      const currencyRates = await CurrencyRateModel.findOne({ partnerCode: partnerCode });
+      const currencyRates = await CurrencyRateModel.findOne({ partnerCode });
 
       const currencyRatesArray = currencyRates.currencyRates;
 
       const loyaltyProgramsWithRates = [];
 
-      for (const currencyRateObject of currencyRatesArray) {
+      currencyRatesArray.forEach((currencyRateObject) => {
         const { programId, currencyRate } = currencyRateObject;
 
-        const loyaltyProgram = loyaltyPrograms.find(obj => obj.programId === programId);
+        const loyaltyProgram = loyaltyPrograms.find((obj) => obj.programId === programId);
 
         // add currencyRate key to document≠
         loyaltyProgram.set('currencyRate', currencyRate);
 
         loyaltyProgramsWithRates.push(loyaltyProgram);
-      }
+      });
 
       response.status(200).json(loyaltyProgramsWithRates);
-
-    }
-    catch (error) {
+    } catch (error) {
       response.status(500).json({ message: error.message });
     }
   };
-
-
-
-  
 
   // populateDb = async () => {
   //   const mockLoyaltyPrograms = [
@@ -99,7 +85,6 @@ class LoyaltyProgramQueryController {
   //   await CurrencyRateModel.create(mockCurrencyRates);
 
   // }
-
 }
 
 const loyaltyProgramQueryController = new LoyaltyProgramQueryController();
