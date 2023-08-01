@@ -2,10 +2,10 @@ const LoyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../models/currencyRateModel');
 
 class LoyaltyProgramQueryController {
-  // constructor() {
-  //   // Populate db with mock loyalty programs and currencyRates
-  //   this.populateDb();
-  // }
+  constructor() {
+    // Populate db with mock loyalty programs and currencyRates
+    this.populateDb();
+  }
 
   getLoyaltyPrograms = async (request, response) => {
     // Grab partnerCode from path params
@@ -38,53 +38,52 @@ class LoyaltyProgramQueryController {
     }
   };
 
-  // populateDb = async () => {
-  //   const mockLoyaltyPrograms = [
-  //     {
-  //       programId: "GOPOINTS",
-  //       programName: "GoJet Points",
-  //       currencyName: "GoPoints",
-  //       processingTime: "Instant",
-  //       description: "Feel free to adjust this",
-  //       enrollmentLink: "https://www.gojet.com/member/",
-  //       tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-  //       membershipFormat: "^\\d{9}[a-zA-Z]$",
-  //     },
-  //     {
-  //       programId: "ASIAMILES",
-  //       programName: "Asia Miles",
-  //       currencyName: "Asia Miles",
-  //       processingTime: "Instant",
-  //       description: "Feel free to adjust this",
-  //       enrollmentLink: "https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html",
-  //       tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html",
-  //       membershipFormat: "^\\d{11}$",
-  //     }
-  //   ];
+  populateDb = async () => {
+    const mockLoyaltyPrograms = [
+      {
+        programId: 'GOPOINTS',
+        programName: 'GoJet Points',
+        currencyName: 'GoPoints',
+        processingTime: 'Instant',
+        description: 'Feel free to adjust this',
+        enrollmentLink: 'https://www.gojet.com/member/',
+        tncLink: 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html',
+        membershipFormat: '^\\d{9}[a-zA-Z]$',
+      },
+      {
+        programId: 'ASIAMILES',
+        programName: 'Asia Miles',
+        currencyName: 'Asia Miles',
+        processingTime: 'Instant',
+        description: 'Feel free to adjust this',
+        enrollmentLink: 'https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html',
+        tncLink: 'https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html',
+        membershipFormat: '^\\d{11}$',
+      },
+    ];
 
-  //   const mockCurrencyRates = {
-  //     partnerCode: "DBSSG",
-  //     currencyRates: [
-  //       {
-  //         programId: "GOPOINTS",
-  //         currencyRate: 1.1
-  //       },
-  //       {
-  //         programId: "ASIAMILES",
-  //         currencyRate: 1
-  //       }
-  //     ]
-  //   }
+    const mockCurrencyRates = {
+      partnerCode: 'DBSSG',
+      currencyRates: [
+        {
+          programId: 'GOPOINTS',
+          currencyRate: 1.1,
+        },
+        {
+          programId: 'ASIAMILES',
+          currencyRate: 1,
+        },
+      ],
+    };
 
-  // //   await LoyaltyProgramQueryModel.deleteMany({});
+    await LoyaltyProgramQueryModel.deleteMany({});
 
-  //   await LoyaltyProgramQueryModel.create(mockLoyaltyPrograms);
+    await LoyaltyProgramQueryModel.create(mockLoyaltyPrograms);
 
-  // //   await CurrencyRateModel.deleteMany({});
+    await CurrencyRateModel.deleteMany({});
 
-  //   await CurrencyRateModel.create(mockCurrencyRates);
-
-  // }
+    await CurrencyRateModel.create(mockCurrencyRates);
+  };
 }
 
 const loyaltyProgramQueryController = new LoyaltyProgramQueryController();

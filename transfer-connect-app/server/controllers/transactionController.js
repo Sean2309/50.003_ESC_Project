@@ -18,7 +18,7 @@ const createTransactionModel = require('../models/transaction');
 class TransactionController {
   generateSystemId = () => {
     // TODO: generate systemId to for reconcilation between TransferConnect and Bank app
-    Math.floor((Math.random() * 9999999));
+    return Math.floor((Math.random() * 9999999));
   };
 
   saveTransactionToDb = async (loyaltyProgramId, transactionData) => {
