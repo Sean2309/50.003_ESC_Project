@@ -1,6 +1,8 @@
 //import shet
+const { default: axios } = require('axios');
 const loyaltyProgramsController = require('../controllers/loyaltyProgramsController');
 const loyaltyProgramsModel = require('../models/loyaltyPrograms');
+
 
 // =========== Setting up Mock models ==========// 
 /* 
@@ -11,7 +13,7 @@ const loyaltyProgramsModel = require('../models/loyaltyPrograms');
 jest.mock('../models/loyaltyPrograms', () => ({
   find: jest.fn(),
 }));
-
+jest.mock('axios');
 // =========== Test Suite and Cases ======== //
 describe('LoyaltyProgramsController', () => {
 
@@ -61,6 +63,8 @@ describe('LoyaltyProgramsController', () => {
       expect(response.json).toHaveBeenCalled();
     });
 
+
+    
 
 
   });
