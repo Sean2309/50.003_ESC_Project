@@ -12,7 +12,7 @@ jest.mock('axios');
 
 // =========== Test Suite and Cases ======== //
 describe('LoyaltyProgramsController - API Integration', () => {
-    test('should respond with 200 status code', async () => {
+    test('http://localhost:3001/api/loyaltyPrograms should respond with 200 status code', async () => {
         const mockedResponseData = [
             {
                 programId: "GOPOINTS",
