@@ -1,15 +1,18 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import axiosMock from './axiosMock'; // Mock axios for testing purposes
+// import axiosMock from './axiosMock'; // Mock axios for testing purposes
 import TransferForm from './components/TransferForm';
 import Marketplace from './views/Marketplace';
 import LoyaltyPrograms from './components/LoyaltyPrograms';
+const axios = require('axios');
 
 // with learning from https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
 // note that we're testing specifically from an enduser's perspective
 
 // Mocked axios
 // jest.mock('axios', () => axiosMock);
+
+jest.mock('axios');
 
 test('renders marketplace', () => {
   render(<Marketplace />);
@@ -45,3 +48,39 @@ describe('TransferForm', () => {
 // test('', () => {
 
 // });
+
+
+// loyaltyprogram setstates
+// unfinished as jest is complaining about wrapping setstate triggers in act()
+// but the documentation is deprecated? confused
+describe ('Unit Tests', () => {
+
+  test ('1. fetches loyalty programs and sets state correctly', async() => {
+     // Mocking the data returned by the find method
+     const mockedResponseData = [
+      {
+          programId: "GOPOINTS",
+          programName: "GoJet Points",
+          currencyName: "GoPoints",
+          processingTime: "Instant",
+          description: "Feel free to adjust this",
+          enrollmentLink: "https://www.gojet.com/member/",
+          tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
+          membershipFormat: "^\\d{9}[a-zA-Z]$",
+          currencyRate: 1
+      },
+      
+    ];
+    axios.get.mockResolvedValue({ data: mockedResponseData});
+
+
+    render(<LoyaltyPrograms></LoyaltyPrograms>)
+
+    // Call the getLoyaltyPrograms function
+    const componentInstance = screen.getByTestId('loyaltyprograms-test');
+    await componentInstance.getLoyaltyPrograms();
+
+    expect(componentInstance.state.loyaltyProgramsData).toEqual(mockResponse.data.loyaltyPrograms);
+  });
+  
+});
