@@ -112,10 +112,10 @@ class TransferForm extends Component {
         }
 
         return (
-            <div className='overlay'>
+            <div className='overlay' >
                 <dialog open={isOpen}>
                     <form onSubmit={this.handleSubmit}>
-                        <label htmlFor="memberName">Primary Cardholder Name: </label>
+                        <label htmlFor="memberName" data-testid = 'member-name'>Primary Cardholder Name: </label>
                         <input
                             type="text"
                             id="memberName"
@@ -126,7 +126,7 @@ class TransferForm extends Component {
                         />
                         <br />
 
-                        <label htmlFor="membershipId">Membership ID: </label>
+                        <label htmlFor="membershipId" data-testid = 'member-id'>Membership ID: </label>
                         <input
                             type="text"
                             id="membershipId"
@@ -137,7 +137,7 @@ class TransferForm extends Component {
                         />
                         <br />
 
-                        <label htmlFor="membershipIdConfirmation">Confirm Membership ID: </label>
+                        <label htmlFor="membershipIdConfirmation" data-testid = 'member-confirm'>Confirm Membership ID: </label>
                         <input
                             type="text"
                             id="membershipIdConfirmation"
@@ -148,7 +148,7 @@ class TransferForm extends Component {
                         />
                         <br />
 
-                        <label htmlFor="transferAmount">Transfer Amount: </label>
+                        <label htmlFor="transferAmount" data-testid = 'transfer-amount'>Transfer Amount: </label>
                         <input
                             type="text"
                             inputMode="numeric"

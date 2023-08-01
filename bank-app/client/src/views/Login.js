@@ -8,7 +8,7 @@ import '../css/login-styles.css'
 class Login extends Component {
     render () {
         return (
-            <div className="login-page-bg">
+            <div data-testid = 'login-1' className="login-page-bg">
                 <div className="logo-box" >
                     <img src={loginLogo}></img>
                 </div>

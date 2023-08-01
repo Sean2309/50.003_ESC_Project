@@ -9,6 +9,7 @@ import Home from './views/Home';
 import Login from './views/Login';
 // import RewardCenter from './views/RewardCenter';
 import Marketplace from './views/Marketplace';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
 
@@ -25,9 +26,13 @@ function App() {
           {/* variable rendering depending on route */}
           <Route index element={<Home />} />
           {/* <Route path="deprecatedTransferPage" element={<TransferPage />} /> */}
-          <Route path="Login" element={<Login />} />
+          <Route path="login" element={<Login />} />
           {/* <Route path="rewardCenter" element={<RewardCenter/>} /> */}
-          <Route path="marketplace" element={<Marketplace />} />
+          <Route path="marketplace" element={
+          <ProtectedRoute>
+          <Marketplace />
+          </ProtectedRoute>
+          } />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Navigate } from 'react-router-dom';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -15,22 +15,26 @@ class LoginPage extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
         const { loginId, password } = this.state;
-      
-        axios.post('http://localhost:3001/Login', { loginId, password })
-          .then(response => {
-            // Handle the successful login response
-            console.log(response.data);
-            if(response.data ==="Success"){
-                console.log("Redirect to specified page")
+
+        axios.post('http://localhost:3001/login', { loginId, password }, { withCredentials: true })
+            .then(response => {
+
+                console.log('Response status:', response.status);
+                console.log('Response data:', response.data);
+                // the cookie is handled by the browser, no storage of token required.
+
+                // Handle the successful login response
                 this.setState({ authenticated: true });
-            }
-          })
-          .catch(error => {
-            // Handle the error response
-            console.error(error);
-          });
-      }
-      
+                
+                
+            })
+            .catch(error => {
+                // Handle the error response
+                console.error(error);
+            });
+    }
+
+
 
     handleChange = (event) => {
         const { name, value } = event.target;
@@ -38,10 +42,11 @@ class LoginPage extends Component {
     }
 
     render() {
-        const { loginId, password } = this.state;
+        const { loginId, password, authenticated } = this.state;
 
         return (
             <div>
+                {authenticated && (<Navigate to="/marketplace/" />)}
                 <form onSubmit={this.handleSubmit}>
                     <label htmlFor="loginId">User ID: </label>
                     <input

@@ -1,5 +1,7 @@
 const UserCredentials = require('../models/userCredentials');
 const UserProfile = require('../models/userProfile');
+const jwt = require("jsonwebtoken");
+const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
   constructor() {
@@ -10,27 +12,65 @@ class AuthManagerController {
   userAuthentication = async (request, response) => {
     try {
       const { loginId, password } = request.body;
+  
+      // Find the user by loginId
+      const user = await UserCredentials.findOne({ loginId: loginId });
+  
+      if (user) {
+        const isMatch = await user.comparePassword(password);
+  
+        if (isMatch) {
+          // If the email and password are correct, create a JWT token
+          // Secrete Key saved in .env file
+          const mysecretkey = SECRET_CODE;
 
-      // Find the user by email
-      // TODO: Implement security features, e.g. hash password
-      UserCredentials.findOne({ loginId: loginId })
-        .then(user => {
-          if (user) {
-            if (user.password == password) {
-              response.json("Success")
-            } else {
-              response.json("The password is incorrect")
-            }
-          } else {
-            response.json("User not found")
-          }
-        })
+          // Payload to generate JWT
+          const payload = {
+            userId: user.userId
+          };
+          // Create a jsonwebtoken that expires in 5 days
+          const token = jwt.sign(payload, mysecretkey, { expiresIn: '5d' });
+
+          // Store into cookie 
+          response.cookie('token', token, { httpOnly: true });
+
+          // Send the token back to the client
+          response.status(200).json({
+            msg: "User is logged in"
+          });
+
+          
+        } else {
+          response.clearCookie('token');
+          response.json("The password is incorrect");
+        }
+      } else {
+        response.clearCookie('token');
+        response.json("User not found");
+      }
     } catch (error) {
       console.error(error);
       response.status(500).json({ message: 'Server error' });
     }
   }
+  
+  // Retrieve token set in cookies and verify, if verified, set auth to true
+  userAuthorization = async (request, response) => {
+    const token = request.cookies.token;
+    
+    try {
+      jwt.verify(token, SECRET_CODE);
 
+      // if token is verified, then set auth to true
+      response.status(200).json({ message: 'Authorized', auth: true});
+    }
+    catch (error) {
+      console.error(error);
+      response.status(401).json({ message: 'Authorization error', auth: false });
+    }
+  }
+
+  
   // createUser for easy debug and call it during instantiation
   createUser = async (request, response) => {
     await UserCredentials.deleteMany({});
