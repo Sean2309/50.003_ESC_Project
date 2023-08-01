@@ -1,32 +1,33 @@
-import { Outlet, Link} from "react-router-dom";
+import React from 'react';
+import { Outlet, Link } from 'react-router-dom';
 
-const Layout = () => {
-    return (
-        <>
-            <nav data-testid = 'login-1'>
-                <ul>
-                    <li>
-                        <Link to="/">Home</Link>
-                    </li>
-                    <li>
-                        <Link to="marketplace">Marketplace</Link>
-                    </li>
-                    <li>
-                        <Link to="login">Login</Link>
-                    </li>
-                    {/* <li>
+function Layout() {
+  return (
+    <>
+      <nav data-testid="login-1">
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="marketplace">Marketplace</Link>
+          </li>
+          <li>
+            <Link to="login">Login</Link>
+          </li>
+          {/* <li>
                         <Link to="deprecatedTransferPage">deprecatedTransferPage</Link>
-                    </li> 
+                    </li>
                     <li>
                         <Link to="RewardCenter">RewardCenter</Link>
-                    </li>*/}
+                    </li> */}
 
-                </ul>
+        </ul>
 
-            </nav>
-            <Outlet/>
-        </>
-    )
-};
+      </nav>
+      <Outlet />
+    </>
+  );
+}
 
 export default Layout;

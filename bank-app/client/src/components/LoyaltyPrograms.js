@@ -1,78 +1,90 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import axios from 'axios';
 import LoyaltyProgram from './LoyaltyProgram';
 
 class LoyaltyPrograms extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            loyaltyProgramsData: [],
-            userProfile: {}
-        };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      loyaltyProgramsData: [],
+      userProfile: {},
+    };
+  }
 
-    getLoyaltyPrograms = async () => {
-        const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyprograms');
-        const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data.loyaltyPrograms;
-        console.log(loyaltyProgramsQueryResponse);
-        this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
-    }
+  componentDidMount() {
+    this.getLoyaltyPrograms();
+    this.getUserProfile();
+  }
 
-    getUserProfile = async () => {
-        const { userId } = this.props;
-        const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } });
-        const userProfileQueryData = userProfileQueryResponse.data;
+  getLoyaltyPrograms = async () => {
+    const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyprograms');
+    const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data.loyaltyPrograms;
+    console.log(loyaltyProgramsQueryResponse);
+    this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
+  };
 
-        this.setState({ userProfile: userProfileQueryData });
-    }
+  getUserProfile = async () => {
+    const { userId } = this.props;
+    const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } });
+    const userProfileQueryData = userProfileQueryResponse.data;
 
-    componentDidMount() {
-        this.getLoyaltyPrograms();
-        this.getUserProfile();
-    }
+    this.setState({ userProfile: userProfileQueryData });
+  };
 
+  renderLoyaltyPrograms() {
+    const { loyaltyProgramsData, userProfile } = this.state;
 
-    renderLoyaltyPrograms() {
-        const { loyaltyProgramsData, userProfile } = this.state;
+    const componentsArray = [];
 
-        const componentsArray = [];
+    // Add in header sentence for number of points
+    componentsArray.push(
+      <p key="pointsHeader">
+        You currently have
+        {' '}
+        {userProfile.abcPoints}
+        {' '}
+        abcPoints
+        {' '}
+      </p>,
+    );
 
-        // Add in header sentence for number of points
-        componentsArray.push(<p key={'pointsHeader'}>You currently have {userProfile.abcPoints} abcPoints </p>)
-
-        /* 
+    /*
             logic to pass on to actual render: if getLoyaltyPrograms is not yet successful,
             render Loading... else pass each data to a LoyaltyProgram component
         */
-        if (loyaltyProgramsData === [] || userProfile === {}) {
-            return (<p>Loading...</p>);
-        }
-
-        loyaltyProgramsData.map((loyaltyProgramData, index) => (
-            componentsArray.push(
-                <LoyaltyProgram
-                    key={`loyaltyProgram${index}`}
-                    loyaltyProgramData={loyaltyProgramData}
-                    userProfile={userProfile}
-                />
-            )
-        ));
-
-        return componentsArray;
-
+    if (loyaltyProgramsData === [] || userProfile === {}) {
+      return (<p>Loading...</p>);
     }
 
-    render() {
-        return (
-            <div>
-                <div className='marketplace-page-bg' data-testid='loyaltyprograms-test'>
-                    <h2>Loyalty Programs</h2>
-                    {this.renderLoyaltyPrograms()}
-                </div>
+    loyaltyProgramsData.map((loyaltyProgramData) => (
+      componentsArray.push(
+        <LoyaltyProgram
+          key={loyaltyProgramData.programId}
+          loyaltyProgramData={loyaltyProgramData}
+          userProfile={userProfile}
+        />,
+      )
+    ));
 
-            </div>
-        );
-    }
+    return componentsArray;
+  }
+
+  render() {
+    return (
+      <div>
+        <div className="marketplace-page-bg" data-testid="loyaltyprograms-test">
+          <h2>Loyalty Programs</h2>
+          {this.renderLoyaltyPrograms()}
+        </div>
+
+      </div>
+    );
+  }
 }
+
+LoyaltyPrograms.propTypes = {
+  userId: PropTypes.number.isRequired,
+};
 
 export default LoyaltyPrograms;

@@ -12,10 +12,6 @@ import Marketplace from './views/Marketplace';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-
-  
-
-  
   return (
 
     <BrowserRouter>
@@ -28,16 +24,18 @@ function App() {
           {/* <Route path="deprecatedTransferPage" element={<TransferPage />} /> */}
           <Route path="login" element={<Login />} />
           {/* <Route path="rewardCenter" element={<RewardCenter/>} /> */}
-          <Route path="marketplace" element={
-          <ProtectedRoute>
-          <Marketplace />
-          </ProtectedRoute>
-          } />
+          <Route
+            path="marketplace"
+            element={(
+              <ProtectedRoute>
+                <Marketplace />
+              </ProtectedRoute>
+        )}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
   );
-
 }
 
 export default App;

@@ -1,185 +1,209 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import axios from 'axios';
 import '../css/transfer-styles.css';
 
 class TransferForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            membershipId: '',
-            memberName: '',
-            membershipIdConfirmation: '',
-            transferAmount: '',
-            isOpen: false // to render form as popup
-        };
-    }
-
-    openModal = () => {
-        this.setState({ isOpen: true });
-    }
-
-    closeModal = () => {
-        this.setState({ isOpen: false });
-    }
-
-    // To return the current Date as a string
-    getDate = () => {
-        const currentDate = new Date();
-
-        // To get date without time
-        //currentDate.setHours(0, 0, 0, 0);
-
-        // To keep only the date portion
-        return currentDate.toISOString().split('T')[0];
+  constructor(props) {
+    super(props);
+    this.state = {
+      membershipId: '',
+      memberName: '',
+      membershipIdConfirmation: '',
+      transferAmount: '',
+      isOpen: false, // to render form as popup
     };
+  }
 
+  openModal = () => {
+    this.setState({ isOpen: true });
+  };
 
-    // Returns true if membershipId is of correct format
-    membershipValidation = (membershipId) => {
-        // membershipFormat is stored as a regex expression in string format
-        const { membershipFormat } = this.props;
-        
-        const regex = new RegExp(membershipFormat);
-        
-        return regex.test(membershipId);
-    };
+  closeModal = () => {
+    this.setState({ isOpen: false });
+  };
 
-    handleSubmit = (event) => {
-        event.preventDefault(); // Prevent default form submission behaviour
+  // To return the current Date as a string
+  getDate = () => {
+    const currentDate = new Date();
 
-        const { membershipId, memberName, membershipIdConfirmation, transferAmount } = this.state;
-        const { userProfile, loyaltyProgramId } = this.props;
-        const { emailAddress, phoneNumber, notificationMethod } = userProfile
+    // To get date without time
+    // currentDate.setHours(0, 0, 0, 0);
 
-        const transferDate = this.getDate();
+    // To keep only the date portion
+    return currentDate.toISOString().split('T')[0];
+  };
 
-        if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)) {
-            const form = {
-                membershipId,
-                memberName,
-                transferDate,
-                transferAmount,
-                emailAddress,
-                phoneNumber,
-                notificationMethod
-            };
+  // Returns true if membershipId is of correct format
+  membershipValidation = (membershipId) => {
+    // membershipFormat is stored as a regex expression in string format
+    const { membershipFormat } = this.props;
 
-            console.log(form);
+    const regex = new RegExp(membershipFormat);
 
-            axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form)
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+    return regex.test(membershipId);
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault(); // Prevent default form submission behaviour
+
+    const {
+      membershipId, memberName, membershipIdConfirmation, transferAmount,
+    } = this.state;
+    const { userProfile, loyaltyProgramId } = this.props;
+    const { emailAddress, phoneNumber, notificationMethod } = userProfile;
+
+    const transferDate = this.getDate();
+
+    if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)) {
+      const form = {
+        membershipId,
+        memberName,
+        transferDate,
+        transferAmount,
+        emailAddress,
+        phoneNumber,
+        notificationMethod,
+      };
+
+      console.log(form);
+
+      axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form)
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      // TODO if the membershipId is not valid or not of confirmation
+
+    }
+  };
+
+  handleChange = (event) => {
+    const { name, value } = event.target;
+
+    switch (name) {
+      case 'transferAmount': {
+        const { userProfile } = this.props;
+        const { abcPoints } = userProfile;
+        // Make sure that the value entered does not exceed user's number of points
+        if (parseInt(value, 10) <= abcPoints || value === '') {
+          this.setState({ [name]: value });
         }
-        else {
-            // TODO if the membershipId is not valid or not of confirmation
-            return;
-        }
+        break;
+      }
+      default:
+        this.setState({ [name]: value });
+    }
+  };
+
+  handleTransferAmountKeyPress = (event) => {
+    if (!'0123456789'.includes(event.key) && event.key !== 'Backspace' && event.key !== 'Delete') {
+      // Prevent key from being entered
+      event.preventDefault();
+    }
+  };
+
+  renderForm = () => {
+    const {
+      memberName, membershipId, membershipIdConfirmation, transferAmount, isOpen,
+    } = this.state;
+    if (!isOpen) {
+      return <button onClick={this.openModal} type="button">Transfer</button>;
     }
 
-    handleChange = (event) => {
-        const { name, value } = event.target;
+    return (
+      <div className="overlay">
+        <dialog open={isOpen}>
+          <form onSubmit={this.handleSubmit}>
+            <label htmlFor="memberName" data-testid="member-name">
+              Primary Cardholder Name:
+              <input
+                type="text"
+                id="memberName"
+                name="memberName"
+                value={memberName}
+                onChange={this.handleChange}
+                required
+              />
+            </label>
+            <br />
 
-        switch (name) {
-            case 'transferAmount':
-                const { abcPoints } = this.props.userProfile;
-                // Make sure that the value entered does not exceed user's number of points
-                if (parseInt(value) <= abcPoints || value === "") {
-                    this.setState({ [name]: value });
-                }
-                break;
+            <label htmlFor="membershipId" data-testid="member-id">
+              Membership ID:
+              <input
+                type="text"
+                id="membershipId"
+                name="membershipId"
+                value={membershipId}
+                onChange={this.handleChange}
+                required
+              />
+            </label>
+            <br />
 
-            default:
-                this.setState({ [name]: value });
-        }
-    }
-    
-    handleTransferAmountKeyPress = (event) => {
-        if (!"0123456789".includes(event.key) && event.key !== "Backspace" && event.key !== "Delete") {
-            // Prevent key from being entered
-            event.preventDefault();
-        }
-    }
+            <label htmlFor="membershipIdConfirmation" data-testid="member-confirm">
+              Confirm Membership ID:
+              <input
+                type="text"
+                id="membershipIdConfirmation"
+                name="membershipIdConfirmation"
+                value={membershipIdConfirmation}
+                onChange={this.handleChange}
+                required
+              />
+            </label>
+            <br />
 
-    renderForm = () => {
-        const { memberName, membershipId, membershipIdConfirmation, transferAmount, isOpen } = this.state;
-        if (!isOpen) {
-            return <button onClick={this.openModal}>Transfer</button>
-        }
+            <label htmlFor="transferAmount" data-testid="transfer-amount">
+              Transfer Amount:
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                id="transferAmount"
+                name="transferAmount"
+                value={transferAmount}
+                onChange={this.handleChange}
+                onKeyDown={this.handleTransferAmountKeyPress}
+                required
+              />
+            </label>
+            <br />
 
-        return (
-            <div className='overlay' >
-                <dialog open={isOpen}>
-                    <form onSubmit={this.handleSubmit}>
-                        <label htmlFor="memberName" data-testid = 'member-name'>Primary Cardholder Name: </label>
-                        <input
-                            type="text"
-                            id="memberName"
-                            name="memberName"
-                            value={memberName}
-                            onChange={this.handleChange}
-                            required
-                        />
-                        <br />
+            <input
+              type="submit"
+              value="Submit"
+            />
+          </form>
+          <button onClick={this.closeModal} type="button">Close</button>
+        </dialog>
+      </div>
 
-                        <label htmlFor="membershipId" data-testid = 'member-id'>Membership ID: </label>
-                        <input
-                            type="text"
-                            id="membershipId"
-                            name="membershipId"
-                            value={membershipId}
-                            onChange={this.handleChange}
-                            required
-                        />
-                        <br />
+    );
+  };
 
-                        <label htmlFor="membershipIdConfirmation" data-testid = 'member-confirm'>Confirm Membership ID: </label>
-                        <input
-                            type="text"
-                            id="membershipIdConfirmation"
-                            name="membershipIdConfirmation"
-                            value={membershipIdConfirmation}
-                            onChange={this.handleChange}
-                            required
-                        />
-                        <br />
-
-                        <label htmlFor="transferAmount" data-testid = 'transfer-amount'>Transfer Amount: </label>
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            id="transferAmount"
-                            name="transferAmount"
-                            value={transferAmount}
-                            onChange={this.handleChange}
-                            onKeyDown={this.handleTransferAmountKeyPress}
-                            required
-                        />
-                        <br />
-
-                        <input
-                            type="submit"
-                            value="Submit"
-                        />
-                    </form>
-                    <button onClick={this.closeModal}>Close</button>
-                </dialog>
-            </div>
-
-        );
-    }
-
-    render() {
-        return (
-            <div>
-                <this.renderForm />
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div>
+        {this.renderForm()}
+      </div>
+    );
+  }
 }
+
+// PropTypes validation
+TransferForm.propTypes = {
+  membershipFormat: PropTypes.string.isRequired,
+  userProfile: PropTypes.shape({
+    abcPoints: PropTypes.number.isRequired,
+    emailAddress: PropTypes.string.isRequired,
+    phoneNumber: PropTypes.string.isRequired,
+    notificationMethod: PropTypes.string.isRequired,
+  }).isRequired,
+  loyaltyProgramId: PropTypes.string.isRequired,
+};
 
 export default TransferForm;
