@@ -135,7 +135,7 @@ const main = async () => {
   await uploadFilesToMongoDB(testDate);
   console.log("Done!");
 }
-// main().catch(console.error);
+main().catch(console.error);
 
 
 const downloadfromSFTPandUpload = async () => {
