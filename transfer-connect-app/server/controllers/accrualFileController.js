@@ -1,4 +1,6 @@
 require('dotenv').config({path: __dirname + '/../.env'});
+const config = require('../utils/config');
+const dateUtil = require('./date');
 const mongoose = require('mongoose');
 const sftpModel = require('../models/sftpModel');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
@@ -29,14 +31,12 @@ function getFormattedDate(format = "standard") {
   }
 }
 
-const collections = ["qflyers", "gojets", "testaccruals"]; // please name your collection name in lowercase and add a "s" at the end
-
 const writeCollectionsToCsv = async () => {
-  mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+  mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  const stringToday = getFormattedDate();
+  const stringToday = dateUtil.getFormattedDate();
 
-  for (const collection of collections) {
+  for (const collection of config.mongoDBCollections) {
     const Model = mongoose.model(collection, sftpModel);
 
     try {
@@ -81,13 +81,13 @@ const writeCollectionsToCsv = async () => {
 }
 
 const uploadFilesToServer = async () => {
-  Files.setBaseUrl('https://kaligo.files.com');
-  Files.setApiKey('d823bcf8852f7259262f425a839a05f88f51fa57e9cddb8c3d1493d10c04192e');
+  Files.setBaseUrl(config.kaligoURL);
+  Files.setApiKey(config.kaligoAPIKey);
 
-  const formattedDate = getFormattedDate("compact");
+  const formattedDate = dateUtil.getFormattedDate("compact");
 
   // Loop through collections
-  for (const collection of collections) {
+  for (const collection of config.sftpCollections) {
     // Loop through partner codes within each collection
     const partnerCodes = fs.readdirSync('accrual_files')
       .filter(file => file.startsWith(`${collection}_`))
@@ -110,7 +110,12 @@ const uploadFilesToServer = async () => {
   }
 }
 
+const clearAccrualFiles = () => {
+  fs.readdirSync('accrual_files').forEach(file => fs.unlinkSync(path.join('accrual_files', file)));
+}
+
 const main = async () => {
+  clearAccrualFiles();
   await writeCollectionsToCsv();
   await uploadFilesToServer();
 };
