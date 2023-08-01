@@ -17,9 +17,9 @@ const createTransactionModel = require('../models/transaction');
 
 class TransactionController {
 
-  generateSystemCode = () => {
-    // TODO: generate systemCode to notify successful/unsuccessful submission 
-    return "101";
+  generateSystemId = () => {
+    // TODO: generate systemId to for reconcilation between TransferConnect and Bank app
+    return Math.floor((Math.random() * 9999999));
   }
 
   saveTransactionToDb = async (loyaltyProgramId, transactionData) => {
@@ -35,11 +35,16 @@ class TransactionController {
       const transactionData = request.body;
 
       const loyaltyProgramId = request.params.loyaltyProgramId;
+      
+      transactionData.systemId = this.generateSystemId();
+      
+      console.log("transaction saved to DB")
+      console.log(transactionData)
 
       // save Transaction to DB
       this.saveTransactionToDb(loyaltyProgramId, transactionData);
 
-      response.status(201).json({ systemCode: this.generateSystemCode() });
+      response.status(201).json({ systemId: transactionData.systemId });
     }
     catch (error) {
       console.error('Error saving transfer form data:', error);

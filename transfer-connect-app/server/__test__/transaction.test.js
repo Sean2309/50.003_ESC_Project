@@ -83,8 +83,6 @@ describe('transactionController', () => {
         await transactionController.submitTransaction(mockRequest, mockResponse);
         
         expect(mockResponse.status).toEqual(201);
-        expect(mockResponse.data).toEqual({ systemCode: "101" });
-
     })
 
 })
