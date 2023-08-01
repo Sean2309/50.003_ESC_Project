@@ -9,10 +9,9 @@ const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path  = require('path');
 var getFormattedDate = require('./date').getFormattedDate;
+var config = require('../utils/config');
 
-// Defining Collection Names
-// const mongoLPList = [`dbssgs`, `qflyers`, `gojets`]; // TODO: Use only one list and transform the other to match 
-// const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
+// Defining Dates
 const testDate = `20200812`; 
 const formattedDate = getFormattedDate("compact");
 
@@ -32,16 +31,15 @@ const getModelForLP = (loyaltyProgram) => {
 // START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async(targetDate) => {
   let fileName;
-  for (const lp of sftpLPList ) {
+  for (const collection of config.sftpCollections ) {
     // Config Details
-    Files.setBaseUrl('https://kaligo.files.com');
-    Files.setApiKey('d823bcf8852f7259262f425a839a05f88f51fa57e9cddb8c3d1493d10c04192e');
+    Files.setBaseUrl(config.kaligoURL);
+    Files.setApiKey(config.kaligoAPIKey);
     // Downloading the handback file from the server
     console.log("Retrieving the files from the SFTP server");
 
-    fileName = `${lp}_HANDBACK_${targetDate}.csv`;
-    console.log(fileName);
-    const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, {mkdir_parents: true});
+    fileName = `${collection}_HANDBACK_${targetDate}.csv`;
+    const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${collection}/${fileName}`, {mkdir_parents: true});
     const downloadableFile = await foundFile.download();
 
     if (!isBrowser()) {
@@ -86,15 +84,15 @@ const extractDataFromCsv = async(filePath) => {
 }
 
 const uploadFilesToMongoDB = async (targetDate) => {
-  await mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  for (let i = 0; i < sftpLPList.length; i++) {
-    const filePath = path.join(__dirname, `sftp_handback_downloads/${sftpLPList[i]}_HANDBACK_${targetDate}.csv`);
+  for (let i = 0; i < config.sftpCollections.length; i++) {
+    const filePath = path.join(__dirname, `sftp_handback_downloads/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
     try {
       const [partnerCode, results] = await extractDataFromCsv(filePath);
       console.log(`Extracting data from ${partnerCode} Handback File`);
 
-      const Model = getModelForLP(mongoLPList[i]);
+      const Model = getModelForLP(config.mongoDBCollections[i]);
 
       for (const result of results) {
         let mappedResult = {
