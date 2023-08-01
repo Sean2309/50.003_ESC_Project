@@ -1,7 +1,7 @@
 const createTransferForm = require('../models/transferForm');
 const { TRANSFER_CONNECT_API_URL, PARTNERCODE } = require('../utils/config');
 const axios = require('axios');
-const validatetransferForm = require('./validatetransferForm');
+const validatetransferForm = require('../utils/validatetransferForm');
 
 class TransferFormController {
 
