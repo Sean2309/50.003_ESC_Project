@@ -1,23 +1,22 @@
 const UserProfile = require('../models/userProfile');
 
 class UserProfileController {
-    
-    authenticateToken(request, response, next) {
-        // some logic to verify the auth token 
-        next();
-    }
+  authenticateToken(request, response, next) {
+    // some logic to verify the auth token
+    next();
+  }
 
-    // This function operates on the assumption that the token is authed   
-    getUserProfile = async (request, response) => {
-        const userId = request.query.id;
-        
-        // ideally userId is hashed, so we need to decrypt this
+  // This function operates on the assumption that the token is authed
+  getUserProfile = async (request, response) => {
+    const userId = request.query.id;
 
-        const userProfile = await UserProfile.findOne({ userId: userId });
+    // ideally userId is hashed, so we need to decrypt this
 
-        response.json(userProfile);
-    }
-};
+    const userProfile = await UserProfile.findOne({ userId });
+
+    response.json(userProfile);
+  };
+}
 
 const userProfileController = new UserProfileController();
 

@@ -1,6 +1,6 @@
-const LoyaltyPrograms = require('../models/loyaltyPrograms');
 const axios = require('axios');
 const cron = require('node-cron');
+const LoyaltyPrograms = require('../models/loyaltyPrograms');
 const { PARTNERCODE } = require('../utils/config');
 
 class LoyaltyProgramsController {
@@ -10,78 +10,72 @@ class LoyaltyProgramsController {
       this.updateLoyaltyPrograms();
     });
   }
-  
 
   getLoyaltyPrograms = async (request, response) => {
     try {
-      console.log("In getLoyaltyPrograms")
+      console.log('In getLoyaltyPrograms');
 
       const loyaltyPrograms = await LoyaltyPrograms.find();
 
-      console.log("loyaltyPrograms", loyaltyPrograms)
+      console.log('loyaltyPrograms', loyaltyPrograms);
 
       response.json({ loyaltyPrograms });
-
-
     } catch (error) {
       console.error(error);
       response.status(500).json({ error });
     }
-  }
+  };
 
-  // to populate db 
+  // to populate db
   populateDb = async () => {
     const mockLoyaltyPrograms = [
       {
-        programId: "GOPOINTS",
-        programName: "GoJet Points",
-        currencyName: "GoPoints",
-        processingTime: "Instant",
-        description: "Feel free to adjust this",
-        enrollmentLink: "https://www.gojet.com/member/",
-        tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-        membershipFormat: "^\\d{9}[a-zA-Z]$",
-        currencyRate: 1
+        programId: 'GOPOINTS',
+        programName: 'GoJet Points',
+        currencyName: 'GoPoints',
+        processingTime: 'Instant',
+        description: 'Feel free to adjust this',
+        enrollmentLink: 'https://www.gojet.com/member/',
+        tncLink: 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html',
+        membershipFormat: '^\\d{9}[a-zA-Z]$',
+        currencyRate: 1,
 
       },
       {
-        programId: "ASIAMILES",
-        programName: "Asia Miles",
-        currencyName: "Asia Miles",
-        processingTime: "Instant",
-        description: "Feel free to adjust this",
-        enrollmentLink: "https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html",
-        tncLink: "https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html",
-        membershipFormat: "^\\d{11}$",
-        currencyRate: 1.1
-      }
-    ]
+        programId: 'ASIAMILES',
+        programName: 'Asia Miles',
+        currencyName: 'Asia Miles',
+        processingTime: 'Instant',
+        description: 'Feel free to adjust this',
+        enrollmentLink: 'https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html',
+        tncLink: 'https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html',
+        membershipFormat: '^\\d{11}$',
+        currencyRate: 1.1,
+      },
+    ];
 
     await LoyaltyPrograms.deleteMany({});
 
     await LoyaltyPrograms.create(mockLoyaltyPrograms);
-
-  }
+  };
 
   // send GET request to transferConnect query API endpoint and store into db
   updateLoyaltyPrograms = async () => {
-    console.log("In updateLoyaltyPrograms")
+    console.log('In updateLoyaltyPrograms');
 
-    
     try {
       const response = await axios.get(`http://localhost:3003/api/loyaltyprograms/${PARTNERCODE}`);
-      const data = response.data;
-      console.log("data", data)
+      const { data } = response;
+      console.log('data', data);
 
       await LoyaltyPrograms.deleteMany({});
       await LoyaltyPrograms.create(data);
 
       console.log('Data updated successfully');
-
     } catch (error) {
       console.error('Error updating data:', error);
     }
-  }
+  };
 }
 
 const loyaltyProgramsController = new LoyaltyProgramsController();
