@@ -115,5 +115,15 @@ const queryFromDBandUpload = async () =>{
   await uploadFilesToServer();
 }
 
-module.exports.queryFromDBandUpload = queryFromDBandUpload;
-module.exports.writeCollectionsToCsv = writeCollectionsToCsv;
+module.exports = {
+  getModel,
+  getDataFromCollection,
+  groupData,
+  writeGroupedDataToCsv,
+  writeCollectionsToCsv,
+  uploadFilesToServer,
+  clearAccrualFiles,
+  main,
+  queryFromDBandUpload
+};
+
