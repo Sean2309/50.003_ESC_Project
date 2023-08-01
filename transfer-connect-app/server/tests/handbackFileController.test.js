@@ -8,14 +8,22 @@ const filePath = path.join(__dirname, `../controllers/sftp_handback_downloads`);
 const config = require('../utils/config');
 const testDate = '20200812'
 
+
+// ======== START OF UNIT TESTING ===========================
+
 describe('retrieveFromServer function check', () => {
+    beforeAll(async () => {
+      // Call the actual function here
+      await handbackFileController.retrieveFromServer(testDate);
+      // await Files.close();
+    }, 30000); // Increase the timeout to allow time for the file download
 
     test('should return success if retrieveFromServer is executed successfully', async () => {
       // Mock the implementation of retrieveFromServer
       const retrieveFromServerSpy = jest.spyOn(handbackFileController, 'retrieveFromServer').mockReturnValue(100);
   
       // Call the function in your test
-      const result = handbackFileController.retrieveFromServer(testDate);
+      const result = await retrieveFromServerSpy(testDate);
   
       // Assertion
       expect(result).toBe(100);
@@ -62,6 +70,28 @@ describe('extractDataFromCSV check', () => {
   });
 });
 
+describe('uploadFilesToMongoDB check', () => {
+  test('should return success if uploadFilesToMongoDB is executed successfully', async () => {
+    // Mock the implementation of uploadFilesToMongoDB
+    const uploadFilesToMongoDBSpy = jest.spyOn(handbackFileController, 'uploadFilesToMongoDB').mockReturnValue(100);
+  
+    // Call the function in your test
+    const result = uploadFilesToMongoDBSpy(testDate);
+
+    // Assertion
+    expect(result).toBe(100);
+
+    // Restore the original implementation
+    uploadFilesToMongoDBSpy.mockRestore();
+  });
+});
+
+// ======== END OF UNIT TESTING ===========================
+
+// ======== START OF INTEGRATION TESTING ==================
+
+// Integration testing example: 
+// Wait for the uploading of files to MongoDB is done, then you pull from the mongo db and see if the data is expected
 
 describe('MongoDB Connectivity', () => {
   beforeAll(async () => {
@@ -78,18 +108,12 @@ describe('MongoDB Connectivity', () => {
   });
 });
 
-describe('uploadFilesToMongoDB check', () => {
-  test('should return success if uploadFilesToMongoDB is executed successfully', async () => {
-    // Mock the implementation of uploadFilesToMongoDB
-    const uploadFilesToMongoDBSpy = jest.spyOn(handbackFileController, 'uploadFilesToMongoDB').mockReturnValue(100);
-  
-    // Call the function in your test
-    const result = handbackFileController.uploadFilesToMongoDB(testDate);
-
-    // Assertion
-    expect(result).toBe(100);
-
-    // Restore the original implementation
-    uploadFilesToMongoDBSpy.mockRestore();
+describe('clearFolder function check', () => {
+  test('should return success if clearFolder is executed successfully', async() => {
+    const clearFolder = require('../controllers/clearFolder').clearFolder;
+    await clearFolder('sftp_handback_downloads');
+    const files = fs.readdirSync(`./`);
+    expect(files.length).toBe(0);
   });
 });
+// ======== END OF INTEGRATION TESTING ==================

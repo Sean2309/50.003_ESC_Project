@@ -1,0 +1,22 @@
+{
+  "name": "50.003_esc_project",
+  "version": "1.0.0",
+  "description": "<br>\r #TODO\r This is a READ ME for the 50.003 Elements of Software Construction Repository",
+  "main": "unused_code.js",
+  "scripts": {
+    "test": "jest --forceExit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "files.com": "^1.0.309",
+    "jest": "^29.6.2",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.4.1",
+    "nodemailer": "^6.9.4",
+    "twilio": "^4.14.1"
+  }
+}

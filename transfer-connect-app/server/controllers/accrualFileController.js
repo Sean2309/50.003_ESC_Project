@@ -11,8 +11,8 @@ const path = require('path');
 const fs = require('fs');
 const csvParser = require('csv-parser');
 
-if (!fs.existsSync('accrual_files')) {
-  fs.mkdirSync('accrual_files');
+if (!fs.existsSync(path.join(__dirname, 'accrual_files'))) {
+  fs.mkdirSync(path.join(__dirname, 'accrual_files'));
 }
 
 // Helper function to get a Mongoose model by collection name
@@ -108,7 +108,7 @@ const main = async () => {
   await uploadFilesToServer();
 };
 
-main().catch(console.error);
+// main().catch(console.error);
 
 const queryFromDBandUpload = async () =>{
   await writeCollectionsToCsv();
