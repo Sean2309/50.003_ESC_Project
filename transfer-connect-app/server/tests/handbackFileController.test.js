@@ -5,7 +5,7 @@ const csv = require('csv-parser');
 const mongoose = require('mongoose');
 const handbackFileController = require('../controllers/handbackFileController');
 const filePath = path.join(__dirname, `../controllers/sftp_handback_downloads`);
-const sftpLPList = ['DBSSG', `QFlyers`, `GoJets`];
+const config = require('../utils/config');
 const testDate = '20200812'
 
 describe('retrieveFromServer function check', () => {
@@ -54,10 +54,10 @@ describe('retrieveFromServer function check', () => {
 describe('extractDataFromCSV check', () => {
 
   test('should return success if extractDataFromCSV is executed successfully', async () => {
-    for (let i = 0; i < sftpLPList.length; i++) {
-      const filePathIter = path.join(filePath, `/${sftpLPList[i]}_HANDBACK_${testDate}.csv`);
+    for (let i = 0; i < config.sftpCollections.length; i++) {
+      const filePathIter = path.join(filePath, `/${config.sftpCollections[i]}_HANDBACK_${testDate}.csv`);
       const [partnerCode, results] = await handbackFileController.extractDataFromCsv(filePathIter);
-      expect(partnerCode).toBe(sftpLPList[i]);
+      expect(partnerCode).toBe(config.sftpCollections[i]);
     }
   });
 });
