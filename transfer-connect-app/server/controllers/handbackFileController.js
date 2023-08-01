@@ -9,11 +9,15 @@ const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path  = require('path');
 var getFormattedDate = require('./date').getFormattedDate;
+var clearFolder = require('./clearFolder').clearFolder;
 var config = require('../utils/config');
 
-// Defining Dates
+// Defining Variables
+// Dates
 const testDate = `20200812`; 
 const formattedDate = getFormattedDate("compact");
+// SFTP Downloads Folder Name
+const sftpHandbackDownloads = 'sftp_handback_downloads';
 
 // Cache for storing the created models
 const modelCache = {};
@@ -44,7 +48,7 @@ const retrieveFromServer = async(targetDate) => {
 
     if (!isBrowser()) {
       // Download to a file on disk
-      await downloadableFile.downloadToFile(path.join(__dirname, `sftp_handback_downloads/${fileName}`));
+      await downloadableFile.downloadToFile(path.join(__dirname, `${sftpHandbackDownloads}/${fileName}`));
       console.log(`File ${fileName} downloaded!\n`);
     }
   };
@@ -87,7 +91,7 @@ const uploadFilesToMongoDB = async (targetDate) => {
   await mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
   for (let i = 0; i < config.sftpCollections.length; i++) {
-    const filePath = path.join(__dirname, `sftp_handback_downloads/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
+    const filePath = path.join(__dirname, `${sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
     try {
       const [partnerCode, results] = await extractDataFromCsv(filePath);
       console.log(`Extracting data from ${partnerCode} Handback File`);
@@ -125,7 +129,9 @@ const uploadFilesToMongoDB = async (targetDate) => {
 
 // Running the functions
 const main = async () => {
+  clearFolder(sftpHandbackDownloads);
   await retrieveFromServer(testDate);
+  
   await uploadFilesToMongoDB(testDate);
   console.log("Done!");
 }
