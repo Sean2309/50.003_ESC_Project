@@ -15,66 +15,54 @@ if (!fs.existsSync('accrual_files')) {
   fs.mkdirSync('accrual_files');
 }
 
-function getFormattedDate(format = "standard") {
-  const date = new Date();
-  date.setDate(date.getDate() - 1); // Subtract a day if requested
-  let month = date.getMonth() + 1; // getMonth() is zero-indexed
-  let day = date.getDate();
+// Helper function to get a Mongoose model by collection name
+const getModel = (collection) => mongoose.model(collection, sftpModel);
 
-  month = month < 10 ? '0' + month : month;
-  day = day < 10 ? '0' + day : day;
+// Helper function to get data from a MongoDB collection
+const getDataFromCollection = async (Model, stringToday) => {
+  return Model.find({
+    outcomeCode: { $exists: false },
+    transferDate: stringToday
+  });
+}
 
-  if (format === "compact") {
-    return `${date.getFullYear()}${month}${day}`;
-  } else { // "standard" format
-    return `${date.getFullYear()}-${month}-${day}`;
+// Helper function to group data by partnerCode
+const groupData = (data) => {
+  return data.reduce((acc, doc) => {
+    (acc[doc.partnerCode] = acc[doc.partnerCode] || []).push(doc);
+    return acc;
+  }, {});
+}
+
+// Helper function to write grouped data to CSV
+const writeGroupedDataToCsv = async (groups, collection) => {
+  for (const partnerCode in groups) {
+    const csvWriter = createCsvWriter({
+      path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
+      header: [
+        { id: 'membershipId', title: 'Membership ID' },
+        { id: 'membershipName', title: 'Membership name' },
+        { id: 'transferDate', title: 'Transfer date' },
+        { id: 'transferAmount', title: 'Transfer Amount' },
+        { id: 'referenceNumber', title: 'Reference number' },
+        { id: 'partnerCode', title: 'Partner code' }
+      ]
+    });
+    await csvWriter.writeRecords(groups[partnerCode]);
   }
 }
 
+// Main function to write collections to CSV
 const writeCollectionsToCsv = async () => {
   mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
-
   const stringToday = dateUtil.getFormattedDate();
 
   for (const collection of config.mongoDBCollections) {
-    const Model = mongoose.model(collection, sftpModel);
-
-    try {
-      const data = await Model.find(
-        {
-          outcomeCode: { $exists: false },
-          transferDate: stringToday
-        }
-      );
-
-      console.log('Data retrieved from ' + collection + ':', data);
-
-      // Group by partnerCode
-      const groups = data.reduce((acc, doc) => {
-        (acc[doc.partnerCode] = acc[doc.partnerCode] || []).push(doc);
-        return acc;
-      }, {});
-
-      for (const partnerCode in groups) {
-        const csvWriter = createCsvWriter({
-          path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
-          header: [
-            { id: 'membershipId', title: 'Membership ID' },
-            { id: 'membershipName', title: 'Membership name' },
-            { id: 'transferDate', title: 'Transfer date' },
-            { id: 'transferAmount', title: 'Transfer Amount' },
-            { id: 'referenceNumber', title: 'Reference number' },
-            { id: 'partnerCode', title: 'Partner code' }
-          ]
-        });
-
-        await csvWriter.writeRecords(groups[partnerCode]);
-
-        console.log(`Data written to ${partnerCode}.csv`);
-      }
-    } catch (error) {
-      console.error('An error occurred while handling collection ' + collection + ':', error);
-    }
+    const Model = getModel(collection);
+    const data = await getDataFromCollection(Model, stringToday);
+    console.log('Data retrieved from ' + collection + ':', data);
+    const groups = groupData(data);
+    await writeGroupedDataToCsv(groups, collection);
   }
 
   mongoose.connection.close();
@@ -121,7 +109,6 @@ const main = async () => {
 };
 
 main().catch(console.error);
-
 
 const queryFromDBandUpload = async () =>{
   await writeCollectionsToCsv();
