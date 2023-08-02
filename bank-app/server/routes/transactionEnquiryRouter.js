@@ -1,8 +1,9 @@
 const transactionEnquiryRouter = require('express').Router();
-const transactionDisplayController = require('../controllers/transactionDisplayController');
+
+const transactionEnquiryController = require('../controllers/transactionEnquiryController');
 
 // Router to handle get request
 
-transactionEnquiryRouter.get('/', transactionDisplayController.getAllUserTransactions);
+transactionEnquiryRouter.get('/:userId', transactionEnquiryController.getUserTransactions);
 
 module.exports = transactionEnquiryRouter;

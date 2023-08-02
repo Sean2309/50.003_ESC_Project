@@ -5,8 +5,6 @@ const config = require('./utils/config');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const transactionEnquiryControllerClass = require('./controllers/transactionEnquiryController').TransactionEnquiryController;
-const transactionEnquiryController = new transactionEnquiryControllerClass(true);
 const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
 
 const app = express();
@@ -27,8 +25,7 @@ app.use(cors());
 // for purpose of parsing incoming requests 
 app.use(express.json());
 
-app.use(transactionEnquiryController.startEnquiry);
-app.use('/api/transactionsDisplay', transactionEnquiryRouter);
+app.use('/api/transactions', transactionEnquiryRouter);
 
 app.listen(config.PORT, () => {
     console.log(`Server running on port ${config.PORT}`);
