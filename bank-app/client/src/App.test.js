@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, screen, act } from '@testing-library/react';
+import { render, fireEvent, screen, act, waitFor } from '@testing-library/react';
 // import axiosMock from './axiosMock'; // Mock axios for testing purposes
 import TransferForm from './components/TransferForm';
 import Marketplace from './views/Marketplace';
@@ -38,6 +38,23 @@ describe('LoyaltyPrograms Component', () => {
     }
   ];
 
+
+
+  it('handles empty loyalty program data by throwing console error', async () => {
+    // Mock the axios.get function to return invalid responses
+    axios.get = jest.fn().mockResolvedValue();
+
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await act(async () => {
+      render(<LoyaltyPrograms userId={mockedUserId} />);
+    });
+    
+    // received absolutely zero data
+    await waitFor(() => expect(spy).toHaveBeenCalled());
+
+  });
+
   beforeEach(() => {
     jest.mock('axios');
     // Mock the axios.get function to return fake responses
@@ -50,6 +67,10 @@ describe('LoyaltyPrograms Component', () => {
       return Promise.reject(new Error('Invalid URL'));
     });
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  })
 
   it('renders loyalty programs after data is fetched', async () => {
     // Render the LoyaltyPrograms component with mocked data

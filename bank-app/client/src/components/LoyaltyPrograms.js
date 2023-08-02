@@ -25,7 +25,6 @@ class LoyaltyPrograms extends Component {
       this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
     } catch (error) {
       console.error('Error fetching loyalty programs:', error);
-      // You may want to handle the error here, e.g., display an error message or retry the request
     }
   };
 
@@ -38,7 +37,6 @@ class LoyaltyPrograms extends Component {
       this.setState({ userProfile: userProfileQueryData });
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      // You may want to handle the error here, e.g., display an error message or retry the request
     }
   };
 
