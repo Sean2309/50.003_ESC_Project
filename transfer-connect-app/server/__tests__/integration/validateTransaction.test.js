@@ -1,6 +1,6 @@
 const validateTransaction = require('../../utils/validateTransaction');
 const { default: mongoose } = require('mongoose');
-const { MONGODB_URL } = require('../../utils/config');
+const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
 const LoyaltyProgramQueryModel = require('../../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../../models/currencyRateModel');
 const loyaltyProgramId = "mock";
@@ -45,9 +45,11 @@ const mockCurrencyRateData = {
     
 }
 
+beforeAll(async () => {
+    await mongoose.connect(MONGODB_URL, MONGODB_OPTIONS);
+})
+
 beforeEach(async () => {
-    await mongoose.connect(MONGODB_URL).catch((err) => console.error('error'));
-    
     const mockLoyaltyProgram = new LoyaltyProgramQueryModel(mockLoyaltyProgramData);
     
     const mockCurrencyRate = new CurrencyRateModel(mockCurrencyRateData);
@@ -150,18 +152,7 @@ describe('validateTransaction middleware function unit tests', () => {
   })
     
   test("if mongoose related errors occur, validateTransaction will catch and return status code 500", async () => {
-    const mockTransactionData = {
-      memberName: 'mockUser',
-      membershipId: '1234567AA',
-      transferDate: '11-11-11',
-      transferAmount: 2000,
-      notificationMethod: '1',
-      emailAddress: 'mock@email.com',
-      phoneNumber: '88100110',
-      referenceNumber: '100101101D',
-      partnerCode: 'DBSSG',
-      systemId: 'MOCK',
-    };
+    const mockTransactionData = null;
 
     const request = { body: mockTransactionData, params: { loyaltyProgramId: loyaltyProgramId }};
       
@@ -169,13 +160,10 @@ describe('validateTransaction middleware function unit tests', () => {
       
     next = jest.fn();
     
-    await mongoose.connection.close();
-    
     await validateTransaction(request, response, next);
       
     expect(response.status).toEqual(500);
 
-    await mongoose.connect(MONGODB_URL).catch((err) => console.error('error'));
   })
     
 });

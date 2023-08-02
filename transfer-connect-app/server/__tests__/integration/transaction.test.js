@@ -1,6 +1,6 @@
 const { default: mongoose } = require('mongoose');
 const transactionController = require('../../controllers/transactionController');
-const { MONGODB_URL } = require('../../utils/config');
+const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
 const createTransactionModel = require('../../models/transaction');
 const loyaltyProgramId = 'MockId';
 
@@ -29,8 +29,11 @@ class MockResponse {
 
 // =========== Test Suite and Cases ======== //
 
+beforeAll(async () => {
+    await mongoose.connect(MONGODB_URL, MONGODB_OPTIONS);
+})
+
 beforeEach(async () => {
-    await mongoose.connect(MONGODB_URL).catch((err) => console.error('error'));
     const MockTransactionModel = createTransactionModel(loyaltyProgramId);
     await MockTransactionModel.deleteMany({});
 })

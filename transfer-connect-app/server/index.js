@@ -10,9 +10,8 @@ const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
 const app = express();
 
 // connect to mongoDB cloud
-mongoose.connect(config.MONGODB_URL).catch((err) => console.error('error'));
+mongoose.connect(config.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
 // mongoose.connect('mongodb+srv://test:4321@test.j9ugyp5.mongodb.net/Dtest?retryWrites=true&w=majority').then((res) => console.log('connected')).catch((err) => console.error('error'))
-
 
 // enable CORS for all routes
 
