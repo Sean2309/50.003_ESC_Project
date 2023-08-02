@@ -39,7 +39,6 @@ class LoyaltyProgramsController {
         tncLink: 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html',
         membershipFormat: '^\\d{9}[a-zA-Z]$',
         currencyRate: 1,
-
       },
       {
         programId: 'ASIAMILES',
