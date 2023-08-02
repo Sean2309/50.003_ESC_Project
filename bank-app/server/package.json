@@ -40,5 +40,9 @@
   "transform": {
     "\\.[jt]sx?$": "babel-jest",
     "\\.css$": "some-css-transformer"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": ["text", "html"]
   }
 }
