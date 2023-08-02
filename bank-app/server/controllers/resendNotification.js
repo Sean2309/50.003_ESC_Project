@@ -1,18 +1,23 @@
-const transactionEnquiryControllerClass = require('./transactionEnquiryController').TransactionEnquiryController;
 const mongoose = require('mongoose');
 const transactionSchema = require('../models/transactionEnquiryModel').transactionSchema;
-const transactionEnquiryController = new transactionEnquiryControllerClass(false);
 const clients = require('./notificationServerController.js').clients;
 const sendMessagetoClient = require('./notificationSendingController.js').sendMessagetoClient;
 
-
-//TODO: link to frontend
-const membershipId = 0;
+const transactionEnquiryControllerClass = require('./transactionEnquiryController.js').TransactionEnquiryController;
+const transactionEnquiryController = new transactionEnquiryControllerClass(true);
 
 class ResendNotification {
-    constructor(){}
-s
-    getTransactions = async (transferAmount, loyaltyProgramName, membershipId) => {
+    constructor(){};
+
+    processClientMessage = async (message) => {
+        const transferAmount = message.transferAmount;
+        const loyaltyProgramName = message.loyaltyProgramName;
+        const membershipId = message.membershipId;
+        return {transferAmount, loyaltyProgramName, membershipId};
+    }
+
+    getTransactions = async (transferAmount, loyaltyProgramName, membershipId) => {        
+        let collection_connection;
         if (mongoose.models[loyaltyProgramName]) {
             collection_connection = mongoose.model(loyaltyProgramName);
           } else {
@@ -33,6 +38,7 @@ s
             }
         //query from TC
         let response_data = await transactionEnquiryController.makeApiRequest(id_list, loyaltyProgramName);
+        return response_data;
         }
         else {
             //TODO: send as websocket notif
@@ -42,7 +48,6 @@ s
             sendMessagetoClient(clients, membershipId, message, messageType);
             return
         }
-        return response_data;
     }
 
     handleNullData = async (response_data) => {
@@ -55,7 +60,8 @@ s
         }
     }
 
-    resendNotif = async (transferAmount, loyaltyProgramName, membershipId) => {
+    resendNotif = async (message) => {
+        let {transferAmount, loyaltyProgramName, membershipId} = this.processClientMessage(message);
         let transactions = await this.getTransactions(transferAmount, loyaltyProgramName, membershipId);
         let response_data = await this.processTransactionsParam(transactions, loyaltyProgramName);
         await this.handleNullData(response_data);

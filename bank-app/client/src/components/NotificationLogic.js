@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import NotificationStyle from "./NotificationStyle";
 
 //assuming every user has unique membershipID in each bank
@@ -7,7 +8,21 @@ const membershipID = '1230oij'; //get this after user logs in
 const url = 'ws://localhost:8080?uuid=' + membershipID;
 const socket = new WebSocket(url);
 
+
 const NotificationLogic = () =>{
+  useEffect(()=>{
+    const handleButtonClick = () => {
+      const transferAmount = document.getElementById('transferAmountText').value;
+      const loyaltyProgramName = document.getElementById('loyaltyProgramNameText').value;
+      console.log(transferAmount);
+      console.log(loyaltyProgramName);
+      const data_to_server = {
+        transferAmount: transferAmount,
+        loyaltyProgramName: loyaltyProgramName,
+        membershipId: membershipID
+      };
+      socket.send(data_to_server);
+    };
    
     // Event listener for connection open
     socket.addEventListener('open', (event) => {
@@ -31,11 +46,17 @@ const NotificationLogic = () =>{
     console.error('WebSocket connection error:', event);
     });
 
-    // Clean up the WebSocket connection on component unmount
+    document.getElementById('resendNotif').addEventListener('click', handleButtonClick);
 
-    
+    // Clean up the WebSocket connection on component unmount
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  return null; // This component doesn't render anything, so return null.
+};
   
-  };
   
   export default NotificationLogic;
   

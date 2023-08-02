@@ -5,7 +5,12 @@ const Home = () => {
     <div>
         <h1>Home</h1>
         <NotificationLogic />
-    </div>);
+        <input type="text" id="transferAmountText" />
+        <input type="text" id="loyaltyProgramNameText" />
+        <button id="resendNotif" onclick="handleButtonClick()">Resend Notif</button>
+    </div>
+
+    );
 };
 
 export default Home;

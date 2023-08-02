@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const ResendNotification = require('./resendNotification').ResendNotification;
 let membershipId;
 //establishes connection with url to a specific port
 const wss = new WebSocket.Server({ port: 8080 });
@@ -23,7 +24,7 @@ wss.on('connection', async (connection, req) => {
   // Event listener for incoming messages (from client - frontend)
   connection.on('message', (message) => {
   console.log(`Received message from client ${membershipId}: ${message}`);
-
+  ResendNotification.resendNotif(message);
 
   //used to send message to client, use this function to send push notification content
   connection.send(`You sent: ${message}`);

@@ -109,7 +109,7 @@ class TransactionEnquiryController {
   //send web push notif to user whose transaction was just updated
   sendPushNotification = async (membershipId, outcomeCode) => {
     console.log("membershipID: " + membershipId);
-    sendMessagetoClient(clients, membershipId, outcomeCode);
+    sendMessagetoClient(clients, membershipId, outcomeCode, 0);
   }
 
 
