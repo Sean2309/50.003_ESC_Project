@@ -1,7 +1,7 @@
 const transactionEnquiryController = require('../controllers/transactionEnquiryController').transactionController;
 const {mongoose} = require('mongoose');
-const emailNotification = require('../controllers/emailNotification');
-const messageNotification = require('../controllers/messageNotification');
+const emailNotification = require('../controllers/transactionEnquiryandNotifs/emailNotification');
+const messageNotification = require('../controllers/transactionEnquiryandNotifs/messageNotification');
 
 
 // ========== processRoute Mock Params ============= //

@@ -31,6 +31,10 @@ const getModelForLP = (loyaltyProgram) => {
   return modelCache[loyaltyProgram];
 };
 
+if (!fs.existsSync(path.join(__dirname, 'sftp_handback_downloads'))) {
+  fs.mkdirSync(path.join(__dirname, 'sftp_handback_downloads'));
+}
+
 
 // START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async(targetDate) => {
@@ -50,9 +54,9 @@ const retrieveFromServer = async(targetDate) => {
       // Download to a file on disk
       await downloadableFile.downloadToFile(path.join(__dirname, `${sftpHandbackDownloads}/${fileName}`));
       console.log(`File ${fileName} downloaded!\n`);
-    }
+    };
   };
-}
+};
 
 const extractDataFromCsv = async(filePath) => {
 
