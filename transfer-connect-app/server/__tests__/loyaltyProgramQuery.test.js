@@ -13,10 +13,14 @@ const currencyRateModel = require('../models/currencyRateModel');
 */
 jest.mock('../models/loyaltyProgramQueryModel', () => ({
   find: jest.fn(),
+  deleteMany: jest.fn(),
+  create: jest.fn()
 }));
 
 jest.mock('../models/currencyRateModel', () => ({
   find: jest.fn(),
+  deleteMany: jest.fn(),
+  create: jest.fn()
 }));
 // =========== Test Suite and Cases ======== //
 
