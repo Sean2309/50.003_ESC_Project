@@ -37,7 +37,7 @@ describe('createTransferForm function', () => {
     expect(TransferForm.collection.name).toEqual(loyaltyProgramId);
   })
 
-  test('TransferForm instance should have all present fields given by mockFormData', () => {
+  test('TransferForm instance should have all present fields given by form data', () => {
 
     // mock form data to simulate sending of data from bank app client
     const mockFormData = {
@@ -48,6 +48,8 @@ describe('createTransferForm function', () => {
       notificationMethod: "1",
       emailAddress: "mock@email.com",
       phoneNumber: "88100110",
+      partnerCode: "20010",
+      systemId: "120203"
     };
 
     // create a document and immediately convert it back to a plain object, 
@@ -56,6 +58,7 @@ describe('createTransferForm function', () => {
     // delete _id key that is created for each mongodb document
     delete transferForm._id;
 
+    console.log(transferForm)
     expect(transferForm).toMatchObject(mockFormData);
   })
 })
@@ -132,6 +135,17 @@ describe('transferFormController', () => {
     expect(mockResponse.status).toEqual(201);
     expect(mockResponse.data).toEqual(mockFormData);
 
+  })
+  
+  test("generateReferenceNumber generates a random number", () => {
+    const referenceNumber = transferFormController.generateReferenceNumber();
+    
+    expect(typeof referenceNumber).toBe('number');
+    
+  })
+  
+  test("submitTransferForm returns status code 500 if the submission fails", () => {
+    
   })
 
 })
