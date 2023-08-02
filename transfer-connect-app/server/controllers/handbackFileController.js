@@ -1,6 +1,6 @@
 // Importing files/modules
 require('dotenv').config({path: __dirname + '/../.env'});
-const sftpModel = require('../models/sftpModel');
+const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 const mongoose = require('mongoose');
 const fs = require(`fs`);
 const csvParser = require(`csv-parser`);
@@ -24,7 +24,7 @@ const modelCache = {};
 // Function to get the model for a given Loyalty Program
 const getModelForLP = (loyaltyProgram) => {
   if (!modelCache[loyaltyProgram]) {
-    const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, sftpModel);
+    const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, transactionEnquiryModel);
     modelCache[loyaltyProgram] = model;
   }
   return modelCache[loyaltyProgram];

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
-const sftpModel = require('../models/sftpModel');
+const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 const handbackFileController = require('../controllers/handbackFileController');
 const filePath = path.join(__dirname, `../controllers/testCsvs`);
 const config = require('../utils/config');
@@ -170,7 +170,7 @@ describe('uploadFilesToMongoDB function check', () => {
     return new Promise((resolve, reject) => {
       // Writing to mongo db
       mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
-      const Model = mongoose.model('testhandbacks', sftpModel);
+      const Model = mongoose.model('testhandbacks', transactionEnquiryModel);
   
       const rawdataFromCSV = [];
       fs.createReadStream(testCsvPath)
