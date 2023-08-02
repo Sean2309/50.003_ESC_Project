@@ -1,10 +1,14 @@
+const axios = require('axios');
+const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
+const {BANK_NAME} = require('../utils/config.js');
+
 const mongoose = require('mongoose');
 const transactionSchema = require('../models/transactionEnquiryModel').transactionSchema;
 const clients = require('./notificationServerController.js').clients;
 const sendMessagetoClient = require('./notificationSendingController.js').sendMessagetoClient;
 
-const transactionEnquiryControllerClass = require('./transactionEnquiryController.js').TransactionEnquiryController;
-const transactionEnquiryController = new transactionEnquiryControllerClass(true);
+const eventEmitter = require('./eventEmitter.js').eventEmitter;
+
 
 class ResendNotification {
     constructor(){};
@@ -37,7 +41,7 @@ class ResendNotification {
                 id_list.push(transaction.referenceNumber);
             }
         //query from TC
-        let response_data = await transactionEnquiryController.makeApiRequest(id_list, loyaltyProgramName);
+        let response_data = await this.makeApiRequest(id_list, loyaltyProgramName);
         return response_data;
         }
         else {
@@ -49,6 +53,42 @@ class ResendNotification {
             return
         }
     }
+
+    //copy and pasting to avoid circular imports zzzz
+    makeApiRequest = async (id_list, loyaltyprogram) => {
+    
+        //return if no transaction to poll for
+        if (id_list.length === 0) {
+          console.log(`${loyaltyprogram} id_list is null`)
+          return;
+        }
+        var response;
+    
+        //id_list is obtained from getReferenceNumbers
+        let string_ids = (id_list).join();
+    
+        ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
+        let url = TRANSFER_CONNECT_API_URL + '/transferconnect/check/' + BANK_NAME +'/' + loyaltyprogram;
+        url = url + "/" + string_ids;
+        console.log(url);
+        try {
+          response = await axios.get(url); // Await the API response
+          if(response.data == null || response.data == undefined){
+            console.log("API request response is null");
+            return;
+          }
+          else{
+            console.log("returning response.data");
+            console.log(response.data);
+            return response.data;
+          }
+          
+        } catch (error) {
+          // Handle any errors
+          console.error(error);
+          return error;
+        };
+      }
 
     handleNullData = async (response_data) => {
         if (response_data == null || response_data == undefined){
@@ -67,6 +107,14 @@ class ResendNotification {
         await this.handleNullData(response_data);
     }
 }
+
+// Listen for the custom event 'dataSent'
+eventEmitter.on('messageReceived', (dataReceived) => {
+    console.log('Data received in resendNotification.js');
+    console.log('Received data:', dataReceived);
+      ResendNotification.resendNotif(dataReceived);
+  });
+
 
 //export as class
 module.exports = {ResendNotification};

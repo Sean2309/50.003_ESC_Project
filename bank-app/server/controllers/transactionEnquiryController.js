@@ -130,7 +130,7 @@ class TransactionEnquiryController {
           };
         console.log('\n');
       }
-    }, 5 * 1000); // 5 seconds
+    }, 100 * 1000); // 5 seconds
   }
 
   //used for testing

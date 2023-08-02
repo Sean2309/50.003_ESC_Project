@@ -49,9 +49,6 @@ const NotificationLogic = () =>{
     document.getElementById('resendNotif').addEventListener('click', handleButtonClick);
 
     // Clean up the WebSocket connection on component unmount
-    return () => {
-      socket.close();
-    };
   }, []);
 
   return null; // This component doesn't render anything, so return null.
