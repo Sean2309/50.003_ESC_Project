@@ -24,13 +24,13 @@ class TransactionEnquiryController {
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
 
     //remember to define variables first
-    let reference_numbers = [];
+    let systemIds = [];
     try{
     //find those that don't have outcomeCode declared or values are empty
     let transactions = await collection_connection.find({ "outcomeCode": { $exists: false} }, { "systemId": 1, "_id": 0});
       if (transactions.length != 0) {
         console.log(`Found reference numbers for ${loyaltyprogram}:`, transactions);
-        reference_numbers = (transactions.map(transaction => transaction['systemId']));
+        systemIds = (transactions.map(transaction => transaction['systemId']));
       } else {
         console.log(`No reference numbers found for ${loyaltyprogram}`);
       }
@@ -39,7 +39,7 @@ class TransactionEnquiryController {
       console.error(`Error finding reference numbers for ${loyaltyprogram}:`, error);
       return error;
     };
-    return reference_numbers;
+    return systemIds;
   }
 
   
@@ -90,8 +90,8 @@ class TransactionEnquiryController {
       let systemId = data["systemId"];
       let outcome_code = data["outcomeCode"];
       let membershipId = data["membershipId"];
-      this.updateOutcomeCodes(reference_number, outcome_code, loyaltyprogram);
-      console.log(`Updated ${reference_number} of ${loyaltyprogram} with outcomeCode ${outcome_code}`);
+      this.updateOutcomeCodes(systemId, outcome_code, loyaltyprogram);
+      console.log(`Updated ${systemId} of ${loyaltyprogram} with outcomeCode ${outcome_code}`);
       //membershipId used for WebSocket connection
       this.sendPushNotification(membershipId, outcome_code);
     };
@@ -99,10 +99,10 @@ class TransactionEnquiryController {
   }
 
   //update bank app database if outcomeCode is updated
-  updateOutcomeCodes = async (reference_number, outcome_code, loyaltyprogram) => {
+  updateOutcomeCodes = async (systemId, outcome_code, loyaltyprogram) => {
     //specific loyaltyprogram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
-    collection_connection.updateOne({ "systemId": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
+    collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
   }
 
 
@@ -130,7 +130,7 @@ class TransactionEnquiryController {
           };
         console.log('\n');
       }
-    }, 100 * 1000); // 5 seconds
+    }, 5 * 1000); // 5 seconds
   }
 
   //used for testing

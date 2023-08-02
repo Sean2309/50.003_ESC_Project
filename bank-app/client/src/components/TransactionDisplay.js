@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import TransferForm from './TransferForm';
 import '../css/loyalty-styles.css';
 
 function LoyaltyProgram(props) {

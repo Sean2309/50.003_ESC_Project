@@ -15,7 +15,7 @@ jest.mock('axios', () => ({
 //used for testing makeApiRequest
 jest.mock('../utils/config', () => ({
     TRANSFER_CONNECT_API_URL: 'localhost',
-    BANK_NAME: 'DBS'
+    PARTNER_CODE: 'DBS'
 }));
 
 
@@ -25,7 +25,7 @@ jest.mock('../utils/config', () => ({
 const mockResponse_data = [
     {
         "transferAmount": 10000,
-        "referenceNumber": "0000",
+        "systemId": "0000",
         "outcomeCode": "0022",
         "notificationMethod": 0,
         "emailAddress": "example@gmail.com",
