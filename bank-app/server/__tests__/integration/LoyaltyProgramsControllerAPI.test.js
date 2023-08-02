@@ -25,4 +25,4 @@ describe('LoyaltyProgramsController - API Integration', () => {
         // expect(response.body.loyaltyPrograms).toHaveLength(2);
     
 });
-  });z
+  });

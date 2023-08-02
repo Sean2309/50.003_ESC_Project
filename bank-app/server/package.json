@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "bank app ",
   "main": "index.js",
-  "jest": {
-    "verbose": true
-  },
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },

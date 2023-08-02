@@ -13,7 +13,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 
 // connect to mongoDB cloud
-mongoose.connect(config.MONGODB_URL).catch((err) => console.error('error'))
+mongoose.connect(config.MONGODB_URL, config.MONGODB_OPTIONS).catch((err) => console.error('error'))
 
 // enable CORS for all routes
 // to allow request from different origins (domain, port etc)

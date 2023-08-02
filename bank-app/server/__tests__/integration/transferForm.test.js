@@ -1,7 +1,7 @@
 const { default: mongoose } = require('mongoose');
 const transferFormController = require('../../controllers/transferFormController');
 const createTransferForm = require('../../models/transferForm');
-const { MONGODB_URL } = require('../../utils/config');
+const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
 
 const loyaltyProgramId = "integrationTestMock";
 
@@ -29,9 +29,11 @@ class MockResponse {
 }
 
 // =========== Test Suite and Cases ======== //
+beforeAll(async () => {
+    await mongoose.connect(MONGODB_URL, MONGODB_OPTIONS);
+})
 
 beforeEach(async () => {
-    await mongoose.connect(MONGODB_URL).catch((err) => console.error('error'));
     const MockTransactionModel = createTransferForm(loyaltyProgramId);
     await MockTransactionModel.deleteMany({});
 })
@@ -108,13 +110,12 @@ describe('transferFormController', () => {
         const response = new MockResponse();
         next = jest.fn();
 
-        await mongoose.connection.close();
+        jest.spyOn(transferFormController, 'postTransaction').mockRejectedValue(new Error);
 
         await transferFormController.submitTransferForm(request, response, next);
 
         expect(response.status).toEqual(500);
 
-        await mongoose.connect(MONGODB_URL).catch((err) => console.error('error'));
 
     })
 
