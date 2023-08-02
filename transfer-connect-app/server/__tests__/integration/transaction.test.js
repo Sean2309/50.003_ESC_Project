@@ -1,0 +1,124 @@
+const { default: mongoose } = require('mongoose');
+const transactionController = require('../../controllers/transactionController');
+const { MONGODB_URL } = require('../../utils/config');
+const createTransactionModel = require('../../models/transaction');
+const loyaltyProgramId = 'MockId';
+
+// Mock Response class to simulate responses
+class MockResponse {
+    constructor() {
+        this.status;
+        this.data;
+    }
+
+    status(statusCode) {
+        this.status = statusCode;
+        return this;
+    }
+
+    json(data) {
+        this.data = data;
+        return this;
+    }
+    
+    sendStatus(statusCode) {
+        this.status = statusCode;
+        return this;
+    }
+}
+
+// =========== Test Suite and Cases ======== //
+
+beforeAll(async () => {
+    await mongoose.connect(MONGODB_URL).then((res) => console.log('connected')).catch((err) => console.error('error'));
+    const MockTransactionModel = createTransactionModel(loyaltyProgramId);
+    await MockTransactionModel.deleteMany({});
+})
+
+afterEach(async () => {
+    const MockTransactionModel = createTransactionModel(loyaltyProgramId);
+    await MockTransactionModel.deleteMany({});
+    
+    try {
+        await MockTransactionModel.collection.drop();
+    }
+    catch (error) {
+        // do nothing 
+    }
+})
+
+
+
+describe('transactionController', () => {
+    test("saveTransactionToDb saves a document to db", async () => {
+
+        const mockTransactionData = {
+            memberName: "MockUser",
+            membershipId: "01",
+            transferDate: "11-11-11",
+            transferAmount: 2000,
+            notificationMethod: "1",
+            referenceNumber: "210200011",
+            emailAddress: "Mock@email.com",
+            phoneNumber: "88100110",
+            systemId: loyaltyProgramId,
+            partnerCode: "DBSSG"
+        };
+        
+        const MockTransactionModel = createTransactionModel(loyaltyProgramId);
+
+        await transactionController.saveTransactionToDb(loyaltyProgramId, mockTransactionData);
+        
+        // Now, we find the same document via systemId
+        
+        const retrievedTransaction = await MockTransactionModel.findOne( {systemId: loyaltyProgramId } );
+        
+        // Verify that the retrieved Transaction is equivalent to our original
+        
+        delete retrievedTransaction._id;
+        
+        expect(retrievedTransaction).toMatchObject(mockTransactionData);
+
+    })
+
+    test("saveTransactionToDb throws error when transaction is missing fields", async () => {
+
+        const mockTransactionData = {
+            memberName: "MockUser",
+            transferAmount: 2000,
+            partnerCode: "DBSSG"
+        };
+        
+        
+        expect.assertions(1);
+        try {
+          const res = await transactionController.saveTransactionToDb(loyaltyProgramId, mockTransactionData);
+          console.log(res);
+        } catch (error) {
+          expect(error).toBeInstanceOf(mongoose.Error.ValidationError);
+        }
+        
+
+        
+    })
+    
+    test("submit transaction throws error when transaction is missing fields", async () => {
+
+        const mockTransactionData = {
+            memberName: "MockUser",
+            transferAmount: 2000,
+            partnerCode: "DBSSG"
+        };
+        
+        const request = { body: mockTransactionData, params: { loyaltyProgramId: loyaltyProgramId } };
+        
+        const response = new MockResponse();
+        
+        await transactionController.submitTransaction(request, response)
+        
+        expect(response.status).toEqual(500);
+
+        
+    })
+
+})

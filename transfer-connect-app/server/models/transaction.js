@@ -1,17 +1,47 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
-  memberName: String,
-  membershipId: String,
-  transferDate: String,
-  transferAmount: Number,
-  referenceNumber: String,
-  partnerCode: String,
+  memberName: {
+    type: String,
+    required: true
+  },
+  membershipId: {
+    type: String,
+    required: true
+  },
+  transferDate: {
+    type: String,
+    required: true
+  },
+  transferAmount: {
+    type: Number,
+    required: true,
+  },
+  referenceNumber: {
+    type: String,
+    required: true,
+  },
+  partnerCode: {
+    type: String,
+    required: true
+  },
+  notificationMethod: {
+    type: String,
+    required: true
+  },
+  emailAddress: {
+    type: String,
+    required: true
+  },
+  phoneNumber: {
+    type: String,
+    required: true
+  },
+  systemId: {
+    type: String,
+    required: true
+  },
   outcomeCode: String,
-  notificationMethod: String,
-  emailAddress: String,
-  phoneNumber: String,
-  systemId: String
 });
 
 const createTransactionModel = (loyaltyProgramId) => {

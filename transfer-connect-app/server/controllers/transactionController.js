@@ -26,7 +26,13 @@ class TransactionController {
 
     const transaction = new TransactionModel(transactionData);
 
-    await transaction.save();
+    try {
+      await transaction.save();
+    }
+    catch (error) {
+      // As it turns out, Promise errors are not propagated up, so we need to throw again
+      throw error;
+    }
   };
 
   submitTransaction = async (request, response) => {
@@ -38,7 +44,7 @@ class TransactionController {
       transactionData.systemId = this.generateSystemId();
 
       // save Transaction to DB
-      this.saveTransactionToDb(loyaltyProgramId, transactionData);
+      await this.saveTransactionToDb(loyaltyProgramId, transactionData);
 
       response.status(201).json({ systemId: transactionData.systemId });
     } catch (error) {

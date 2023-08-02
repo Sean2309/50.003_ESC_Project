@@ -1,5 +1,6 @@
-const transactionController = require('../controllers/transactionController');
-const createTransactionModel = require('../models/transaction');
+const transactionController = require('../../controllers/transactionController');
+const createTransactionModel = require('../../models/transaction');
+const mongoose = require('mongoose');
 
 const loyaltyProgramId = 'mockId';
 
@@ -43,6 +44,8 @@ describe('createTransaction function', () => {
             referenceNumber: "210200011D",
             emailAddress: "mock@email.com",
             phoneNumber: "88100110",
+            systemId: "mock",
+            partnerCode: "DBSSG"
         };
 
         // create a document and immediately convert it back to a plain object, 
@@ -52,6 +55,21 @@ describe('createTransaction function', () => {
         delete transaction._id;
 
         expect(transaction).toMatchObject(mockTransactionData);
+    })
+
+    test('TransactionModel throws error if required fields are not present', async () => {
+        // mock form data to simulate sending of data from bank app client
+        const mockTransactionData = {
+            memberName: "mockUser",
+            membershipId: "01",
+            systemId: "mock"
+        };
+
+        const transaction = new TransactionModel(mockTransactionData);
+        
+        error = transaction.validateSync();
+        
+        expect(error).toBeInstanceOf(mongoose.Error.ValidationError);
     })
 })
 
@@ -65,7 +83,9 @@ describe('transactionController', () => {
         notificationMethod: "1",
         emailAddress: "mock@email.com",
         phoneNumber: "88100110",
-        referenceNumber: "100101101D"
+        referenceNumber: "100101101D",
+        partnerCode: "DBSSG",
+        systemId: "MOCK"
     };
 
     test('submitTransaction POST handler successfully responds to POST request with correct body and params', async () => {
@@ -84,5 +104,5 @@ describe('transactionController', () => {
         
         expect(mockResponse.status).toEqual(201);
     })
-
+    
 })
