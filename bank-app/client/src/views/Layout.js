@@ -10,7 +10,9 @@ const Layout = () => {
                     </li>
                     <li>
                         <Link to="marketplace">Marketplace</Link>
-                        <Link to="Transactions">Transactions</Link>
+                    </li>
+                    <li>
+                        <Link to="transactions">Transactions</Link>
                     </li>
 
                 </ul>
