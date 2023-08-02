@@ -1,23 +1,30 @@
 const LoyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 
-const validateTransaction = async (req, res, next) => {
-  const reqBody = req.body;
-  const { loyaltyProgramId } = req.params;
+const getLoyaltyProgram = async (loyaltyProgramId) => {
+  const loyaltyProgram = await LoyaltyProgramQueryModel.findOne({ programId: loyaltyProgramId }).exec();
+  return loyaltyProgram;
+};
 
-  // Retrieve the loyalty program by its identifier (e.g., programId) from the database
+const validateTransaction = async (request, response, next) => {
+  const requestBody = request.body;
+  const { loyaltyProgramId } = request.params;
+
   try {
-    const loyaltyProgram = await LoyaltyProgramQueryModel.findOne({ programId: loyaltyProgramId }).exec();
+    // Retrieve the loyalty program by its identifier (e.g., programId) from the database
+    const loyaltyProgram = await getLoyaltyProgram(loyaltyProgramId);
+    
     if (!loyaltyProgram) {
-      return res.status(404).json({ error: 'Loyalty program not found.' });
+      return response.status(400).json({ error: 'Invalid loyaltyProgramId.' });
     }
+
     // Use the membershipFormat from the loyalty program to construct the regex for membershipId
     const membershipIdRegexFromDB = new RegExp(loyaltyProgram.membershipFormat);
 
-    if (!membershipIdRegexFromDB.test(reqBody.membershipId)) {
-      return res.status(400).json({ error: 'Invalid membershipId format for this loyalty program.' });
+    if (!membershipIdRegexFromDB.test(requestBody.membershipId)) {
+      return response.status(400).json({ error: 'Invalid membershipId format for this loyalty program.' });
     }
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error.' });
+    return response.status(500).json({ error: 'Internal server error.' });
   }
 
   next();
