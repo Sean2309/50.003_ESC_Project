@@ -51,6 +51,8 @@ afterEach(async () => {
 
 describe('transactionController', () => {
     test("saveTransactionToDb saves a document to db", async () => {
+        
+        const mockSystemId = "1001";
 
         const mockTransactionData = {
             memberName: "MockUser",
@@ -61,7 +63,7 @@ describe('transactionController', () => {
             referenceNumber: "210200011",
             emailAddress: "Mock@email.com",
             phoneNumber: "88100110",
-            systemId: loyaltyProgramId,
+            systemId: mockSystemId,
             partnerCode: "DBSSG"
         };
         
@@ -71,7 +73,7 @@ describe('transactionController', () => {
         
         // Now, we find the same document via systemId
         
-        const retrievedTransaction = await MockTransactionModel.findOne( {systemId: loyaltyProgramId } );
+        const retrievedTransaction = await MockTransactionModel.findOne({systemId: mockSystemId });
         
         // Verify that the retrieved Transaction is equivalent to our original
         
