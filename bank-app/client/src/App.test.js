@@ -1,86 +1,77 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, act } from '@testing-library/react';
 // import axiosMock from './axiosMock'; // Mock axios for testing purposes
 import TransferForm from './components/TransferForm';
 import Marketplace from './views/Marketplace';
 import LoyaltyPrograms from './components/LoyaltyPrograms';
-const axios = require('axios');
-
-// with learning from https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
-// note that we're testing specifically from an enduser's perspective
-
-// Mocked axios
-// jest.mock('axios', () => axiosMock);
-
-jest.mock('axios');
-
-test('renders marketplace', () => {
-  render(<Marketplace />);
-  const linkElement = screen.getByTestId("marketplace-container-test");
-  expect(linkElement).toBeInTheDocument();
-});
-// login test is in todo.test.js
-test('renders loyalty program interaction', () => {
-  render(<LoyaltyPrograms />);
-  const linkElement = screen.getByTestId("loyaltyprograms-test");
-  expect(linkElement).toBeInTheDocument();
-});
-
-// doesn't work yet due to button shenanigans
-// and axios testing has issues
-// I'll discuss later with transfer form people
-// https://stackoverflow.com/questions/74088726/react-testing-library-cant-find-an-element-with-a-text-even-though-its-in-the
-// https://stackoverflow.com/questions/57623153/getting-error-while-jest-the-module-factory-of-jest-mock-is-not-allowed-to
-// https://stackoverflow.com/questions/66465749/getting-axios-default-create-is-not-a-function-when-trying-to-test-a-componen
-describe('TransferForm', () => {
-  test('frontend displays the form fields correctly', () => {
-    render(<TransferForm userProfile={{}} membershipFormat="" />);
-    
-    // Ensure that the input fields and submit button are present on the screen
-    expect(screen.getByTestId('member-name'),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByTestId('member-id'),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByTestId('member-confirm'),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByTestId('transfer-amount'),  {exact:false}).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Transfer' }),  {exact:false}).toBeInTheDocument();
-  });
-});
-
-// test('', () => {
-
-// });
+import LoyaltyProgram from './components/LoyaltyProgram';
+import axios from 'axios';
 
 
-// loyaltyprogram setstates
-// unfinished as jest is complaining about wrapping setstate triggers in act()
-// but the documentation is deprecated? confused
-describe ('Unit Tests', () => {
 
-  test ('1. fetches loyalty programs and sets state correctly', async() => {
-     // Mocking the data returned by the find method
-     const mockedResponseData = [
-      {
-          programId: "GOPOINTS",
-          programName: "GoJet Points",
-          currencyName: "GoPoints",
-          processingTime: "Instant",
-          description: "Feel free to adjust this",
-          enrollmentLink: "https://www.gojet.com/member/",
-          tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-          membershipFormat: "^\\d{9}[a-zA-Z]$",
-          currencyRate: 1
-      },
+// https://jestjs.io/docs/en/api#describename-fn
+// good testing practices
+
+describe('LoyaltyPrograms Component', () => {
+  const mockedUserId = 1;
+
+  const mockedUserProfile = {
+    abcPoints : 12367,
+    emailAddress: "abc@gmail.com",
+    phoneNumber: "3267352",
+    notificationMethod: "Bank",
+    // Add other properties as needed for your test cases
+  };
+
+  const mockedLoyaltyPrograms = [
+    {
+      programId: "GOPOINTS",
+      programName: "GoJet Points",
+      currencyName: "GoPoints",
+      processingTime: "Instant",
+      description: "Feel free to adjust this",
+      enrollmentLink: "https://www.gojet.com/member/",
+      tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
+      membershipFormat: "^\\d{9}[a-zA-Z]$",
+      currencyRate: 1.2
       
-    ];
-    axios.get.mockResolvedValue({ data: mockedResponseData});
+    }
+  ];
 
-
-    render(<LoyaltyPrograms></LoyaltyPrograms>)
-
-    // Call the getLoyaltyPrograms function
-    const componentInstance = screen.getByTestId('loyaltyprograms-test');
-    await componentInstance.getLoyaltyPrograms();
-
-    expect(componentInstance.state.loyaltyProgramsData).toEqual(mockResponse.data.loyaltyPrograms);
+  beforeEach(() => {
+    jest.mock('axios');
+    // Mock the axios.get function to return fake responses
+    axios.get = jest.fn().mockResolvedValue((url) => {
+      if (url === 'http://localhost:3001/api/userprofile') {
+        return { data: mockedUserProfile };
+      } else if (url === 'http://localhost:3001/api/loyaltyprograms') {
+        return { data: { loyaltyPrograms: mockedLoyaltyPrograms } };
+      }
+      return Promise.reject(new Error('Invalid URL'));
+    });
   });
-  
+
+  it('renders loyalty programs after data is fetched', async () => {
+    // Render the LoyaltyPrograms component with mocked data
+    const spy = jest.spyOn(LoyaltyPrograms.prototype, 'renderLoyaltyPrograms');
+
+    await act(async () => {
+      render(<LoyaltyPrograms userId={mockedUserId} />);
+    });
+
+    
+    await expect(spy).toHaveBeenCalled();
+
+    // Wait for the component to fetch data and re-render
+
+    // Assert the loyalty programs are rendered
+    expect(screen.getAllByTestId('loyaltyprograms-test')).toHaveLength(mockedLoyaltyPrograms.length);
+
+    expect(screen.getByText('Loyalty Programs')).toBeInTheDocument();
+
+    // note that loyalty program details like gojet points text etc will not be rendered in this test
+    // because the component's nested inside loyalty programs logic
+    // but it's a separate component
+    // see this for details https://stackoverflow.com/questions/65618080/react-testing-library-nested-components-keep-parent-from-rendering-properly
+  });
 });
