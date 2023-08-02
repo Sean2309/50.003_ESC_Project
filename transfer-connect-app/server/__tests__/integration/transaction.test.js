@@ -29,8 +29,8 @@ class MockResponse {
 
 // =========== Test Suite and Cases ======== //
 
-beforeAll(async () => {
-    await mongoose.connect(MONGODB_URL).then((res) => console.log('connected')).catch((err) => console.error('error'));
+beforeEach(async () => {
+    await mongoose.connect(MONGODB_URL).catch((err) => console.error('error'));
     const MockTransactionModel = createTransactionModel(loyaltyProgramId);
     await MockTransactionModel.deleteMany({});
 })
@@ -92,8 +92,8 @@ describe('transactionController', () => {
         
         expect.assertions(1);
         try {
+          // Since our transaction data is incomplete, mongoose validate hook will throw a ValidationError when .save() is called in saveTransactionToDb
           const res = await transactionController.saveTransactionToDb(loyaltyProgramId, mockTransactionData);
-          console.log(res);
         } catch (error) {
           expect(error).toBeInstanceOf(mongoose.Error.ValidationError);
         }
@@ -102,7 +102,7 @@ describe('transactionController', () => {
         
     })
     
-    test("submit transaction throws error when transaction is missing fields", async () => {
+    test("submitTransaction throws error when transaction is missing fields", async () => {
 
         const mockTransactionData = {
             memberName: "MockUser",
@@ -117,8 +117,50 @@ describe('transactionController', () => {
         await transactionController.submitTransaction(request, response)
         
         expect(response.status).toEqual(500);
+ 
+    })
+    
+    test("submitTransaction successfully saves a transaction to db and responds with systemId and satus code 201", async () => {
 
+        const mockTransactionData = {
+            memberName: "MockUser",
+            membershipId: "01",
+            transferDate: "11-11-11",
+            transferAmount: 2000,
+            notificationMethod: "1",
+            referenceNumber: "210200011",
+            emailAddress: "Mock@email.com",
+            phoneNumber: "88100110",
+            partnerCode: "DBSSG"
+        };
         
+        const mockSystemId = "1001";
+        
+        jest.spyOn(transactionController, 'generateSystemId').mockReturnValueOnce(mockSystemId);
+
+        const request = { body: mockTransactionData, params: { loyaltyProgramId: loyaltyProgramId } };
+        
+        const response = new MockResponse();
+        
+        await transactionController.submitTransaction(request, response);
+        
+        expect(response.status).toEqual(201);
+
+        expect(response.data.systemId).toEqual(mockSystemId);
+    
+        const MockTransactionModel = createTransactionModel(loyaltyProgramId);
+        
+        retrievedTransaction = await MockTransactionModel.findOne({ systemId: mockSystemId });
+        
+        delete retrievedTransaction._id;
+        
+        mockTransactionData.systemId = mockSystemId;
+        
+        expect(retrievedTransaction).toMatchObject(mockTransactionData);
+        
+        
+
+
     })
 
 })

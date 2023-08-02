@@ -48,7 +48,7 @@ class TransactionController {
 
       response.status(201).json({ systemId: transactionData.systemId });
     } catch (error) {
-      response.sendStatus(500);
+      response.status(500).json({ error: 'Internal Server Error' });
     }
   };
 }
