@@ -103,4 +103,57 @@ describe('Test getLoyaltyPrograms function', () => {
       expect(loyaltyProgramsModel.create).toHaveBeenCalledWith(loyaltyProgramsPromise);
 
     });
+
+
+    test('4. updateLoyaltyPrograms should handle errors ', async () => {
+      const errorMessage = 'API Error';
+  
+      // Mock axios.get to throw an error
+      axios.get.mockRejectedValue(new Error(errorMessage));
+  
+      // Call the method to be tested
+      await loyaltyProgramsController.updateLoyaltyPrograms();
+  
+      // Check if axios.get was called with the correct URL and partner code
+      expect(axios.get).toHaveBeenCalledWith('http://localhost:3003/api/loyaltyprograms/DBSSG');
+  
+      // Check if deleteMany was not called since there was an error
+      expect(loyaltyProgramsModel.deleteMany).not.toHaveBeenCalled();
+  
+      // Check if create was not called since there was an error
+      expect(loyaltyProgramsModel.create).not.toHaveBeenCalled();
+    });  
+
+    test('5. populatedb works ', async () => {
+      const mockLoyaltyPrograms = [
+        {
+          programId: 'GOPOINTS',
+          programName: 'GoJet Points',
+          currencyName: 'GoPoints',
+          processingTime: 'Instant',
+          description: 'Feel free to adjust this',
+          enrollmentLink: 'https://www.gojet.com/member/',
+          tncLink: 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html',
+          membershipFormat: '^\\d{9}[a-zA-Z]$',
+          currencyRate: 1,
+        },
+        {
+          programId: 'ASIAMILES',
+          programName: 'Asia Miles',
+          currencyName: 'Asia Miles',
+          processingTime: 'Instant',
+          description: 'Feel free to adjust this',
+          enrollmentLink: 'https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html',
+          tncLink: 'https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html',
+          membershipFormat: '^\\d{11}$',
+          currencyRate: 1.1,
+        },
+      ];
+
+        await controller.populateDb();
+        expect(loyaltyProgramsModel.deleteMany).toHaveBeenCalledTimes(1);
+        expect(loyaltyProgramsModel.create).toHaveBeenCalledWith(mockLoyaltyPrograms);
+
+
+    });
   });
