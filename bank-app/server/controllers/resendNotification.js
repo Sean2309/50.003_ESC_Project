@@ -7,16 +7,21 @@ const transactionSchema = require('../models/transactionEnquiryModel').transacti
 const clients = require('./notificationServerController.js').clients;
 const sendMessagetoClient = require('./notificationSendingController.js').sendMessagetoClient;
 
-const eventEmitter = require('./eventEmitter.js').eventEmitter;
+
 
 
 class ResendNotification {
     constructor(){};
 
     processClientMessage = async (message) => {
-        const transferAmount = message.transferAmount;
-        const loyaltyProgramName = message.loyaltyProgramName;
-        const membershipId = message.membershipId;
+        const messageObject = JSON.parse(message);
+        console.log(messageObject);
+        const transferAmount = messageObject.transferAmount;
+        console.log(transferAmount);
+        const loyaltyProgramName = messageObject.loyaltyProgramName;
+        const membershipId = messageObject.membershipId;
+        console.log(loyaltyProgramName)
+        console.log(membershipId);
         return {transferAmount, loyaltyProgramName, membershipId};
     }
 
@@ -106,8 +111,10 @@ class ResendNotification {
         let response_data = await this.processTransactionsParam(transactions, loyaltyProgramName);
         await this.handleNullData(response_data);
     }
+
 }
 
+/*
 // Listen for the custom event 'dataSent'
 eventEmitter.on('messageReceived', (dataReceived) => {
     console.log('Data received in resendNotification.js');
@@ -116,5 +123,9 @@ eventEmitter.on('messageReceived', (dataReceived) => {
   });
 
 
+*/
+
+resendNotifClass = new ResendNotification()
+
 //export as class
-module.exports = {ResendNotification};
+module.exports = {resendNotifClass};

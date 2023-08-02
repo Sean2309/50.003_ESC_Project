@@ -13,7 +13,7 @@ const membershipId = '1230oij'
       const client = WebSocket(url);
       client.open(done);
     });
-  
+
     afterAll(() => {
       // Close the WebSocket client after the tests
       client.close();
@@ -23,7 +23,7 @@ const membershipId = '1230oij'
 
         //jest.replaceProperty(WebSocket, 'OPEN', true)
         const logSpy = await jest.spyOn(global.console, 'log');
-    
+
 
         expect(logSpy.mock.calls).toHaveBeenCalledWith('WebSocket connection established')
 

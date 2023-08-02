@@ -21,7 +21,7 @@ const NotificationLogic = () =>{
         loyaltyProgramName: loyaltyProgramName,
         membershipId: membershipID
       };
-      socket.send(data_to_server);
+      socket.send(JSON.stringify(data_to_server));
     };
    
     // Event listener for connection open

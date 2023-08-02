@@ -126,7 +126,7 @@ describe ('Unit Tests for startEnquiry', () => {
 
       jest.useFakeTimers();
 
-      const transactionEnquiryControllerTrue = new TransactionEnquiryController(true);
+      const transactionEnquiryControllerTrue = new transactionEnquiryControllerClass(true);
 
       const mockgetReferenceNumbers = jest.spyOn(transactionEnquiryControllerTrue, "getReferenceNumbers").mockResolvedValue();
       const mockmakeApiRequest = jest.spyOn(transactionEnquiryControllerTrue, "makeApiRequest").mockResolvedValue();
@@ -156,7 +156,7 @@ describe ('Unit Tests for startEnquiry', () => {
 
       jest.useFakeTimers();
 
-      const transactionEnquiryControllerTrue = new TransactionEnquiryController(true);
+      const transactionEnquiryControllerTrue = new transactionEnquiryControllerClass(true);
 
       const mockgetReferenceNumbers = jest.spyOn(transactionEnquiryControllerTrue, "getReferenceNumbers").mockResolvedValue();
       const mockmakeApiRequest = jest.spyOn(transactionEnquiryControllerTrue, "makeApiRequest").mockResolvedValue();
