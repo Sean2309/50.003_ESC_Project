@@ -7,14 +7,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const transactionEnquiryControllerClass = require('./controllers/transactionEnquiryController').TransactionEnquiryController;
 const transactionEnquiryController = new transactionEnquiryControllerClass(true);
-
+const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
 
 const app = express();
 
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL,  {
-    dbName: config.BANK_NAME, // Specify the database name, edit this accordingly
+    dbName: config.PARTNER_CODE, // Specify the database name, edit this accordingly
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then((res) => console.log('connected')).catch((err) => console.error('error'))
@@ -28,6 +28,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(transactionEnquiryController.startEnquiry);
+app.use('/api/transactionsDisplay', transactionEnquiryRouter);
 
 app.listen(config.PORT, () => {
     console.log(`Server running on port ${config.PORT}`);

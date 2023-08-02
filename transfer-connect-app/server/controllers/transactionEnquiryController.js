@@ -19,7 +19,7 @@ class TransactionEnquiryController {
     }
     console.log(id.loyalty_program);
     console.log(id.bank_app);
-    console.log(id.referencenumber);
+    console.log(id.systemId);
 
     //connections to specific DB and collection
     var bank_name = id.bank_app;
@@ -33,7 +33,7 @@ class TransactionEnquiryController {
     }
     
     //pass in reference numbers
-    const id_list = id.referencenumber.split(",");
+    const id_list = id.systemId.split(",");
     console.log(id_list);
     const transactions = await this.getOutcomeCode(collection_connection, id_list, bank_name, loyalty_program_name);
 
@@ -64,11 +64,11 @@ class TransactionEnquiryController {
 
   find_transaction = async(collection_connection, id, bank_name) => {
     //use .lean().exec() to return an obj instead of document
-    //check if referenceNumber has outcomeCode field + not empty
+    //check if systemId has outcomeCode field + not empty
     try {
     console.log("find_transaction")
     console.log(id)
-    let user = await collection_connection.find({"referenceNumber": id, "outcomeCode":{$exists: true, $ne:""}, "partnerCode": bank_name}, {"outcomeCode": 1, "referenceNumber": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress" : 1, "transferAmount" : 1, "membershipId": 1 }).lean().exec()
+    let user = await collection_connection.find({"systemId": id, "outcomeCode":{$exists: true, $ne:""}, "partnerCode": bank_name}, {"outcomeCode": 1, "systemId": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress" : 1, "transferAmount" : 1, "membershipId": 1 }).lean().exec()
     return user;
     } catch(error) {
       //can change this to throw status code

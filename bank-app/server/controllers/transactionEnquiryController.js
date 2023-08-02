@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
-const {BANK_NAME} = require('../utils/config.js');
+const {PARTNER_CODE} = require('../utils/config.js');
 const { mongoose } = require('mongoose');
 const transactionSchema = require('../models/transactionEnquiryModel.js').transactionSchema;
 const loyaltyprograms = require('../models/transactionEnquiryModel.js').loyaltyprograms;
@@ -27,10 +27,10 @@ class TransactionEnquiryController {
     let reference_numbers = [];
     try{
     //find those that don't have outcomeCode declared or values are empty
-    let transactions = await collection_connection.find({ "outcomeCode": { $exists: false} }, { "referenceNumber": 1, "_id": 0});
+    let transactions = await collection_connection.find({ "outcomeCode": { $exists: false} }, { "systemId": 1, "_id": 0});
       if (transactions.length != 0) {
         console.log(`Found reference numbers for ${loyaltyprogram}:`, transactions);
-        reference_numbers = (transactions.map(transaction => transaction['referenceNumber']));
+        reference_numbers = (transactions.map(transaction => transaction['systemId']));
       } else {
         console.log(`No reference numbers found for ${loyaltyprogram}`);
       }
@@ -57,7 +57,7 @@ class TransactionEnquiryController {
     let string_ids = (id_list).join();
 
     ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
-    let url = TRANSFER_CONNECT_API_URL + '/transferconnect/check/' + BANK_NAME +'/' + loyaltyprogram;
+    let url = TRANSFER_CONNECT_API_URL + '/transferconnect/check/' + PARTNER_CODE +'/' + loyaltyprogram;
     url = url + "/" + string_ids;
     console.log(url);
     try {
@@ -87,7 +87,7 @@ class TransactionEnquiryController {
     }
     else{
     for (const data of response_data) {
-      let reference_number = data["referenceNumber"];
+      let systemId = data["systemId"];
       let outcome_code = data["outcomeCode"];
       let membershipId = data["membershipId"];
       this.updateOutcomeCodes(reference_number, outcome_code, loyaltyprogram);
@@ -102,7 +102,7 @@ class TransactionEnquiryController {
   updateOutcomeCodes = async (reference_number, outcome_code, loyaltyprogram) => {
     //specific loyaltyprogram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyprogram, transactionSchema, loyaltyprogram);
-    collection_connection.updateOne({ "referenceNumber": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
+    collection_connection.updateOne({ "systemId": reference_number }, { $set: { "outcomeCode": outcome_code } }).exec();
   }
 
 

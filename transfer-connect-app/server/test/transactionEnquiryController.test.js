@@ -6,8 +6,8 @@ const messageNotification = require('../controllers/messageNotification');
 
 // ========== processRoute Mock Params ============= //
 
-    const req1 = { params: { loyalty_program: 'AirAsia', bank_app: 'DBS', referencenumber: '0000' } };
-    const req2 = { params: { loyalty_program: 'AirAsia', bank_app: 'DBS', referencenumber: '0000,0001' } };
+    const req1 = { params: { loyalty_program: 'AirAsia', bank_app: 'DBS', systemId: '0000' } };
+    const req2 = { params: { loyalty_program: 'AirAsia', bank_app: 'DBS', systemId: '0000,0001' } };
     const res = { send: jest.fn() };
 
 // =========== Mock data for getOutcomeCodes ==========// 
@@ -15,7 +15,7 @@ const messageNotification = require('../controllers/messageNotification');
 const mockgetOutcomeCodeSuccessData = [
     {
         "transferAmount": 10000,
-        "referenceNumber": "0000",
+        "systemId": "0000",
         "outcomeCode": "0022",
         "notificationMethod": 0,
         "emailAddress": "example@gmail.com",
