@@ -4,6 +4,7 @@ import { render, fireEvent, screen, act } from '@testing-library/react';
 import TransferForm from './components/TransferForm';
 import Marketplace from './views/Marketplace';
 import LoyaltyPrograms from './components/LoyaltyPrograms';
+import LoyaltyProgram from './components/LoyaltyProgram';
 import axios from 'axios';
 
 
@@ -14,13 +15,13 @@ import axios from 'axios';
 describe('LoyaltyPrograms Component', () => {
   const mockedUserId = 1;
 
-  const mockedUserProfile = [{
+  const mockedUserProfile = {
     abcPoints : 12367,
     emailAddress: "abc@gmail.com",
     phoneNumber: "3267352",
     notificationMethod: "Bank",
     // Add other properties as needed for your test cases
-  }];
+  };
 
   const mockedLoyaltyPrograms = [
     {
@@ -33,6 +34,7 @@ describe('LoyaltyPrograms Component', () => {
       tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
       membershipFormat: "^\\d{9}[a-zA-Z]$",
       currencyRate: 1.2
+      
     }
   ];
 
@@ -51,19 +53,25 @@ describe('LoyaltyPrograms Component', () => {
 
   it('renders loyalty programs after data is fetched', async () => {
     // Render the LoyaltyPrograms component with mocked data
+    const spy = jest.spyOn(LoyaltyPrograms.prototype, 'renderLoyaltyPrograms');
+
     await act(async () => {
       render(<LoyaltyPrograms userId={mockedUserId} />);
     });
+
+    
+    await expect(spy).toHaveBeenCalled();
 
     // Wait for the component to fetch data and re-render
 
     // Assert the loyalty programs are rendered
     expect(screen.getAllByTestId('loyaltyprograms-test')).toHaveLength(mockedLoyaltyPrograms.length);
-    console.log(mockedLoyaltyPrograms.length)
-    console.log(mockedLoyaltyPrograms)
 
-    // You can also test the content of rendered components if needed
     expect(screen.getByText('Loyalty Programs')).toBeInTheDocument();
-    // GOPOINTS DOESN'T SHOW UP YET
+
+    // note that loyalty program details like gojet points text etc will not be rendered in this test
+    // because the component's nested inside loyalty programs logic
+    // but it's a separate component
+    // see this for details https://stackoverflow.com/questions/65618080/react-testing-library-nested-components-keep-parent-from-rendering-properly
   });
 });
