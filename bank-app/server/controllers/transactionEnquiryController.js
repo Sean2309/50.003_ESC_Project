@@ -16,22 +16,76 @@ class TransactionEnquiryController {
     }
   }
 
+  populateTransactions = async () => {
+    const transactionModel = mongoose.model("AirAsia", transactionSchema, "AirAsia");
+    
+    await transactionModel.deleteMany({});
+
+    const transactions = [
+      {
+        "membershipId": "1234",
+        "memberName": "keith low",
+        "transferDate": "11-11-11",
+        "transferAmount": 300,
+        "referenceNumber": "123132",
+        "partnerCode": "DBSSG",
+        "outcomeCode": "1",
+        "notificationMethod": "0",
+        "emailAddress": "email@address.com",
+        "phoneNumber": "88910101",
+        "systemId": "1"
+      },
+      {
+        "membershipId": "1234",
+        "memberName": "keith low",
+        "transferDate": "11-11-11",
+        "transferAmount": 300,
+        "referenceNumber": "123132",
+        "partnerCode": "DBSSG",
+        "outcomeCode": "1",
+        "notificationMethod": "0",
+        "emailAddress": "email@address.com",
+        "phoneNumber": "88910101",
+        "systemId": "3"
+      },
+      {
+        "membershipId": "1234",
+        "memberName": "keith low",
+        "transferDate": "11-11-11",
+        "transferAmount": 300,
+        "referenceNumber": "123132",
+        "partnerCode": "DBSSG",
+        "outcomeCode": "1",
+        "notificationMethod": "0",
+        "emailAddress": "email@address.com",
+        "phoneNumber": "88910101",
+        "systemId": "2"
+      }
+    ]
+    
+    await transactionModel.create(transactions);
+
+  }
+
   getUserTransactions = async (request, response) => {
     const userId = request.params.userId;
 
     // mock transactions ids in userProfile by systemId
     // TODO: retrieve from userProfile in integration by userId
     const mockTransactionIds = ["1", "2", "3"];
+    
+    this.populateTransactions();
 
     const allTransactions = [];
 
-    loyaltyPrograms.forEach(async (loyaltyProgram) => {
+    for(const loyaltyProgram of loyaltyPrograms) {
+
       const transactionModel = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-      const retrievedTransactions = await transactionModel.find({ "systemId": { $in: mockTransactionIds } });
+      const retrievedTransactions = await transactionModel.find({ systemId: { $in: mockTransactionIds } });
 
       allTransactions.push(retrievedTransactions);
-    })
+    }
 
     response.json(allTransactions);
   }
