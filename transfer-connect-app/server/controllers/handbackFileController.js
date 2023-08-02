@@ -18,11 +18,10 @@ const testDate = `20200812`;
 const formattedDate = getFormattedDate("compact");
 // SFTP Downloads Folder Name
 const sftpHandbackDownloads = 'sftp_handback_downloads';
-
 // Cache for storing the created models
 const modelCache = {};
 
-// Function to get the model for a given LP
+// Function to get the model for a given Loyalty Program
 const getModelForLP = (loyaltyProgram) => {
   if (!modelCache[loyaltyProgram]) {
     const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, sftpModel);
@@ -31,13 +30,17 @@ const getModelForLP = (loyaltyProgram) => {
   return modelCache[loyaltyProgram];
 };
 
+// Creates the sftp_handback_downloads folder if it doesn't exist
 if (!fs.existsSync(path.join(__dirname, 'sftp_handback_downloads'))) {
   fs.mkdirSync(path.join(__dirname, 'sftp_handback_downloads'));
 }
 
 
-// START OF MAIN FUNCTIONS ======================
+// =========== START OF MAIN FUNCTIONS ======================
 const retrieveFromServer = async(targetDate) => {
+  /*
+  This function retrieves the handback files from the SFTP server
+  */
   let fileName;
   for (const collection of config.sftpCollections ) {
     // Config Details
@@ -59,6 +62,12 @@ const retrieveFromServer = async(targetDate) => {
 };
 
 const extractDataFromCsv = async(filePath) => {
+  /*
+  Function tasks:
+  1) extracts data from the downloaded handback csv files
+  2) generates a random outcome code for each 
+
+  */
 
   return new Promise((resolve, reject) => {
     // List of outcomeCodes
@@ -82,6 +91,7 @@ const extractDataFromCsv = async(filePath) => {
         results.push(data);
       })
       .on('end', () => {
+        console.log(results);
         resolve([partnerCode, results]);
       })
       .on(`error`, (error) =>  {
@@ -143,6 +153,7 @@ const main = async () => {
 
 
 const downloadfromSFTPandUpload = async () => {
+  clearFolder(sftpHandbackDownloads);
   await retrieveFromServer(formattedDate);
   await uploadFilesToMongoDB(formattedDate); 
 };
