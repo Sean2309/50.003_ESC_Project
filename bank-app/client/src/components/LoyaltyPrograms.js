@@ -18,18 +18,28 @@ class LoyaltyPrograms extends Component {
   }
 
   getLoyaltyPrograms = async () => {
-    const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyprograms');
-    const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data.loyaltyPrograms;
-    console.log(loyaltyProgramsQueryResponse);
-    this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
+    try {
+      const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyprograms');
+      const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data?.loyaltyPrograms || [];
+      console.log(loyaltyProgramsQueryResponse);
+      this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
+    } catch (error) {
+      console.error('Error fetching loyalty programs:', error);
+      // You may want to handle the error here, e.g., display an error message or retry the request
+    }
   };
 
   getUserProfile = async () => {
-    const { userId } = this.props;
-    const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } });
-    const userProfileQueryData = userProfileQueryResponse.data;
-
-    this.setState({ userProfile: userProfileQueryData });
+    try {
+      const { userId } = this.props;
+      const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } });
+      const userProfileQueryData = userProfileQueryResponse.data || {};
+  
+      this.setState({ userProfile: userProfileQueryData });
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      // You may want to handle the error here, e.g., display an error message or retry the request
+    }
   };
 
   renderLoyaltyPrograms() {
