@@ -183,22 +183,3 @@ describe ('Unit Tests for startEnquiry', () => {
     })
 
 })
-
-
-    /*
-//edit test after integration to use membershipID
- // ============ test WebSocket connecton ============= // 
-describe ('Unit tests for WebSocket', () => {
-
-    test('WebSocket is connected', async () => {
-
-        //jest.replaceProperty(WebSocket, 'OPEN', true)
-        const logSpy = await jest.spyOn(global.console, 'log');
-        //use placeholder membershipId first
-        await sendMessagetoClient(clients, membershipId, '0000');
-
-        expect(logSpy.mock.calls).toHaveBeenCalledWith('1230oij websocket connection found')
-
-    })})
-
-    */
