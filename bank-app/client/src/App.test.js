@@ -64,7 +64,7 @@ describe('LoyaltyPrograms Component', () => {
 
     // Wait for the component to fetch data and re-render
 
-    // Assert the loyalty programs are rendered
+    // Assert the loyalty program components are rendered
     expect(screen.getAllByTestId('loyaltyprograms-test')).toHaveLength(mockedLoyaltyPrograms.length);
 
     expect(screen.getByText('Loyalty Programs')).toBeInTheDocument();
