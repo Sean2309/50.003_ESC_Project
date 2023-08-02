@@ -47,7 +47,7 @@ class AuthManagerController {
         response.json('User not found');
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       response.status(500).json({ message: 'Server error' });
     }
   };

@@ -28,10 +28,8 @@ describe('LoyaltyProgramsController - API Integration', () => {
             
           ];
           axios.get.mockResolvedValue({ data: mockedResponseData, status: 200 });
-      
           // Make the actual HTTP GET request using axios
           const response = await axios.get('http://localhost:3001/api/loyaltyPrograms');
-      
           // Check if the response status code is 200
           expect(response.status).toBe(200);
     
