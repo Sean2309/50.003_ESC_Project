@@ -5,7 +5,7 @@ const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
   constructor() {
-    this.createUser();
+    async () => {await this.createUser();}
   }
 
   // Handle the POST request to authenticate a user
@@ -47,7 +47,6 @@ class AuthManagerController {
         response.json('User not found');
       }
     } catch (error) {
-      // console.error(error);
       response.status(500).json({ message: 'Server error' });
     }
   };

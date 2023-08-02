@@ -47,17 +47,9 @@ class TransferFormController {
       // check for systemId given to us by TransferConnect, tag to the transaction then save to our own DB
       const postTransactionResponse = await this.postTransaction(transferFormData, loyaltyProgramId);
 
-      console.log('request is successful, response is:');
-      console.log(postTransactionResponse);
-
       transferFormData.systemId = postTransactionResponse.systemId;
 
-      console.log('Transaction submitted to TransferConnect');
-      console.log(transferFormData);
-
-      this.saveTransactionToDb();
-
-      console.log('Transaction saved to BankApp DB');
+      await this.saveTransactionToDb();
 
       response.status(201).json(transferFormData);
     } catch (error) {
