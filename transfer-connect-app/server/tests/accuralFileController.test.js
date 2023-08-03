@@ -285,8 +285,6 @@ describe('Unit tests', () => {
   });
 });
 
-const mockWriteRecords = jest.fn().mockResolvedValue();
-
 describe('Integration tests', () => {
   describe('writeGroupedDataToCsv function check', () => {
     const testGroupedData = {
@@ -302,52 +300,72 @@ describe('Integration tests', () => {
       ]
     };
     const testCollection = 'testCollection';
+    const csvWriter = {
+      writeRecords: jest.fn().mockResolvedValue()
+    };
+    const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
 
-    beforeAll(async () => {
+    beforeEach(() => {
+      createObjectCsvWriter.mockReturnValue(csvWriter);
+      fs.existsSync.mockReturnValue(true);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('createObjectCsvWriter should be called with correct params', async () => {
       await writeGroupedDataToCsv(testGroupedData, testCollection);
-    });
-
-    test('should return success if writeGroupedDataToCsv is executed successfully', () => {
-      // Here we just check if the file exists
-      const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
-      expect(fs.existsSync(filePath)).toBeTruthy();
-    });
-
-    test('should return success if the data in the csv file matches the input data', done => {
-      // Read the written CSV and compare it with the input data
-      const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
-      const results = [];
+      expect(createObjectCsvWriter).toHaveBeenCalledWith({
+        path: path.resolve(__dirname, "..", "controllers", "accrual_files", "testCollection_partner1.csv"),
+        header: [
+          {id: 'membershipId', title: 'Membership ID'},
+          {id: 'memberName', title: 'Member name'},
+          {id: 'transferDate', title: 'Transfer date'},
+          {id: 'transferAmount', title: 'Transfer Amount'},
+          {id: 'referenceNumber', title: 'Reference number'},
+          {id: 'partnerCode', title: 'Partner code'},
+        ],
+      });
       
-      createReadStream(filePath)
-        .pipe(csvParser())
-        .on('data', (data) => results.push(data))
-        .on('end', () => {
-          expect(results).toEqual(testGroupedData['partner1']);
-          done();
-        });
+    });
+
+    test('writeRecords should be called with correct data', async () => {
+      await writeGroupedDataToCsv(testGroupedData, testCollection);
+
+      expect(csvWriter.writeRecords).toHaveBeenCalledWith(testGroupedData['partner1']);
+    });
+  });
+
+  describe('writeCollectionsToCsv function check', () => {
+    const stringToday = '2023-08-03';
+    const mockData = [{test: 'data'}];
+    const mockGroups = {partner1: mockData};
+
+    beforeEach(() => {
+      dateUtil.getFormattedDate.mockReturnValue(stringToday);
+      config.mongoDBCollections = ['testCollection1', 'testCollection2'];
+      yourClassInstance.getModel = jest.fn();
+      yourClassInstance.getDataFromCollection = jest.fn().mockResolvedValue(mockData);
+      yourClassInstance.groupData = jest.fn().mockReturnValue(mockGroups);
+      yourClassInstance.writeGroupedDataToCsv = jest.fn().mockResolvedValue();
+      console.log = jest.fn();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('should correctly retrieve, group and write data for each collection', async () => {
+      await yourClassInstance.writeCollectionsToCsv();
+
+      for (const collection of config.mongoDBCollections) {
+        expect(yourClassInstance.getModel).toHaveBeenCalledWith(collection);
+        expect(yourClassInstance.getDataFromCollection).toHaveBeenCalledWith(yourClassInstance.getModel(collection), stringToday);
+        expect(yourClassInstance.groupData).toHaveBeenCalledWith(mockData);
+        expect(yourClassInstance.writeGroupedDataToCsv).toHaveBeenCalledWith(mockGroups, collection);
+        expect(console.log).toHaveBeenCalledWith('Data retrieved from ' + collection + ':', mockData);
+      }
     });
   });
 });
-
-// test('writeCollectionsToCsv function should correctly fetch, group, and write data for each collection', async () => {
-//   // Mock getModel, getDataFromCollection, groupData, writeGroupedDataToCsv functions
-//   const mockGetModel = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([]) });
-//   const mockGetDataFromCollection = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([])});
-//   const mockGroupData = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([])});
-//   const mockWriteGroupedDataToCsv = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([])});
-
-//   // Call the function
-//   await writeCollectionsToCsv();
-
-//   // Expect that each helper function was called the correct number of times
-//   for (const collection of config.mongoDBCollections) {
-//     expect(mockGetModel).toHaveBeenCalledWith(collection);
-//     expect(mockGetDataFromCollection).toHaveBeenCalledWith(expect.anything(), '2023-07-23'); // We're not testing the model here, so we don't care what it is
-//     expect(mockGroupData).toHaveBeenCalledWith([]);
-//     expect(mockWriteGroupedDataToCsv).toHaveBeenCalledWith({}, collection);
-//   }
-// });
-
-// test('uploadFilesToServer should correctly upload files', async () => {
-//   // Mocking this function depends on how you're uploading the files
-// });
