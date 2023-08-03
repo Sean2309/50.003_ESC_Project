@@ -1,7 +1,7 @@
 //import shet
 const { default: axios } = require('axios');
-const loyaltyProgramsController = require('../controllers/loyaltyProgramsController');
-const loyaltyProgramsModel = require('../models/loyaltyPrograms');
+const loyaltyProgramsController = require('../../controllers/loyaltyProgramsController');
+const loyaltyProgramsModel = require('../../models/loyaltyPrograms');
 const cron = require('node-cron');
 const { response } = require('express');
 // =========== Setting up Mock models ==========// 

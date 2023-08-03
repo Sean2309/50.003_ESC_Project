@@ -19,7 +19,7 @@ app.get('/api/loyaltyPrograms', (req, res) => {
 // =========== Test Suite and Cases ======== //
 describe('LoyaltyProgramsController - API Integration', () => {
     test('api/loyaltyPrograms should respond with 200 status code', async () => {
-        const response = await request(app).get('/api/loyaltyprograms');
+        const response = await request(app).get('/api/loyaltyPrograms');
         expect(response.status).toBe(200);
         // expect(response.body).toHaveProperty('loyaltyPrograms');
         // expect(response.body.loyaltyPrograms).toHaveLength(2);
