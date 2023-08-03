@@ -11,18 +11,6 @@ const socket = new WebSocket(url);
 
 const NotificationLogic = () =>{
   useEffect(()=>{
-    const handleButtonClick = () => {
-      const transferAmount = document.getElementById('transferAmountText').value;
-      const loyaltyProgramName = document.getElementById('loyaltyProgramNameText').value;
-      console.log(transferAmount);
-      console.log(loyaltyProgramName);
-      const data_to_server = {
-        transferAmount: transferAmount,
-        loyaltyProgramName: loyaltyProgramName,
-        membershipId: membershipID
-      };
-      socket.send(JSON.stringify(data_to_server));
-    };
    
     // Event listener for connection open
     socket.addEventListener('open', (event) => {
@@ -46,14 +34,11 @@ const NotificationLogic = () =>{
     console.error('WebSocket connection error:', event);
     });
 
-    document.getElementById('resendNotif').addEventListener('click', handleButtonClick);
-
-    // Clean up the WebSocket connection on component unmount
   }, []);
 
   return null; // This component doesn't render anything, so return null.
 };
   
   
-  export default NotificationLogic;
+export default NotificationLogic;
   
