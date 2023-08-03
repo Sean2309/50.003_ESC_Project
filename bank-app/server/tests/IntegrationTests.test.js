@@ -13,54 +13,68 @@ mongoDb connection
 // __tests__/websocket.test.js
 const WebSocket = require('ws');
 
-describe('WebSocket connection', () => {
-  let ws;
-  let client1;
+describe("WebSocket Server", () => {
+    let ws;
+    const url = "ws://localhost:8081";
+    let client1;
 
-  beforeEach(() => {
-    const url = "ws://localhost:8081"
-    ws = new WebSocket.Server({ port: 8081 });
-    client1 = new WebSocket(url);
-  });
-
-  afterEach(() => {
-    // Close the WebSocket connection after each test
-
-    ws.close();
-
-  });
-
-  test('WebSocket server is connected and can send message to client', () => {
-    const message1 = 'Hello, WebSocket!';
-    
-    ws.on('connection', async (connection, req) => {
-      connection.on('open', () => {
-      console.log("websocket sent message")
-      connection.send(message1);
-      })
+    beforeAll(async () => {
+      ws = new WebSocket.Server({ port: 8081 });
+      console.log("beforeAll")
+      client1 = new WebSocket(url);
     });
 
-    client1.addEventListener('message', (event) => {
-      const message = event.data;
-      console.log("client received message")
-      expect(message).toBe(message1);
-     });
+    afterAll(() => {
+      ws.close();
+      console.log("afterall")
+    });
+
+  test('WebSocket server is connected to client ', async () => {
+    const message1 = "test";
+    let counter = 0;
+
+      ws.on('connection', async (connection, req) => {
+        console.log("websocket sent message")
+        connection.send(message1);
+      });
+
+      const promise = new Promise((resolve) => {
+        client1.addEventListener('message', (message) => {
+          console.log("client received message");
+          counter++;
+          resolve();
+      });
+      });
+
+      await promise;
+
+      expect(counter).toBe(1);
   })
 
-  test('WebSocket client can send messsage to server', () => {
-    const message1 = 'Hello, WebSocket!';
-    
-    ws.on('connection', async (connection, req) => {
-      connection.on('message', (message) => {
-        console.log("websocket got message")
-      expect(message).toBe(message1);
-    })});
-  
-    client1.addEventListener('open', () => {
-      console.log("client1 sent message")
-        client1.send(message1);
+  test('WebSocket server is connected to client ', async () => {
+    const message1 = "test";
+    const client2 = new
+    let counter = 0;
+
+      ws.on('connection', async (connection, req) => {
+        console.log("websocket sent message")
+        connection.send(message1);
       });
+
+      const promise = new Promise((resolve) => {
+        client1.addEventListener('message', (message) => {
+          console.log("client received message");
+          counter++;
+          resolve();
+      });
+      });
+
+      await promise;
+
+      expect(counter).toBe(1);
   })
+
+ 
 
 
 
