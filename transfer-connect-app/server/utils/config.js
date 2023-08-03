@@ -14,7 +14,7 @@ const TRANSFER_CONNECT_API_URL = process.env.TRANSFER_CONNECT_API_URL
 const DB_NAME = process.env.DB_NAME
 
 module.exports = {
-    MONGODB_URL, MONGODB_URLB, PORT, TRANSFER_CONNECT_API_URL, DB_NAME,
+    MONGODB_URL, MONGODB_URLB, PORT, DB_NAME,
     kaligoURL,
     kaligoAPIKey,
     mongoDBCollections,

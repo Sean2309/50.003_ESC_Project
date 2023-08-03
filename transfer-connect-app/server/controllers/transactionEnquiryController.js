@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const emailNotification = require('./emailNotification.js');
 const messageNotification = require('./messageNotification.js');
 
-
 //can improve code by using caching for faster data retrieval
 class TransactionEnquiryController {
 
@@ -30,7 +29,6 @@ class TransactionEnquiryController {
     } else {
       collection_connection = mongoose.model(loyalty_program_name, transactionSchema, loyalty_program_name);
     }
-
     //pass in reference numbers
     const id_list = id.systemId.split(",");
     console.log(id_list);
