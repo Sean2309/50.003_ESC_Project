@@ -1,6 +1,8 @@
 const request = require('supertest');
 const app = require('../index'); 
 const UserCredentials = require('../models/userCredentials');
+const jwt = require('jsonwebtoken');
+const { SECRET_CODE } = require('../utils/config');
 
 // Mock UserCredentials.findOne
 jest.mock('../models/userCredentials'); 
@@ -61,5 +63,41 @@ describe('AuthManagerController - userAuthentication', () => {
       .expect(500);
 
     expect(response.body.message).toBe('Server error');
+  });
+
+  it('should return "Server error" if an error occurs during password comparison', async () => {
+    // Mock the response from UserCredentials.findOne
+    UserCredentials.findOne.mockResolvedValueOnce({
+      loginId: 'john123',
+      comparePassword: jest.fn().mockRejectedValueOnce(new Error('Comparison error')),
+    });
+
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: 'john123', password: 'correctpassword' })
+      .expect(500);
+
+    expect(response.body.message).toBe('Server error');
+  });
+
+  it('should return 200 and auth: true if token is valid', async () => {
+    const token = jwt.sign({ userId: 1 }, SECRET_CODE);
+    const res = await request(app)
+      .get('/login')
+      .set('Cookie', [`token=${token}`]);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('auth');
+    expect(res.body.auth).toBe(true);
+  });
+  it('should return 401 and auth: false if token is invalid', async () => {
+    const token = 'invalid token';
+    const res = await request(app)
+      .get('/login') // replace with your actual endpoint
+      .set('Cookie', [`token=${token}`]);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty('auth');
+    expect(res.body.auth).toBe(false);
   });
 });
