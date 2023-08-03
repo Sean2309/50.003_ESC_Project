@@ -10,7 +10,7 @@ const { response } = require('express');
   jest.mock() takes in 2 arguments. The path and a function that returns an object representing mocked implementation of the module
   find:jest.fn() Find a new Jest mock function created by jest.fn(). jest.fn() simulates the behaviour of the original find function  from the module
 */
-jest.mock('../models/loyaltyPrograms', () => ({
+jest.mock('../../models/loyaltyPrograms', () => ({
   find: jest.fn(),
   deleteMany: jest.fn().mockResolvedValue({}),
   create: jest.fn().mockResolvedValue({}),
