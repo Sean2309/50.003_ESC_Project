@@ -1,23 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen, act, waitFor } from '@testing-library/react';
-// import axiosMock from './axiosMock'; // Mock axios for testing purposes
 import LoyaltyProgram from '../../components/LoyaltyProgram';
-import axios from 'axios';
-
-// LoyaltyProgram.propTypes = {
-//     loyaltyProgramData: PropTypes.shape({
-//       programName: PropTypes.string.isRequired,
-//       description: PropTypes.string.isRequired,
-//       processingTime: PropTypes.string.isRequired,
-//       currencyRate: PropTypes.number.isRequired,
-//       currencyName: PropTypes.string.isRequired,
-//       enrollmentLink: PropTypes.string.isRequired,
-//       tncLink: PropTypes.string.isRequired,
-//       programId: PropTypes.string.isRequired,
-//       membershipFormat: PropTypes.string.isRequired,
-//     }).isRequired,
-//     userProfile: PropTypes.shape({}).isRequired,
-//   };
 
 describe('LoyaltyProgram Functions', () => {
   
@@ -48,6 +31,7 @@ describe('LoyaltyProgram Functions', () => {
 
       const spy = jest.spyOn(console, 'error');
 
+      // simulates a not found scenario
       await act(async () => {
         render(<LoyaltyProgram loyaltyProgramData={[]} userProfile={[]}/>);
       });

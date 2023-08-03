@@ -4,20 +4,16 @@ import { render, fireEvent, screen, act, waitFor } from '@testing-library/react'
 import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
-
-
 // https://jestjs.io/docs/en/api#describename-fn
 // good testing practices
 
 describe('TransferForm Component', () => {
-  const mockedUserId = 1;
 
   const mockedUserProfile = {
     abcPoints : 12367,
     emailAddress: "abc@gmail.com",
     phoneNumber: "3267352",
     notificationMethod: "Bank",
-    // Add other properties as needed for your test cases
   };
 
   const mockedTransferProps =
@@ -31,7 +27,7 @@ describe('TransferForm Component', () => {
   
   beforeEach(() => {
     jest.mock('axios');
-    // Mock the axios.get function to return fake responses
+    // Mock the axios.get function to return responses according to url called
     axios.get = jest.fn().mockResolvedValue((url) => {
       if (url === 'http://localhost:3001/api/userprofile') {
         return { data: mockedUserProfile };
@@ -46,8 +42,10 @@ describe('TransferForm Component', () => {
     jest.clearAllMocks();
   })
 
+  // ensure that the transfer form is not covering the screen
+  // until the user decides on one loyalty program's transfer form
+  // and actually clicks on it
   it('fail to render form when button is not yet clicked', async () => {
-
     await act(async () => {
       render(<TransferForm 
         membershipFormat={mockedTransferProps.membershipFormat}
@@ -57,8 +55,9 @@ describe('TransferForm Component', () => {
         />);
     });
 
-    // indirect way to test if renderForm was called
+    // indirect way to test if renderForm was (not) called
     // to simulate how user would interact with the form
+    // which is to say, the user should NOT be seeing any of these
     expect(screen.getByTestId("member-name")).toBeInTheDocument();
     expect(screen.getByTestId("member-id")).toBeInTheDocument();
     expect(screen.getByTestId("member-confirm")).toBeInTheDocument();
@@ -76,6 +75,7 @@ describe('TransferForm Component', () => {
     });
 
     // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+    // User can see the transfer form button at the bottom page of the loyalty program
     const transferButton = screen.getByRole('button');
     fireEvent.click(transferButton);
 
@@ -86,8 +86,8 @@ describe('TransferForm Component', () => {
     expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
   });
 
-    // render test is already on integration side. technically.
-  // the integration's technically an indirect openModal testing ig
+  // this is an indirect openModal testing
+  // from the viewpoint of a user
   it('user can submit the transfer form, no errors are logged', async () => {
     const spy = jest.spyOn(console, 'error');
 
@@ -106,23 +106,22 @@ describe('TransferForm Component', () => {
       // user opens transferForm
       fireEvent.click(transferButton);
 
-      // Find input fields and submit button
+      // User finds input fields and submit button
       const memberNameInput = screen.getByTestId('member-name').querySelector('input');
       const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
       const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
       const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
       const submitButton = screen.getByTestId('submit-form').querySelector('input');
 
-      // Fill in the form
+      // User fills in the form
       fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
       fireEvent.change(membershipIdInput, { target: { value: '123456' } });
       fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
       fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
+      // User presses the submit button on the form
       fireEvent.submit(submitButton);
-
     
-    // await expect(screen.getByTestId('modal-dialog')).toHaveState('isOpen', false);
     await waitFor(() => expect(spy).not.toHaveBeenCalled());
 
     // https://github.com/jestjs/jest/issues/3821
