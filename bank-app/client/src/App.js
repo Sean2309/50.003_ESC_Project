@@ -10,10 +10,13 @@ import Login from './views/Login';
 // import RewardCenter from './views/RewardCenter';
 import Marketplace from './views/Marketplace';
 import ProtectedRoute from './components/ProtectedRoute';
+import Transactions from './views/Transactions';
+
+
 
 function App() {
 
-  
+
   return (
 
     <BrowserRouter>
@@ -27,10 +30,15 @@ function App() {
           <Route path="login" element={<Login />} />
           {/* <Route path="rewardCenter" element={<RewardCenter/>} /> */}
           <Route path="marketplace" element={
-          <ProtectedRoute>
-          <Marketplace />
-          </ProtectedRoute>
+            <ProtectedRoute>
+              <Marketplace />
+            </ProtectedRoute>
           } />
+          <Route path="transactions" element={
+            <ProtectedRoute>
+
+              <Transactions />
+            </ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

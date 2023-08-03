@@ -22,7 +22,8 @@
     "jsonwebtoken": "^9.0.1",
     "mongodb": "^5.7.0",
     "mongoose": "^7.3.0",
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.2",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",

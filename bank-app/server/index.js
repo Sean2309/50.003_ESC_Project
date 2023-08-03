@@ -9,6 +9,7 @@ const loyaltyProgramsRouter = require('./routes/loyaltyProgramsRouter');
 const updateLoyaltyProgramsRouter = require('./routes/updateLoyaltyProgramsRouter');
 const authManagerRouter = require('./routes/authManagerRouter');
 const userProfileRouter = require('./routes/userProfileRouter'); 
+const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
 const cookieParser = require('cookie-parser');
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/transferformsubmit', transferFormRouter);
 app.use('/api/loyaltyprograms', loyaltyProgramsRouter);
 app.use('/api/updateLoyaltyProgramsRouter',updateLoyaltyProgramsRouter);
 app.use('/api/userprofile', userProfileRouter);
+app.use('/api/transactions', transactionEnquiryRouter);
 app.use('/login', authManagerRouter);
 
 

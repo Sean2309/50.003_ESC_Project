@@ -196,6 +196,7 @@ class CurrencyRateModel {
   appName: String
 }
 ```
+# Transaction Enquiry API
 
 ### Enquire Transaction Status
 

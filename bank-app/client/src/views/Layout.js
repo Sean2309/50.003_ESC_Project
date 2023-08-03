@@ -15,6 +15,9 @@ function Layout() {
           <li>
             <Link to="login">Login</Link>
           </li>
+          <li>
+            <Link to="transactions">Transactions</Link>
+          </li>
           {/* <li>
                         <Link to="deprecatedTransferPage">deprecatedTransferPage</Link>
                     </li>
