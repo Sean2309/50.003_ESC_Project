@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import Transaction from './Transaction';
 import axios from 'axios';
 
@@ -7,7 +7,7 @@ const TransactionsDisplay = (props) => {
 
   const [transactions, setTransactions] = useState({});
   const [componentsArray, setComponentsArray] = useState([]);
-  const [uniqueTransactionRefs, setUniqueTransactionRefs] = useState(new Set());
+  const [uniqueTransactionIds, setUniqueTransactionIds] = useState(new Set());
 
   const fetchTransactions = async () => {
     try {
@@ -31,9 +31,9 @@ const TransactionsDisplay = (props) => {
     // Loop through each transaction array along with loyaltyProgramId as key, and map them to Transaction components
     Object.entries(transactions).forEach(([key, transactionArray]) => {
       const transactionsRendered = transactionArray.map((transaction) => {
-        if (!uniqueTransactionRefs.has(transaction.referenceNumber)) {
+        if (!uniqueTransactionIds.has(transaction.systemId)) {
           // Push the transaction ID to the set to prevent duplicates
-          setUniqueTransactionRefs((prevSet) => new Set(prevSet).add(transaction.referenceNumber));
+          setUniqueTransactionIds((prevSet) => new Set(prevSet).add(transaction.systemId));
 
           return (
             <Transaction key={transaction.systemId} transaction={transaction} loyaltyProgramId={key} />
@@ -46,7 +46,7 @@ const TransactionsDisplay = (props) => {
 
     // Update the components array
     setComponentsArray(array);
-  }, [transactions, uniqueTransactionRefs]);
+  }, [transactions, uniqueTransactionIds]);
 
   return <div>{Object.keys(transactions).length > 0 && componentsArray}</div>;
 };
