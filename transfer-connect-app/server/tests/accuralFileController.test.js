@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 const { createObjectCsvWriter } = require('csv-writer');
+const dateUtil = require('../controllers/date');
+const config = require('../utils/config');
+const File = require('files.com/lib/models/File').default;
 const {
   getModel,
   getDataFromCollection,
@@ -9,6 +12,8 @@ const {
   writeGroupedDataToCsv,
 } = require('../controllers/accrualFileController');
 const {clearFolder} = require('../controllers/clearFolder')
+const accrualFileController = require('../controllers/accrualFileController');
+const accrual_files_dir = path.join(__dirname, '../controllers/accrual_files');
 
 jest.mock('fs', () => {
   return {
@@ -28,6 +33,15 @@ jest.mock('csv-writer', () => ({
     writeRecords: jest.fn().mockResolvedValue(),
   })),
 }));
+jest.mock('../controllers/date', () => ({
+  getFormattedDate: jest.fn()
+}));
+jest.mock('files.com/lib/models/File', () => ({
+  default: {
+    uploadFile: jest.fn(),
+  },
+}));
+
 
 // Mock Mongoose document
 class MockDocument {
@@ -345,10 +359,10 @@ describe('Integration tests', () => {
     beforeEach(() => {
       dateUtil.getFormattedDate.mockReturnValue(stringToday);
       config.mongoDBCollections = ['testCollection1', 'testCollection2'];
-      yourClassInstance.getModel = jest.fn();
-      yourClassInstance.getDataFromCollection = jest.fn().mockResolvedValue(mockData);
-      yourClassInstance.groupData = jest.fn().mockReturnValue(mockGroups);
-      yourClassInstance.writeGroupedDataToCsv = jest.fn().mockResolvedValue();
+      accrualFileController.getModel = jest.fn();
+      accrualFileController.getDataFromCollection = jest.fn().mockResolvedValue(mockData);
+      accrualFileController.groupData = jest.fn().mockReturnValue(mockGroups);
+      accrualFileController.writeGroupedDataToCsv = jest.fn().mockResolvedValue();
       console.log = jest.fn();
     });
 
@@ -357,15 +371,47 @@ describe('Integration tests', () => {
     });
 
     test('should correctly retrieve, group and write data for each collection', async () => {
-      await yourClassInstance.writeCollectionsToCsv();
+      await accrualFileController.writeCollectionsToCsv();
 
       for (const collection of config.mongoDBCollections) {
-        expect(yourClassInstance.getModel).toHaveBeenCalledWith(collection);
-        expect(yourClassInstance.getDataFromCollection).toHaveBeenCalledWith(yourClassInstance.getModel(collection), stringToday);
-        expect(yourClassInstance.groupData).toHaveBeenCalledWith(mockData);
-        expect(yourClassInstance.writeGroupedDataToCsv).toHaveBeenCalledWith(mockGroups, collection);
+        expect(accrualFileController.getModel).toHaveBeenCalledWith(collection);
+        expect(accrualFileController.getDataFromCollection).toHaveBeenCalledWith(accrualFileController.getModel(collection), stringToday);
+        expect(accrualFileController.groupData).toHaveBeenCalledWith(mockData);
+        expect(accrualFileController.writeGroupedDataToCsv).toHaveBeenCalledWith(mockGroups, collection);
         expect(console.log).toHaveBeenCalledWith('Data retrieved from ' + collection + ':', mockData);
       }
+    });
+  });
+
+  describe('uploadFilesToServer function', () => {
+    let controller;
+
+    beforeEach(() => {
+      // Setup the mocks before each test
+      fs.readdirSync.mockImplementation(() => ['collection1_1.csv', 'collection2_2.csv']);
+      File.uploadFile.mockResolvedValue(true);
+      dateUtil.getFormattedDate.mockReturnValue('20230803');
+      config.mongoDBCollections = ['collection1', 'collection2'];
+      config.sftpCollections = ['sftpCollection1', 'sftpCollection2'];
+      config.kaligoURL = '<mocked-kaligo-url>';
+      config.kaligoAPIKey = '<mocked-api-key>';
+    });
+
+    it('should upload files to the server', async () => {
+      await accrualFileController.uploadFilesToServer();
+
+      expect(fs.readdirSync).toHaveBeenCalledWith(accrual_files_dir);
+      expect(File.uploadFile).toHaveBeenCalledTimes(2);
+      expect(File.uploadFile).toHaveBeenCalledWith(
+        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/sftpCollection1/20230803/1_ACCRUAL_20230803.csv',
+        path.join(accrual_files_dir, 'collection1_1.csv'),
+        { mkdir_parents: true }
+      );
+      expect(File.uploadFile).toHaveBeenCalledWith(
+        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/sftpCollection2/20230803/2_ACCRUAL_20230803.csv',
+        path.join(accrual_files_dir, 'collection2_2.csv'),
+        { mkdir_parents: true }
+      );
     });
   });
 });
