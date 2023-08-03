@@ -10,6 +10,7 @@ const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 var getFormattedDate = require('./date').getFormattedDate;
 var clearFolder = require('./clearFolder').clearFolder;
+var convertDateFormat = require('./convertDateFormat').convertDateFormat;
 var config = require('../utils/config');
 const { CronJob } = require('cron');
 
@@ -57,8 +58,7 @@ class HandbackFileController {
 
     await uploadFilesToMongoDB(testDate);
     console.log("Done!");
-
-  }
+  };
 
   // Function to get the model for a given Loyalty Program
   getModelForLP = (loyaltyProgram) => {
@@ -142,7 +142,7 @@ class HandbackFileController {
         const Model = getModelForLP(config.mongoDBCollections[i]);
         for (const result of results) {
           let mappedResult = {
-            transferDate: result['Transfer date'],
+            transferDate: convertDateFormat(result['Transfer date']),
             partnerCode: partnerCode,
             referenceNumber: result['Reference number'],
             outcomeCode: result['Outcome Code'],

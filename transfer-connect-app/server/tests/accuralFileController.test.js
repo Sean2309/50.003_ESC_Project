@@ -24,7 +24,9 @@ jest.mock('fs', () => {
 jest.mock('mongoose');
 jest.mock('../utils/config');
 jest.mock('csv-writer', () => ({
-  createObjectCsvWriter: jest.fn(),
+  createObjectCsvWriter: jest.fn(() => ({
+    writeRecords: jest.fn().mockResolvedValue(),
+  })),
 }));
 
 // Mock Mongoose document
@@ -286,54 +288,45 @@ describe('Unit tests', () => {
 const mockWriteRecords = jest.fn().mockResolvedValue();
 
 describe('Integration tests', () => {
-  beforeEach(() => {
-    fs.existsSync.mockReturnValue(true); // Mock that the directory already exists
-    fs.mkdirSync.mockClear(); // Clear any previous calls to mkdirSync
-    fs.unlinkSync.mockClear(); // Clear any previous calls to unlinkSync
-    createObjectCsvWriter.mockClear(); // Clear any previous calls to createObjectCsvWriter
-    mockWriteRecords.mockClear(); // Clear any previous calls to writeRecords
+  describe('writeGroupedDataToCsv function check', () => {
+    const testGroupedData = {
+      'partner1': [
+        { 
+          membershipId: '123',
+          memberName: 'John Doe',
+          transferDate: '2023-07-23',
+          transferAmount: '1000',
+          referenceNumber: 'ref123',
+          partnerCode: 'partner1' 
+        }
+      ]
+    };
+    const testCollection = 'testCollection';
 
-    createObjectCsvWriter.mockImplementation(() => {
-      return {
-        writeRecords: mockWriteRecords,
-      };
+    beforeAll(async () => {
+      await writeGroupedDataToCsv(testGroupedData, testCollection);
+    });
+
+    test('should return success if writeGroupedDataToCsv is executed successfully', () => {
+      // Here we just check if the file exists
+      const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
+      expect(fs.existsSync(filePath)).toBeTruthy();
+    });
+
+    test('should return success if the data in the csv file matches the input data', done => {
+      // Read the written CSV and compare it with the input data
+      const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
+      const results = [];
+      
+      createReadStream(filePath)
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+          expect(results).toEqual(testGroupedData['partner1']);
+          done();
+        });
     });
   });
-
-  afterEach(() => {
-    jest.resetAllMocks();    
-  });
-
-  test('writeGroupedDataToCsv function should correctly create csv files with the correct headers', async () => {
-    // Mock the csvWriter
-    const mockCsvWriter = {
-      writeRecords: jest.fn().mockResolvedValue(),
-    };
-    createObjectCsvWriter.mockReturnValue(mockCsvWriter);
-  
-    // Call the function with the given mock data
-    const collection = 'collection1';
-    const groupedData = groupData(mockData[collection]);
-    await writeGroupedDataToCsv(groupedData, collection);
-  
-    // Expect that createCsvWriter was called with the correct arguments
-    for (let partnerCode in groupedData) {
-      expect(createObjectCsvWriter).toHaveBeenCalledWith({
-        path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
-        header: [
-          { id: 'membershipId', title: 'Membership ID' },
-          { id: 'memberName', title: 'Member name' },
-          { id: 'transferDate', title: 'Transfer date' },
-          { id: 'transferAmount', title: 'Transfer Amount' },
-          { id: 'referenceNumber', title: 'Reference number' },
-          { id: 'partnerCode', title: 'Partner code' },
-        ],
-      });
-  
-      // Expect that writeRecords was called with the correct data for the partner code
-      expect(mockCsvWriter.writeRecords).toHaveBeenCalledWith(groupedData[partnerCode]);
-    }
-  }); 
 });
 
 // test('writeCollectionsToCsv function should correctly fetch, group, and write data for each collection', async () => {
