@@ -33,13 +33,14 @@ jest.mock('csv-writer', () => ({
 }));
 
 // Mock Mongoose document
-function MockDocument(data) {
-  return {
-    ...data,
-    get: function(field) {
+class MockDocument {
+    constructor(data) {
+      Object.assign(this, data);
+    }
+  
+    get(field) {
       return this[field];
     }
-  };
 }
 
 // Mock data
@@ -51,7 +52,7 @@ const mockData = {
       referenceNumber: "3av456b",
       partnerCode: "DBSSG",
       membershipId: "2342345bc",
-      membershipName: "Thomas Doe",
+      memberName: "Thomas Doe",
       transferAmount: 100000,
       outcomeCode: "0002"
     },
@@ -61,7 +62,7 @@ const mockData = {
       referenceNumber: "4bx456c",
       partnerCode: "HSBC",
       membershipId: "1231235cd",
-      membershipName: "Jane Doe",
+      memberName: "Jane Doe",
       transferAmount: 200000
     },
     {
@@ -70,7 +71,7 @@ const mockData = {
       referenceNumber: "6dy456e",
       partnerCode: "HSBC",
       membershipId: "8908908ij",
-      membershipName: "Jane Smith",
+      memberName: "Jane Smith",
       transferAmount: 350000
     },
     {
@@ -79,7 +80,7 @@ const mockData = {
       referenceNumber: "7ez456f",
       partnerCode: "DBSSG",
       membershipId: "9109109kl",
-      membershipName: "John Doe",
+      memberName: "John Doe",
       transferAmount: 400000
     }
   ],
@@ -90,7 +91,7 @@ const mockData = {
       referenceNumber: "5cy456d",
       partnerCode: "DBSSG",
       membershipId: "5675675ef",
-      membershipName: "Richard Roe",
+      memberName: "Richard Roe",
       transferAmount: 300000
     }
   ]
@@ -181,7 +182,7 @@ describe('Unit tests', () => {
         referenceNumber: "4bx456c",
         partnerCode: "HSBC",
         membershipId: "1231235cd",
-        membershipName: "Jane Doe",
+        memberName: "Jane Doe",
         transferAmount: 200000
       },
       {
@@ -190,7 +191,7 @@ describe('Unit tests', () => {
         referenceNumber: "7ez456f",
         partnerCode: "DBSSG",
         membershipId: "9109109kl",
-        membershipName: "John Doe",
+        memberName: "John Doe",
         transferAmount: 400000
       },
       {
@@ -199,7 +200,7 @@ describe('Unit tests', () => {
         referenceNumber: "5cy456d",
         partnerCode: "DBSSG",
         membershipId: "5675675ef",
-        membershipName: "Richard Roe",
+        memberName: "Richard Roe",
         transferAmount: 300000
       }
     ];
@@ -209,7 +210,7 @@ describe('Unit tests', () => {
   
   test('groupData function should group data by partnerCode', () => {
     // Convert array of docs to a single array to mimic getDataFromCollection's output
-    const ungroupedData = [].concat(...Object.values(mockData)).map(MockDocument);
+    const ungroupedData = [].concat(...Object.values(mockData)).map((document) => new MockDocument(document));
     const result = groupData(ungroupedData);
   
     // Hardcoded expected result
@@ -221,7 +222,7 @@ describe('Unit tests', () => {
           referenceNumber: "3av456b",
           partnerCode: "DBSSG",
           membershipId: "2342345bc",
-          membershipName: "Thomas Doe",
+          memberName: "Thomas Doe",
           transferAmount: 100000,
           outcomeCode: "0002"
         },
@@ -231,7 +232,7 @@ describe('Unit tests', () => {
           referenceNumber: "7ez456f",
           partnerCode: "DBSSG",
           membershipId: "9109109kl",
-          membershipName: "John Doe",
+          memberName: "John Doe",
           transferAmount: 400000
         },
         {
@@ -240,7 +241,7 @@ describe('Unit tests', () => {
           referenceNumber: "5cy456d",
           partnerCode: "DBSSG",
           membershipId: "5675675ef",
-          membershipName: "Richard Roe",
+          memberName: "Richard Roe",
           transferAmount: 300000
         }
       ],
@@ -251,7 +252,7 @@ describe('Unit tests', () => {
           referenceNumber: "4bx456c",
           partnerCode: "HSBC",
           membershipId: "1231235cd",
-          membershipName: "Jane Doe",
+          memberName: "Jane Doe",
           transferAmount: 200000
         },
         {
@@ -260,7 +261,7 @@ describe('Unit tests', () => {
           referenceNumber: "6dy456e",
           partnerCode: "HSBC",
           membershipId: "8908908ij",
-          membershipName: "Jane Smith",
+          memberName: "Jane Smith",
           transferAmount: 350000
         }
       ]
@@ -326,7 +327,7 @@ describe('Integration tests', () => {
         path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
         header: [
           { id: 'membershipId', title: 'Membership ID' },
-          { id: 'membershipName', title: 'Membership name' },
+          { id: 'memberName', title: 'Member name' },
           { id: 'transferDate', title: 'Transfer date' },
           { id: 'transferAmount', title: 'Transfer Amount' },
           { id: 'referenceNumber', title: 'Reference number' },

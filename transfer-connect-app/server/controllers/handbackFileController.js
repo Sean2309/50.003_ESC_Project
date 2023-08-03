@@ -21,6 +21,8 @@ const sftpHandbackDownloads = 'sftp_handback_downloads';
 // Cache for storing the created models
 const modelCache = {};
 
+const testMongoDBURL = 'mongodb+srv://tengtjinyang:zagNwPsta2HHTyfE@transferconnect.0papjri.mongodb.net/TransferConnectDB';
+
 // Function to get the model for a given Loyalty Program
 const getModelForLP = (loyaltyProgram) => {
   if (!modelCache[loyaltyProgram]) {
@@ -70,10 +72,6 @@ const extractDataFromCsv = async(filePath) => {
   */
 
   return new Promise((resolve, reject) => {
-    // List of outcomeCodes
-    const outcomeCodeList = ['0000', '0001', '0002', '0003', '0004', '0005', '0099'];
-    // Randomly pick an outcomeCode
-    const random_outcomeCode = outcomeCodeList[Math.floor(Math.random() * outcomeCodeList.length)];
 
     const str1 = filePath.split('\\');
     const splitStr = str1[str1.length-1].split(/_/);
@@ -84,14 +82,16 @@ const extractDataFromCsv = async(filePath) => {
     fs.createReadStream(filePath)
       .pipe(csvParser())
       .on('data', (data) => {
-        // Adding outcomeCode field
-        data[`Outcome Code`] = random_outcomeCode;
+        // Extracting outcome code
+        if (data['Outcome Code'] && data['Outcome Code'].startsWith('"') && data['Outcome Code'].endsWith('"')) {
+          data['Outcome Code'] = data['Outcome Code'].slice(1, -1);
+        };
 
         // Pushing the whole result
         results.push(data);
       })
       .on('end', () => {
-        console.log(results);
+        console.log(`Extracted Data:`, results);
         resolve([partnerCode, results]);
       })
       .on(`error`, (error) =>  {
@@ -99,38 +99,41 @@ const extractDataFromCsv = async(filePath) => {
       })
   });
   
-}
+};
 
 const uploadFilesToMongoDB = async (targetDate) => {
-  await mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(testMongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
   for (let i = 0; i < config.sftpCollections.length; i++) {
     const filePath = path.join(__dirname, `${sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
     try {
       const [partnerCode, results] = await extractDataFromCsv(filePath);
-      console.log(`Extracting data from ${partnerCode} Handback File`);
-
+      // console.log(`Extracting data from ${partnerCode} Handback File`);
       const Model = getModelForLP(config.mongoDBCollections[i]);
-
       for (const result of results) {
         let mappedResult = {
+          transferDate: result['Transfer date'],
           partnerCode: partnerCode,
           referenceNumber: result['Reference number'],
           outcomeCode: result['Outcome Code'],
+          transferAmount: parseInt(result['Transfer Amount']),
         };
-
-        console.log(`Updating ${partnerCode} Database in Mongo\n`);
-        let doc = await Model.findOne({ referenceNumber: mappedResult.referenceNumber }); // Must match the referenceNumber to update
-
+        
+        let doc = await Model.findOne({ 
+          $and: [{referenceNumber: mappedResult.referenceNumber},
+          {transferDate: mappedResult.transferDate} ]
+        }); // Must match the referenceNumber and transferDate to update
         if (doc) {
           doc.set(mappedResult);
+          console.log(`Data uploaded: `, doc)
           await doc.save();
         } else {
-          await Model.create(mappedResult);
+          const newModel = await Model.create(mappedResult);
+          console.log(`new model: `, newModel)
         }
       }
-
-      console.log(`Data updated for ${partnerCode} successfully\n`);
+      
+      // console.log(`Data updated for ${partnerCode} successfully\n`);
     } catch (error) {
       console.log(error);
     }
@@ -149,7 +152,7 @@ const main = async () => {
   await uploadFilesToMongoDB(testDate);
   console.log("Done!");
 }
-// main().catch(console.error);
+main().catch(console.error);
 
 
 const downloadfromSFTPandUpload = async () => {

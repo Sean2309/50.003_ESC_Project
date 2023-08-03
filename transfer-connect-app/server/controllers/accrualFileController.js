@@ -56,7 +56,7 @@ const writeGroupedDataToCsv = async (groups, collection) => {
 
 // Main function to write collections to CSV
 const writeCollectionsToCsv = async () => {
-  mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
+  mongoose.connect(config.MONGODB_URLB, { useNewUrlParser: true, useUnifiedTopology: true });
   const stringToday = dateUtil.getFormattedDate();
 
   for (const collection of config.mongoDBCollections) {

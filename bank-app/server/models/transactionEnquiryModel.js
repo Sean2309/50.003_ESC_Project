@@ -13,10 +13,8 @@ const transactionSchema = new mongoose.Schema({
   "emailAddress": String,
   "phoneNumber": String,
   "systemId": String
-},
-{ versionKey: false } // Disable the "__v" field
-);
+});
 
-
-
-module.exports = transactionSchema;
+//edit to add/remove loyaltyprograms available
+const loyaltyPrograms = ["AirAsia", "GoJet"];
+module.exports = {transactionSchema, loyaltyPrograms};
