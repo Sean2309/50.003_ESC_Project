@@ -25,7 +25,7 @@ class UserProfileController {
   // This function operates on the assumption that the token is authed
   getUserProfile = async (request, response) => {
     try {
-      const userId = request.query.id;
+      const userId = request.body.userId;
   
       const userProfile = await UserProfile.findOne({ userId: userId });
   
