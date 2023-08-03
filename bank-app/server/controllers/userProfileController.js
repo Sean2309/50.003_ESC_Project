@@ -10,13 +10,12 @@ class UserProfileController {
 
     // Check if no token
     if (!token) {
-      return response.status(401).json({ msg: 'No token, authorization denied' });
+      return response.status(403).json({ msg: 'No token, authorization denied' });
     }
 
     // Verify token
     try {
       const decoded = jwt.verify(token, SECRET_CODE);
-
       request.user = decoded.user;
       next();
     } catch (err) {
@@ -25,20 +24,20 @@ class UserProfileController {
   }
   // This function operates on the assumption that the token is authed
   getUserProfile = async (request, response) => {
-
-    const encryptedUserId = request.query.id;
-
-    // Note: Will only work if the userId is ecrypted using the same algorithm
-    // Decrypt the userId
-    const decipher = crypto.createDecipher('aes256', 'a password'); // replace 'aes256' and 'a password' with your actual algorithm and password
-    let decrypted = decipher.update(encryptedUserId, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-
-    const userId = decrypted;
-
-    const userProfile = await UserProfile.findOne({ userId });
-
-    response.json(userProfile);
+    try {
+      const userId = request.query.id;
+  
+      const userProfile = await UserProfile.findOne({ userId: userId });
+  
+      if (!userProfile) {
+        return response.status(404).json({ message: 'User not found.' });
+      }
+  
+      response.json(userProfile);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      response.status(500).json({ message: 'Server error' });
+    }
   };
 }
 
