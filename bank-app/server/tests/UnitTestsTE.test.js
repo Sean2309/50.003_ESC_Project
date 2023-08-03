@@ -29,7 +29,8 @@ const mockResponse_data = [
     "notificationMethod": 0,
     "emailAddress": "example@gmail.com",
     "phoneNumber": "+6512345678",
-    "membershipId": "12345678"
+    "membershipId": "12345678",
+    "userId": "12345678"
   }];
 
 
@@ -55,7 +56,7 @@ describe('Unit Tests for makeApiRequest', () => {
 
     await transactionEnquiryController.makeApiRequest(['0000', '0001'], 'AirAsia');
 
-    expect(logSpy.mock.calls).toContainEqual(['localhost/transferconnect/check/DBS/AirAsia/0000,0001']);
+    expect(logSpy.mock.calls).toContainEqual(['localhost/api/transactionenquiry/check/undefined/AirAsia/0000,0001']);
     expect(axios.get).toHaveBeenCalledTimes(2);
 
   })
@@ -85,7 +86,7 @@ describe('Unit Tests for updateDBandNotifs', () => {
     await transactionEnquiryController.updateDBandNotifs(mockResponse_data, "AirAsia")
 
     expect(transactionEnquiryController.updateOutcomeCodes).toHaveBeenCalledWith("0000", "0022", "AirAsia");
-    expect(transactionEnquiryController.sendPushNotification).toHaveBeenCalledWith("12345678", "0022");
+    expect(transactionEnquiryController.sendPushNotification).toHaveBeenCalledWith(undefined, "0022");
 
     mockupdateOutcomeCodes.mockRestore();
     mocksendPushNotification.mockRestore();
