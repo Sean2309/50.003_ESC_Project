@@ -1,5 +1,4 @@
-const transactionEnquiryControllerClass = require('../controllers/transactionEnquiryController').TransactionEnquiryController;
-const transactionEnquiryController = new transactionEnquiryControllerClass(false);
+const transactionEnquiryController = require('../controllers/transactionEnquiryController');
 const axios = require('axios');
 
 
@@ -35,6 +34,9 @@ const mockResponse_data = [
 
 
 // =========== Test Suite and Cases ======== //
+beforeEach(() => {
+  transactionEnquiryController.stopEnquiry();
+})
 
   // ====== Unit Test ====== // 
 describe ('Unit Tests for makeApiRequest', () => {
@@ -125,12 +127,11 @@ describe ('Unit Tests for startEnquiry', () => {
     test('startEnquiry calls getReferenceNumbers, makeApiRequest and updateDbandNotifs', async () => {
 
       jest.useFakeTimers();
+      await transactionEnquiryController.startEnquiry();
 
-      const transactionEnquiryControllerTrue = new transactionEnquiryControllerClass(true);
-
-      const mockgetReferenceNumbers = jest.spyOn(transactionEnquiryControllerTrue, "getReferenceNumbers").mockResolvedValue();
-      const mockmakeApiRequest = jest.spyOn(transactionEnquiryControllerTrue, "makeApiRequest").mockResolvedValue();
-      const mockupdateDBandNotifs = jest.spyOn(transactionEnquiryControllerTrue, "updateDBandNotifs").mockResolvedValue();
+      const mockgetReferenceNumbers = jest.spyOn(transactionEnquiryController, "getReferenceNumbers").mockResolvedValue();
+      const mockmakeApiRequest = jest.spyOn(transactionEnquiryController, "makeApiRequest").mockResolvedValue();
+      const mockupdateDBandNotifs = jest.spyOn(transactionEnquiryController, "updateDBandNotifs").mockResolvedValue();
       
       //move forward by 1 only
       jest.advanceTimersToNextTimer(1);
@@ -139,28 +140,28 @@ describe ('Unit Tests for startEnquiry', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(transactionEnquiryControllerTrue.getReferenceNumbers).toHaveBeenCalledTimes(1);
-      expect(transactionEnquiryControllerTrue.makeApiRequest).toHaveBeenCalledTimes(1);
-      expect(transactionEnquiryControllerTrue.updateDBandNotifs).toHaveBeenCalledTimes(1);
+      expect(transactionEnquiryController.getReferenceNumbers).toHaveBeenCalledTimes(1);
+      expect(transactionEnquiryController.makeApiRequest).toHaveBeenCalledTimes(1);
+      expect(transactionEnquiryController.updateDBandNotifs).toHaveBeenCalledTimes(1);
 
 
       mockgetReferenceNumbers.mockRestore();
       mockmakeApiRequest.mockRestore();
       mockupdateDBandNotifs.mockRestore();
 
-      transactionEnquiryControllerTrue.stopEnquiry();
+      transactionEnquiryController.stopEnquiry();
 
     })
 
     test('startEnquiry calls has delay of 5 seconds - change accordingly', async () => {
 
       jest.useFakeTimers();
+      
+      await transactionEnquiryController.startEnquiry();
 
-      const transactionEnquiryControllerTrue = new transactionEnquiryControllerClass(true);
-
-      const mockgetReferenceNumbers = jest.spyOn(transactionEnquiryControllerTrue, "getReferenceNumbers").mockResolvedValue();
-      const mockmakeApiRequest = jest.spyOn(transactionEnquiryControllerTrue, "makeApiRequest").mockResolvedValue();
-      const mockupdateDBandNotifs = jest.spyOn(transactionEnquiryControllerTrue, "updateDBandNotifs").mockResolvedValue();
+      const mockgetReferenceNumbers = jest.spyOn(transactionEnquiryController, "getReferenceNumbers").mockResolvedValue();
+      const mockmakeApiRequest = jest.spyOn(transactionEnquiryController, "makeApiRequest").mockResolvedValue();
+      const mockupdateDBandNotifs = jest.spyOn(transactionEnquiryController, "updateDBandNotifs").mockResolvedValue();
       
       //only call once every 5s
       jest.advanceTimersByTime(5000);
@@ -169,16 +170,16 @@ describe ('Unit Tests for startEnquiry', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(transactionEnquiryControllerTrue.getReferenceNumbers).toHaveBeenCalledTimes(1);
-      expect(transactionEnquiryControllerTrue.makeApiRequest).toHaveBeenCalledTimes(1);
-      expect(transactionEnquiryControllerTrue.updateDBandNotifs).toHaveBeenCalledTimes(1);
+      expect(transactionEnquiryController.getReferenceNumbers).toHaveBeenCalledTimes(1);
+      expect(transactionEnquiryController.makeApiRequest).toHaveBeenCalledTimes(1);
+      expect(transactionEnquiryController.updateDBandNotifs).toHaveBeenCalledTimes(1);
 
 
       mockgetReferenceNumbers.mockRestore();
       mockmakeApiRequest.mockRestore();
       mockupdateDBandNotifs.mockRestore();
 
-      transactionEnquiryControllerTrue.stopEnquiry();
+      transactionEnquiryController.stopEnquiry();
 
     })
 
