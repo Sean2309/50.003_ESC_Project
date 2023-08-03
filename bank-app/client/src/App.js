@@ -30,8 +30,16 @@ function App() {
               <ProtectedRoute>
                 <Marketplace />
               </ProtectedRoute>
-        )}
-          />
+            )}
+              />
+          {/* <Route
+            path="transaction"
+            element={(
+              <ProtectedRoute>
+                <TransactionHistory />
+              </ProtectedRoute>
+            )}
+              /> */}
         </Route>
       </Routes>
     </BrowserRouter>

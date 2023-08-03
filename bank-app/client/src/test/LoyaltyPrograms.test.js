@@ -1,10 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen, act, waitFor } from '@testing-library/react';
 // import axiosMock from './axiosMock'; // Mock axios for testing purposes
-import TransferForm from './components/TransferForm';
-import Marketplace from './views/Marketplace';
-import LoyaltyPrograms from './components/LoyaltyPrograms';
-import LoyaltyProgram from './components/LoyaltyProgram';
+import LoyaltyPrograms from '../components/LoyaltyPrograms';
 import axios from 'axios';
 
 
