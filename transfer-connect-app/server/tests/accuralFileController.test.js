@@ -1,17 +1,12 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
-const config = require('../utils/config');
 const { createObjectCsvWriter } = require('csv-writer');
 const {
   getModel,
   getDataFromCollection,
   groupData,
   writeGroupedDataToCsv,
-  writeCollectionsToCsv,
-  uploadFilesToServer,
-  main,
-  queryFromDBandUpload
 } = require('../controllers/accrualFileController');
 const {clearFolder} = require('../controllers/clearFolder')
 
