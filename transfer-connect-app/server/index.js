@@ -7,8 +7,15 @@ const mongoose = require('mongoose');
 const transactionRouter = require('./routes/transactionRouter');
 const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
 const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
+const accrualFileController = require('./controllers/accrualFileController');
+const handbackFileController = require('./controllers/handbackFileController');
+const transactionEnquiryModel = require('./models/transactionEnquiryModel');
 
 const app = express();
+
+// createMongoDBCollection.createNewCollection();
+// accrualFileController.queryFromDBandUpload();
+handbackFileController.testHandbackFileFns();
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL,  {dbName: config.DB_NAME, useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));

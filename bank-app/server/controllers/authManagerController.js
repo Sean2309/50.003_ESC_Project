@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 const UserCredentials = require('../models/userCredentials');
 const UserProfile = require('../models/userProfile');
+const { generateWebSocketId } = require('../controllers/notificationSendingController');
 const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
   constructor() {
-    this.createUser();
   }
 
   // Handle the POST request to authenticate a user
@@ -34,7 +34,6 @@ class AuthManagerController {
           // Store into cookie
           response.cookie('token', token, { httpOnly: true });
 
-          // Send the token back to the client
           response.status(200).json({
             msg: 'User is logged in',
           });
@@ -57,12 +56,14 @@ class AuthManagerController {
     //console.log("Auth: ",token)
 
     try {
-      jwt.verify(token, SECRET_CODE);
+      const decoded = jwt.verify(token, SECRET_CODE);
 
       // if token is verified, then set auth to true
-      response.status(200).json({ message: 'Authorized', auth: true });
+      
+      // id for notif system. 
+      //TODO: we need to protect this somehow
+      response.status(200).json({ message: 'Authorized', auth: true, id: decoded.userId});
     } catch (error) {
-      console.error(error);
       response.status(401).json({ message: 'Authorization error', auth: false });
     }
   };

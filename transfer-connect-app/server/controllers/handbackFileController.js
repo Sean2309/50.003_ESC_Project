@@ -1,6 +1,4 @@
-// Importing files/modules
-require('dotenv').config({ path: __dirname + '/../.env' });
-const transactionEnquiryModel = require('../models/transactionEnquiryModel');
+// Importing Modules
 const mongoose = require('mongoose');
 const fs = require(`fs`);
 const csvParser = require(`csv-parser`);
@@ -8,32 +6,37 @@ const Files = require('files.com/lib/Files').default;
 const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
+const { CronJob } = require('cron');
+
+// Importing Config Files + Schemas
+require('dotenv').config({ path: __dirname + '/../.env' });
+var config = require('../utils/config');
+const transactionEnquiryModel = require('../models/transactionEnquiryModel');
+
+// Importing Helper Functions
 var getFormattedDate = require('./date').getFormattedDate;
 var clearFolder = require('./clearFolder').clearFolder;
-var config = require('../utils/config');
-const { CronJob } = require('cron');
+var convertDateFormat = require('./convertDateFormat').convertDateFormat;
 
 // Creates the sftp_handback_downloads folder if it doesn't exist
 if (!fs.existsSync(path.join(__dirname, 'sftp_handback_downloads'))) {
   fs.mkdirSync(path.join(__dirname, 'sftp_handback_downloads'));
 }
 
+// Class for the Handback File Controller
 class HandbackFileController {
 
   constructor() {
-    this.formattedDate = getFormattedDate("compact");
-    // SFTP Downloads Folder Name
-    this.sftpHandbackDownloads = 'sftp_handback_downloads';
-    // Cache for storing the created models
-    this.modelCache = {};
-    this.testMongoDBURL = 'mongodb+srv://tengtjinyang:zagNwPsta2HHTyfE@transferconnect.0papjri.mongodb.net/TransferConnectDB';
+    this.formattedDate = getFormattedDate("compact"); // Example 20200823
+    this.sftpHandbackDownloads = 'sftp_handback_downloads'; // SFTP Directory for the downloaded files to be stored in
+    this.modelCache = {}; // Cache for storing the created models
 
-    this.startService();
+    this.startService(); // Starts the Cron Job
   }
 
   startService = async () => {
     let job = new CronJob(
-      '30 30 * * * *',
+      '30 30 * * * *', // Runs at the 30th Second of the 30th Minute of every hour
       this.downloadfromSFTPandUpload,
     )
     job.start();
@@ -42,25 +45,24 @@ class HandbackFileController {
 
   downloadfromSFTPandUpload = async () => {
     clearFolder(this.sftpHandbackDownloads);
-    await retrieveFromServer(this.formattedDate);
-    await uploadFilesToMongoDB(this.formattedDate);
+    await this.retrieveFromServer(this.formattedDate);
+    await this.uploadFilesToMongoDB(this.formattedDate);
   }
 
-  testAccrualFileFns = async () => {
-    // Defining Variables
+  testHandbackFileFns = async () => {
+    // This is a test function, with a fixed date for demonstration purposes
     // Dates
     const testDate = `20200812`;
 
     // Running the functions
-    clearFolder(sftpHandbackDownloads);
-    await retrieveFromServer(testDate);
+    clearFolder(this.sftpHandbackDownloads);
+    await this.retrieveFromServer(testDate);
 
-    await uploadFilesToMongoDB(testDate);
+    await this.uploadFilesToMongoDB(testDate);
     console.log("Done!");
+  };
 
-  }
-
-  // Function to get the model for a given Loyalty Program
+  // Function that compares the existing model with the new one. If needed, it will replace the existing model with the new one
   getModelForLP = (loyaltyProgram) => {
     if (!this.modelCache[loyaltyProgram]) {
       const model = mongoose.models[loyaltyProgram] || mongoose.model(loyaltyProgram, transactionEnquiryModel);
@@ -72,7 +74,9 @@ class HandbackFileController {
   // =========== START OF MAIN FUNCTIONS ======================
   retrieveFromServer = async (targetDate) => {
     /*
-    This function retrieves the handback files from the SFTP server
+    Functionalities:
+    - retrieves the handback files from the SFTP server
+    - stores the files in the sftp_handback_downloads folder
     */
     let fileName;
     for (const collection of config.sftpCollections) {
@@ -88,7 +92,7 @@ class HandbackFileController {
 
       if (!isBrowser()) {
         // Download to a file on disk
-        await downloadableFile.downloadToFile(path.join(__dirname, `${sftpHandbackDownloads}/${fileName}`));
+        await downloadableFile.downloadToFile(path.join(__dirname, `${this.sftpHandbackDownloads}/${fileName}`));
         console.log(`File ${fileName} downloaded!\n`);
       };
     };
@@ -96,14 +100,14 @@ class HandbackFileController {
 
   extractDataFromCsv = async (filePath) => {
     /*
-    Function tasks:
-    1) extracts data from the downloaded handback csv files
-    2) generates a random outcome code for each 
-   
+    Functionalities:
+    -extracts data from the downloaded handback csv files
+    -returns the extracted data in json format
     */
 
     return new Promise((resolve, reject) => {
-
+      
+      // Parses the string to extract partnerCode data
       const str1 = filePath.split('\\');
       const splitStr = str1[str1.length - 1].split(/_/);
       const partnerCode = splitStr[0];
@@ -113,7 +117,13 @@ class HandbackFileController {
       fs.createReadStream(filePath)
         .pipe(csvParser())
         .on('data', (data) => {
-          // Extracting outcome code
+          /*
+          Reformatting of outcome code
+          -outcome codes are stored as strings with quotes around them e.g '"0001"'
+          -removes the quotation marks from the outcome code
+          '"0001"' -> '0001'
+          -this standardises the format of String data being added to the MongoDB
+          */
           if (data['Outcome Code'] && data['Outcome Code'].startsWith('"') && data['Outcome Code'].endsWith('"')) {
             data['Outcome Code'] = data['Outcome Code'].slice(1, -1);
           };
@@ -133,16 +143,22 @@ class HandbackFileController {
   };
 
   uploadFilesToMongoDB = async (targetDate) => {
+    /*
+    Functionalities:
+    -receives extracted data from the csv in the variable results
+    -updates the MongoDB with the data iteratively, row by row
+    -finds the document with matching referenceNumber + transferDate
+    -updates the document with the new data
+    */
 
     for (let i = 0; i < config.sftpCollections.length; i++) {
-      const filePath = path.join(__dirname, `${sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
+      const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
       try {
-        const [partnerCode, results] = await extractDataFromCsv(filePath);
-        // console.log(`Extracting data from ${partnerCode} Handback File`);
-        const Model = getModelForLP(config.mongoDBCollections[i]);
+        const [partnerCode, results] = await this.extractDataFromCsv(filePath);
+        const Model = this.getModelForLP(config.mongoDBCollections[i]);
         for (const result of results) {
           let mappedResult = {
-            transferDate: result['Transfer date'],
+            transferDate: convertDateFormat(result['Transfer date']),
             partnerCode: partnerCode,
             referenceNumber: result['Reference number'],
             outcomeCode: result['Outcome Code'],

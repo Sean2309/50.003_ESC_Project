@@ -1,55 +1,21 @@
-require('dotenv').config({path: __dirname + '/../.env'});
+// Importing Modules
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
+// Importing Config Files + Schemas
+require('dotenv').config({path: __dirname + '/../.env'});
 const transactionEnquiryModel = require('../models/transactionEnquiryModel');
-const handbackFileController = require('../controllers/handbackFileController');
-const filePath = path.join(__dirname, `../controllers/testCsvs`);
 const config = require('../utils/config');
 
+// Importing Helper Functions
+const handbackFileController = require('../controllers/handbackFileController');
+const convertDateFormat = require('../controllers/convertDateFormat').convertDateFormat;
 
-/*
-Unit Testing: Testing with purely the function, without any external modules
-Integration Testing: Testing with the imported modules, bottom up approach
-
-Imported Modules:
-- mongoose
-- fs
-- path
-- files.com
-- csv-parser
-
-Modules used in Functions:
-
-getModelForLP:
-- mongoose
-
-retrieveFromServer:
-- files.com
-- path
-
-extractDataFromCSV:
--fs
--csv-parser
-
-uploadFilesToMongoDB:
-- path
-- mongoose
-
-=> Can't do unit testing but can do integration testing
-
-For Uploading to mongodb, create and write into a csv. 
-This csv will be used to upload data into mongodb
-Then query the data from mongo db and see if it matches the data that we have uploaded
-
-After that, we test the extracting data from csv function
-with the written test csv, extract the headers and data => see if it matches the expected headers and data
-
-*/
-// Creating a test csv
+// Instantiating Variables
+const filePath = path.join(__dirname, `../controllers/testCsvs`);
 const testPartnerCode = 'TESTPARTNERCODE';
 const testDate = '20210923';
 const testCsvName = `${testPartnerCode}_HANDBACK_${testDate}.csv`;
@@ -62,6 +28,12 @@ const records = [
     transferAmount: '85',
     referenceNumber: '998877665b',
     outcomeCode: '0005',
+  },
+  {
+    transferDate: '24/9/2022',
+    transferAmount: '99',
+    referenceNumber: '556677889a',
+    outcomeCode: '0099',
   }
 ];
 beforeAll(async() => {
@@ -70,9 +42,9 @@ beforeAll(async() => {
   
   if (!fs.existsSync(testCsvDir)) {
     fs.mkdirSync(testCsvDir);
-    conso
-  }
+  };
 
+  // Creates the test csv within the testCsvs folder
   const csvWriter = createCsvWriter({
     path: testCsvPath,
     header: [
@@ -93,53 +65,61 @@ beforeAll(async() => {
 
 // ======== START OF TESTING ===========================
 describe('retrieveFromServer function check', () => {
-    // beforeAll(async () => {
-    //   // Call the actual function here
-    //   await handbackFileController.retrieveFromServer(testDate);
-    // }, 30000); // Increase the timeout to allow time for the file download
 
-    test('should return success if retrieveFromServer is executed successfully', async () => {
-      // Mock the implementation of retrieveFromServer
-      const retrieveFromServerSpy = jest.spyOn(handbackFileController, 'retrieveFromServer').mockReturnValue(100);
+  /*
+  3 Tests: 
+  - Mock Implementation of the retrieveFromServer function
+  - Compares the downloaded file name to the appropriate naming convention => this also tests the file type (.csv)
+  - Compares the column headers within the csv to the expected headers
+  */
+
+  test('should return success if retrieveFromServer is executed successfully', async () => {
+    // Mock the implementation of retrieveFromServer
+    const retrieveFromServerSpy = jest.spyOn(handbackFileController, 'retrieveFromServer').mockReturnValue(100);
+
+    // Call the function in your test
+    const result = await retrieveFromServerSpy(testDate);
+
+    // Assertion
+    expect(result).toBe(100);
+
+    // Restore the original implementation
+    retrieveFromServerSpy.mockRestore();
+  });
   
-      // Call the function in your test
-      const result = await retrieveFromServerSpy(testDate);
-  
-      // Assertion
-      expect(result).toBe(100);
-  
-      // Restore the original implementation
-      retrieveFromServerSpy.mockRestore();
-    });
-    
-    test('should return success if naming convention and downloaded file ext is correct', async () => {
-        process.chdir(filePath);
-        const files = fs.readdirSync(`./`);
-        for (let i = 0; i < files.length; i++) {
-            expect(files[i]).toMatch(/^\w+_HANDBACK_\d{8}\.csv$/);
-        }
-    });
-  
-    test('should return success if csv headers are correct', (done) => {
-        const expectedHeaders = ['Transfer date', 'Transfer Amount', 'Reference number', 'Outcome Code'];
-        let completed = 0;
-        process.chdir(filePath);
-        const files = fs.readdirSync(`./`);
-            for (let i = 0; i < files.length; i++) {
-                fs.createReadStream(path.join(filePath, files[i]))
-                .pipe(csvParser())
-                .on('headers', (headers) => {
-                    expect(headers).toEqual(expectedHeaders);
-                    completed++;
-                    if (completed === files.length) {
-                    done();
-                    }
-            });
-        }
-        });
+  test('should return success if naming convention and downloaded file ext is correct', async () => {
+      process.chdir(filePath);
+      const files = fs.readdirSync(`./`);
+      for (let i = 0; i < files.length; i++) {
+          expect(files[i]).toMatch(/^\w+_HANDBACK_\d{8}\.csv$/);
+      }
+  });
+
+  test('should return success if csv headers are correct', (done) => {
+      const expectedHeaders = ['Transfer date', 'Transfer Amount', 'Reference number', 'Outcome Code'];
+      let completed = 0;
+      process.chdir(filePath);
+      const files = fs.readdirSync(`./`);
+          for (let i = 0; i < files.length; i++) {
+              fs.createReadStream(path.join(filePath, files[i]))
+              .pipe(csvParser())
+              .on('headers', (headers) => {
+                  expect(headers).toEqual(expectedHeaders);
+                  completed++;
+                  if (completed === files.length) {
+                  done();
+                  }
+          });
+      }
+      });
   });
 
 describe('extractDataFromCSV function check', () => {
+
+  /*
+  1 Test:
+  - Iterates through the testCsvs directory -> compares the extracted partnerCode to the expected testPartnerCode
+  */
 
   test('should return success if extractDataFromCSV is executed successfully', async () => {
     for (let i = 0; i < config.sftpCollections.length; i++) {
@@ -153,6 +133,18 @@ describe('extractDataFromCSV function check', () => {
 });
 
 describe('uploadFilesToMongoDB function check', () => {
+
+  /*
+  2 Tests:
+  - Mock implmentation of the uploadFilesToMongoDB function
+  - Test on the mongodb connection:
+    - Connects to the mongodb
+    - Extracts the data from the testCsv and stores in the variable rawDataFromCsv
+    - Queries the uploaded collection data into the variable dataFromDB
+    - Converts the rawDataFromCSV into the db format, storing in the variable dataFromCsv
+    - Compares the values from dataFromDB and dataFromCsv
+  */
+
   test('should return success if uploadFilesToMongoDB is executed successfully', async () => {
     // Mock the implementation of uploadFilesToMongoDB
     const uploadFilesToMongoDBSpy = jest.spyOn(handbackFileController, 'uploadFilesToMongoDB').mockReturnValue(100);
@@ -182,16 +174,30 @@ describe('uploadFilesToMongoDB function check', () => {
         .on('end', async () => {
           try {
             // Update or create a document in the collection
-            // console.log(`Data from csv transfer amt: ${rawdataFromCSV[0]["Transfer Amount"]}`)
-            const filter = { referenceNumber: rawdataFromCSV[0]["Reference number"] };
-            const update = {
-              transferDate: rawdataFromCSV[0]["Transfer date"],
-              transferAmount: parseInt(rawdataFromCSV[0]["Transfer Amount"]),
-              outcomeCode: rawdataFromCSV[0]["Outcome Code"],
+            for (let row of rawdataFromCSV) {
+              const convertedDate = convertDateFormat(row['Transfer date']);
+              row['Transfer date'] = convertedDate;
+              let mappedResult = {
+                transferDate: convertedDate,
+                referenceNumber: row['Reference number'],
+                outcomeCode: row['Outcome Code'],
+                transferAmount: parseInt(row['Transfer Amount']),
+              }
+              let doc = await Model.findOne({
+                $and: [
+                  { referenceNumber: mappedResult.referenceNumber },
+                  { transferDate: mappedResult.transferDate }]
+              });
+              if (doc) {
+                doc.set(mappedResult);
+                await doc.save();
+              } else {
+                await Model.create(mappedResult);
+              }
             };
-
-            const options = { upsert: true, new: true }; // "upsert" creates a new document if not found
-            await Model.findOneAndUpdate(filter, update, options);
+            
+            const filter = { referenceNumber: rawdataFromCSV[0]["Reference number"] };
+    
             // Querying from mongo db
             const dataFromDB = await Model.find(filter);
             

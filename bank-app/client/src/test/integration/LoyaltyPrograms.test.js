@@ -31,7 +31,6 @@ describe('LoyaltyPrograms Component', () => {
       tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
       membershipFormat: "^\\d{9}[a-zA-Z]$",
       currencyRate: 1.2
-      
     }
   ];
 
@@ -50,13 +49,14 @@ describe('LoyaltyPrograms Component', () => {
     });
     
     // received absolutely zero data
+    // should therefore console.error
     await waitFor(() => expect(spy).toHaveBeenCalled());
 
   });
 
   beforeEach(() => {
     jest.mock('axios');
-    // Mock the axios.get function to return fake responses
+    // Mock the axios.get function to return responses
     axios.get = jest.fn().mockResolvedValue((url) => {
       if (url === 'http://localhost:3001/api/userprofile') {
         return { data: mockedUserProfile };
@@ -68,6 +68,7 @@ describe('LoyaltyPrograms Component', () => {
   });
 
   afterEach(() => {
+    // ensures no mock can interfere with each other
     jest.clearAllMocks();
   })
 
@@ -79,12 +80,10 @@ describe('LoyaltyPrograms Component', () => {
       render(<LoyaltyPrograms userId={mockedUserId} />);
     });
 
-    
+    // Wait for the component to fetch data and re-render
     await expect(spy).toHaveBeenCalled();
 
-    // Wait for the component to fetch data and re-render
-
-    // Assert the loyalty program components are rendered
+    // Assert the loyalty program components are interactable/seen by users
     expect(screen.getAllByTestId('loyaltyprograms-test')).toHaveLength(mockedLoyaltyPrograms.length);
 
     expect(screen.getByText('Loyalty Programs')).toBeInTheDocument();

@@ -117,6 +117,8 @@ describe('TransferForm Component', () => {
         const transferButton = screen.getByRole('button');
         // user opens transferForm
         fireEvent.click(transferButton);
+        // check if modal is properly rendered
+        expect(screen.getByTestId("modal-dialog")).toBeInTheDocument();
 
         // Find input fields and submit button
         const memberNameInput = screen.getByTestId('member-name').querySelector('input');
@@ -156,6 +158,8 @@ describe('TransferForm Component', () => {
         const transferButton = screen.getByRole('button');
         // user opens transferForm
         fireEvent.click(transferButton);
+        // check if modal is properly rendered
+        expect(screen.getByTestId("modal-dialog")).toBeInTheDocument();
 
         // Find input fields and submit button
         const memberNameInput = screen.getByTestId('member-name').querySelector('input');
@@ -172,6 +176,7 @@ describe('TransferForm Component', () => {
 
         fireEvent.submit(submitButton);
 
+      // getDate was called
       await expect(spy).toHaveBeenCalled();
       // getDate returns something!
       await expect(spy).toHaveReturned();
@@ -179,7 +184,5 @@ describe('TransferForm Component', () => {
       // https://github.com/jestjs/jest/issues/3821
     
     });
-
-    // check if overlay is there in integration
 
 });

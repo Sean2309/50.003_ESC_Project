@@ -287,10 +287,12 @@ classDiagram
 HandbackController "1" --> "*" TransactionModel 
 
 class HandbackController{
-    confirmedTransactions: List<<list>TransactionModel>
-    retrieveFromServer(): void
-    extractDataFromCsv(String filePath): void
-    uploadFilesToMongoDB(): void
+    -confirmedTransactions: List<<list>ConfirmationModel>
+    -convertDateFormat(String date): String date
+    -getModelForLP(String loyaltyProgram): mongoose.model[loyaltyProgram]
+    -retrieveFromServer(Date targetDate): void
+    -extractDataFromCsv(String filePath): String partnerCode, object results
+    -uploadFilesToMongoDB(Date targetDate): void
 }
 
 class TransactionModel{

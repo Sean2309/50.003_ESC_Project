@@ -24,7 +24,6 @@ userCredentialsSchema.pre('save',function(next){
           }
 
           user.password = hash
-          console.log('Hashed password',user.password)
           next()
         })
       }
