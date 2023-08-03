@@ -21,7 +21,6 @@ class LoyaltyPrograms extends Component {
     try {
       const loyaltyProgramsQueryResponse = await axios.get('http://localhost:3001/api/loyaltyprograms');
       const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data?.loyaltyPrograms || [];
-      console.log(loyaltyProgramsQueryResponse);
       this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
     } catch (error) {
       console.error('Error fetching loyalty programs:', error);
@@ -30,8 +29,7 @@ class LoyaltyPrograms extends Component {
 
   getUserProfile = async () => {
     try {
-      const { userId } = this.props;
-      const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } , withCredentials: true}); // added withCredentials
+      const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { withCredentials: true}); // added withCredentials
       const userProfileQueryData = userProfileQueryResponse.data || {};
       this.setState({ userProfile: userProfileQueryData });
     } catch (error) {
