@@ -8,34 +8,41 @@ class LoyaltyProgramQueryController {
   }
 
   getLoyaltyPrograms = async (request, response) => {
-    // Grab partnerCode from path params
-    const { partnerCode } = request.params;
-
     try {
-      const loyaltyPrograms = await LoyaltyProgramQueryModel.find({}); // Fetch all loyaltyProgramProviders
-
-      // Fetch the document correspond to the partnerCode, which contains a nested document of programIds and currencyRates specific to the bank
-      const currencyRates = await CurrencyRateModel.findOne({ partnerCode });
-
-      const currencyRatesArray = currencyRates.currencyRates;
-
-      const loyaltyProgramsWithRates = [];
-
-      currencyRatesArray.forEach((currencyRateObject) => {
-        const { programId, currencyRate } = currencyRateObject;
-
-        const loyaltyProgram = loyaltyPrograms.find((obj) => obj.programId === programId);
-
-        // add currencyRate key to document≠
-        loyaltyProgram.set('currencyRate', currencyRate);
-
-        loyaltyProgramsWithRates.push(loyaltyProgram);
-      });
-
+      const partnerCode = request.params.partnerCode;
+      const loyaltyProgramsWithRates = await this.fetchLoyaltyProgramsWithRates(partnerCode);
       response.status(200).json(loyaltyProgramsWithRates);
     } catch (error) {
       response.status(500).json({ message: error.message });
     }
+  };
+
+  fetchLoyaltyProgramsWithRates = async (partnerCode) => {
+
+    const loyaltyPrograms = await this.fetchLoyaltyPrograms();
+ 
+  
+    const currencyRates = await this.fetchCurrencyRates(partnerCode);
+  
+    
+    //map currencyRates to loyaltyPrograms
+    const loyaltyProgramsWithRates = currencyRates.currencyRates.map((currencyRateObject) => {
+      const { programId, currencyRate } = currencyRateObject;
+      const loyaltyProgram = loyaltyPrograms.find((obj) => obj.programId === programId);
+      //add currencyRates to loyalty program data 
+      loyaltyProgram.currencyRate = currencyRate;
+      return loyaltyProgram;
+    });
+  
+    return loyaltyProgramsWithRates;
+  };
+
+  fetchLoyaltyPrograms = async () => {
+    return LoyaltyProgramQueryModel.find({});
+  };
+
+  fetchCurrencyRates = async (partnerCode) => {
+    return CurrencyRateModel.findOne({ partnerCode });
   };
 
   populateDb = async () => {
