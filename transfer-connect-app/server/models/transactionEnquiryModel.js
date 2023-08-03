@@ -17,4 +17,4 @@ const transactionSchema = new mongoose.Schema({
 
 
 
-module.exports = {transactionSchema};
+module.exports = transactionSchema;
