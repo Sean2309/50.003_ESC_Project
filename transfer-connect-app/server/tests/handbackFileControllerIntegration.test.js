@@ -63,6 +63,12 @@ const records = [
     transferAmount: '85',
     referenceNumber: '998877665b',
     outcomeCode: '0005',
+  },
+  {
+    transferDate: '24/9/2022',
+    transferAmount: '99',
+    referenceNumber: '556677889a',
+    outcomeCode: '0099',
   }
 ];
 beforeAll(async() => {
