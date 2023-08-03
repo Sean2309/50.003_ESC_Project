@@ -2,15 +2,22 @@ const LoyaltyProgramQueryModel = require('../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../models/currencyRateModel');
 
 class LoyaltyProgramQueryController {
+
+
   constructor() {
-    // Populate db with mock loyalty programs and currencyRates
+    // Populate database with mockdata 
     this.populateDb();
   }
-
+  
   getLoyaltyPrograms = async (request, response) => {
     try {
+
+      // fetch query parameter (partnercode)
       const partnerCode = request.params.partnerCode;
+
+      // Obtain loyalty program data, filtered by partnercode
       const loyaltyProgramsWithRates = await this.fetchLoyaltyProgramsWithRates(partnerCode);
+
       response.status(200).json(loyaltyProgramsWithRates);
     } catch (error) {
       response.status(500).json({ message: error.message });
@@ -20,32 +27,36 @@ class LoyaltyProgramQueryController {
   fetchLoyaltyProgramsWithRates = async (partnerCode) => {
 
     const loyaltyPrograms = await this.fetchLoyaltyPrograms();
- 
-  
     const currencyRates = await this.fetchCurrencyRates(partnerCode);
   
-    
     //map currencyRates to loyaltyPrograms
     const loyaltyProgramsWithRates = currencyRates.currencyRates.map((currencyRateObject) => {
       const { programId, currencyRate } = currencyRateObject;
       const loyaltyProgram = loyaltyPrograms.find((obj) => obj.programId === programId);
+
       //add currencyRates to loyalty program data 
       loyaltyProgram.currencyRate = currencyRate;
       return loyaltyProgram;
     });
-  
+
     return loyaltyProgramsWithRates;
+    
   };
 
+
   fetchLoyaltyPrograms = async () => {
+    //fetch all loyalty program providers 
     return LoyaltyProgramQueryModel.find({});
   };
 
   fetchCurrencyRates = async (partnerCode) => {
+    //fetch currency rates, filtered by partnerCode
     return CurrencyRateModel.findOne({ partnerCode });
   };
 
   populateDb = async () => {
+
+    // Mock loyalty programs
     const mockLoyaltyPrograms = [
       {
         programId: 'GOPOINTS',
@@ -69,6 +80,7 @@ class LoyaltyProgramQueryController {
       },
     ];
 
+    // Mock currency rates 
     const mockCurrencyRates = {
       partnerCode: 'DBSSG',
       currencyRates: [
@@ -83,12 +95,12 @@ class LoyaltyProgramQueryController {
       ],
     };
 
+    //Remove all documents
     await LoyaltyProgramQueryModel.deleteMany({});
-
-    await LoyaltyProgramQueryModel.create(mockLoyaltyPrograms);
-
     await CurrencyRateModel.deleteMany({});
 
+    //Create documents 
+    await LoyaltyProgramQueryModel.create(mockLoyaltyPrograms);
     await CurrencyRateModel.create(mockCurrencyRates);
   };
 }
