@@ -1,4 +1,3 @@
-const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
 const transactionSchema = require('../models/transactionEnquiryModel.js');
 const mongoose  = require('mongoose');
 const emailNotification = require('./emailNotification.js');
@@ -105,4 +104,4 @@ const transactionController = new TransactionEnquiryController();
 
 
 
-module.exports = {transactionController};
+module.exports = transactionController;
