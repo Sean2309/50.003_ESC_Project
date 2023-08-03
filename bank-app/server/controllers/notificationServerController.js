@@ -41,4 +41,4 @@ wss.on('connection', async (connection, req) => {
 
 
 
-module.exports = {clients};
+module.exports = {clients, wss};
