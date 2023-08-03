@@ -32,6 +32,16 @@ jest.mock('csv-writer', () => ({
   createObjectCsvWriter: jest.fn(),
 }));
 
+// Mock Mongoose document
+function MockDocument(data) {
+  return {
+    ...data,
+    get: function(field) {
+      return this[field];
+    }
+  };
+}
+
 // Mock data
 const mockData = {
   'collection1': [
@@ -199,7 +209,7 @@ describe('Unit tests', () => {
   
   test('groupData function should group data by partnerCode', () => {
     // Convert array of docs to a single array to mimic getDataFromCollection's output
-    const ungroupedData = [].concat(...Object.values(mockData));
+    const ungroupedData = [].concat(...Object.values(mockData)).map(MockDocument);
     const result = groupData(ungroupedData);
   
     // Hardcoded expected result
@@ -255,7 +265,7 @@ describe('Unit tests', () => {
         }
       ]
     };
-    expect(result).toEqual(expectedResultGroup);
+    expect(result).toMatchObject(expectedResultGroup);
   });
 
   test('should delete all files in a directory', async () => {
