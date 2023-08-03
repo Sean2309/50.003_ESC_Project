@@ -64,6 +64,7 @@ class LoyaltyProgramsController {
 
     } catch (error) {
       // TODO: try again by rescheduling?
+      
     }
   };
 }

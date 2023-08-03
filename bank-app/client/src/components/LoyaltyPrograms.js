@@ -33,7 +33,6 @@ class LoyaltyPrograms extends Component {
       const { userId } = this.props;
       const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } });
       const userProfileQueryData = userProfileQueryResponse.data || {};
-  
       this.setState({ userProfile: userProfileQueryData });
     } catch (error) {
       console.error('Error fetching user profile:', error);
