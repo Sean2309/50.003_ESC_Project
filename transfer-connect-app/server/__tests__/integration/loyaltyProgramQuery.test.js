@@ -14,6 +14,8 @@ const controller = require('../../controllers/loyaltyProgramQueryController');
 
 beforeAll(async () => {
   await mongoose.connect(MONGODB_URL);
+  await LoyaltyProgramQueryModel.deleteMany({});
+  await CurrencyRateModel.deleteMany({});
 });
 
 beforeEach(async () => {
