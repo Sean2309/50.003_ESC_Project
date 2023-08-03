@@ -2,7 +2,7 @@ const twilio = require('twilio');
 
 // from twilio account, can register for it online
 const accountSid = 'AC3dbfa982e8235525cb238a8c21650a51';
-const authToken = 'b1ced07d76098bad606cd6e043c7e8a1';
+const authToken = '020b0dec527b2c037b9cdf82c8c8a521';
 const client = twilio(accountSid, authToken);
 
 async function sendMessages(phoneNumber, bankName, loyaltyProgramName, outcomeCode, transferAmount) {
