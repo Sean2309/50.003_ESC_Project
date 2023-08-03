@@ -66,9 +66,8 @@ class TransferForm extends Component {
         notificationMethod,
       };
 
-      console.log(form);
-
-      axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form)
+      // withCredentials
+      axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form, { withCredentials: true })
         .then((response) => {
           console.log(response.data);
         })

@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const UserCredentials = require('../models/userCredentials');
 const UserProfile = require('../models/userProfile');
-const { generateWebSocketId } = require('../controllers/notificationSendingController');
 const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
