@@ -1,12 +1,3 @@
-/*
-things to test:
-WebSocket connection - done
-WebSocket sending - done
-mongoDb connection
-- create collection
-- create data
-- retrieve data
-*/
 
 //==================== WebSocket integration test =====================//
 
@@ -25,6 +16,7 @@ describe('WebSocket connection', () => {
 
   afterEach(() => {
     // Close the WebSocket connection after each test
+    client1.close();
     ws.close();
 
   });
@@ -83,6 +75,8 @@ describe('WebSocket connection', () => {
   });
   await promise;
   expect(counter).toBe(2);
+
+  client2.close();
 })
 
 test('Client receives correct WebSocket message', async () => {
@@ -115,6 +109,7 @@ test('Client receives correct WebSocket message', async () => {
 
 describe('WebSocket identifies unique connections', () => {
 
+  const wss = require('../controllers/notificationServerController').wss;
   const clients = require('../controllers/notificationServerController').clients;
 
   test('WebSocket server can store unique client connection', async () => {
@@ -127,7 +122,7 @@ describe('WebSocket identifies unique connections', () => {
     expect(clientPresent).toBe(true);
 
     clientABC.close();
-
+    wss.close();
     await new Promise((resolve) => setTimeout(resolve, 100));
-  }, 6000)
+  })
 })
