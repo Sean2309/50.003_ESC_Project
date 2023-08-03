@@ -16,71 +16,13 @@ class TransactionEnquiryController {
     }
   }
 
-  populateTransactions = async () => {
-    const transactionModelAirAsia = mongoose.model("AirAsia", transactionSchema, "AirAsia");
-    const transactionModelGoJet = mongoose.model("GoJet", transactionSchema, "GoJet");
 
-    await transactionModelAirAsia.deleteMany({});
-    await transactionModelGoJet.deleteMany({});
-
-    const transactionsAirAsia = [
-      {
-        "userId": "100430043889",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "10023",
-        "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "1"
-      },
-      {
-        "userId": "100430043889",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 250,
-        "referenceNumber": "10001",
-        "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "3"
-      },
-    ]
-
-    const transactionsGoJet = [
-      {
-        "userId": "1200302J",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 100,
-        "referenceNumber": "12422",
-        "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "2"
-      }
-    ]
-
-    await transactionModelGoJet.create(transactionsGoJet);
-    await transactionModelAirAsia.create(transactionsAirAsia);
-
-  }
-
+  //needs userId -- get from client API request
   getUserTransactions = async (request, response) => {
     const userId = request.params.userId;
 
     // mock transactions ids in userProfile by systemId
     // TODO: retrieve from userProfile in integration by userId
-    const mockTransactionIds = ["1", "2", "3"];
-
-    this.populateTransactions();
 
     const allTransactions = {};
 
@@ -88,7 +30,7 @@ class TransactionEnquiryController {
 
       const transactionModel = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-      const retrievedTransactions = await transactionModel.find({ systemId: { $in: mockTransactionIds } });
+      const retrievedTransactions = await transactionModel.find({ "userId": userId });
 
       allTransactions[loyaltyProgram] = retrievedTransactions;
     }
@@ -136,7 +78,7 @@ class TransactionEnquiryController {
     let string_ids = (id_list).join();
 
     ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
-    let url = TRANSFER_CONNECT_API_URL + '/api/transactionenquiry/check/' + PARTNERCODE + '/' + loyaltyProgram;
+    let url = TRANSFER_CONNECT_API_URL + '/api/trancheck/' + PARTNERCODE + '/' + loyaltyProgram;
     url = url + "/" + string_ids;
     console.log(url);
     try {
@@ -167,8 +109,7 @@ class TransactionEnquiryController {
       for (const data of response_data) {
         let systemId = data["systemId"];
         let outcome_code = data["outcomeCode"];
-        let userId = data["membershipId"];
-        this.updateOutcomeCodes(systemId, outcome_code, loyaltyProgram);
+        let userId = await this.updateOutcomeCodes(systemId, outcome_code, loyaltyProgram);
 
         console.log(`Updated ${systemId} of ${loyaltyProgram} with outcomeCode ${outcome_code}`);
         //userId used for WebSocket connection
@@ -181,7 +122,12 @@ class TransactionEnquiryController {
   updateOutcomeCodes = async (systemId, outcome_code, loyaltyProgram) => {
     //specific loyaltyProgram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
+    //find userId 
+    const userIdCollection = await collection_connection.find({"systemId": systemId },{"userId": 1});
+    const userId = userIdCollection[0];
+    console.log(userId)
     collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
+    return userId;
   }
 
 

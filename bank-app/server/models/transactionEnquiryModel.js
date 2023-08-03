@@ -12,7 +12,8 @@ const transactionSchema = new mongoose.Schema({
   "notificationMethod": Number,
   "emailAddress": String,
   "phoneNumber": String,
-  "systemId": String
+  "systemId": String,
+  "userId": String
 });
 
 //edit to add/remove loyaltyprograms available
