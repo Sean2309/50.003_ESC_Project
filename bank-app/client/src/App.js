@@ -6,6 +6,7 @@ import './App.css';
 import Layout from './views/Layout';
 import Home from './views/Home';
 import Marketplace from './views/Marketplace';
+import Transactions from './views/Transactions';
 
 
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="marketplace" element={<Marketplace />} />
+          <Route path="transactions" element={<Transactions />} />
         </Route>
       </Routes>
     </BrowserRouter>

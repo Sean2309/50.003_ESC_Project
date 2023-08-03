@@ -16,5 +16,5 @@ const transactionSchema = new mongoose.Schema({
 });
 
 //edit to add/remove loyaltyprograms available
-const loyaltyprograms = ["AirAsia", "GoJet"];
-module.exports = {transactionSchema, loyaltyprograms};
+const loyaltyPrograms = ["AirAsia", "GoJet"];
+module.exports = {transactionSchema, loyaltyPrograms};

@@ -1,12 +1,12 @@
 import React from 'react';
-import Transactions from '../components/TransactionDisplay';
+import TransactionsDisplay from '../components/TransactionsDisplay';
 
 function Transactions() {
   return (
     <div data-testid="marketplace-container-test">
-      <h1>Marketplace</h1>
+      <h1>Transactions</h1>
       {/* temporarily put userId = 1 */}
-      <Transactions userId={1} />
+      <TransactionsDisplay userId={1} />
     </div>
   );
 }
