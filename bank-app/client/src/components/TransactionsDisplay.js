@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import Transaction from './Transaction';
 import axios from 'axios';
 
@@ -19,12 +19,12 @@ const TransactionsDisplay = (props) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Fetch transactions when the component is mounted
     fetchTransactions();
   }, [userId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Call the renderTransactions function to create the components array
     const array = [];
 
