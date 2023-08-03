@@ -28,7 +28,7 @@ describe('LoyaltyProgram Functions', () => {
       notificationMethod: "Bank",
     };
   
-    const mockedLoyaltyProgramData = [
+    const mockedLoyaltyProgramData = 
       {
         programName: "GoJet Points",
         description: "Feel free to adjust this",
@@ -40,7 +40,7 @@ describe('LoyaltyProgram Functions', () => {
         programId: "GOPOINTS",
         membershipFormat: "^\\d{9}[a-zA-Z]$",
       }
-    ];
+    ;
   
   
     it('handles empty loyalty program data by throwing console error', async () => {

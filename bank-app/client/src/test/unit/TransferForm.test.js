@@ -12,14 +12,14 @@ describe('TransferForm Component', () => {
         notificationMethod: "Bank",
     };
 
-    const mockedTransferProps = [
+    const mockedTransferProps = 
         {
             membershipFormat: "^\\d{9}[a-zA-Z]$",
             loyaltyProgramId: "GOPOINTS",
             userProfile: mockedUserProfile,
             currencyRate: 1.2
         }
-    ];
+    ;
 
 // for line 71
 // axios.post = jest.fn().mockResolvedValue();
