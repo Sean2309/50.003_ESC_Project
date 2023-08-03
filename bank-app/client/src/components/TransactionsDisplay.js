@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import Transaction from './Transaction';
 import axios from 'axios';
 
@@ -7,8 +7,9 @@ const TransactionsDisplay = (props) => {
 
   const [transactions, setTransactions] = useState({});
   const [componentsArray, setComponentsArray] = useState([]);
+  const [uniqueTransactionRefs, setUniqueTransactionRefs] = useState(new Set());
 
-  const getTransactions = async () => {
+  const fetchTransactions = async () => {
     try {
       const transactionEnquiryResponse = await axios.get(`http://localhost:3001/api/transactions/${userId}`);
       const transactionEnquiryData = transactionEnquiryResponse.data;
@@ -18,29 +19,34 @@ const TransactionsDisplay = (props) => {
     }
   };
 
-  useEffect(() => {
-    getTransactions();
+  useLayoutEffect(() => {
+    // Fetch transactions when the component is mounted
+    fetchTransactions();
   }, [userId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Call the renderTransactions function to create the components array
-    setComponentsArray(renderTransactions());
-  }, [transactions]);
-
-  const renderTransactions = () => {
     const array = [];
 
     // Loop through each transaction array along with loyaltyProgramId as key, and map them to Transaction components
     Object.entries(transactions).forEach(([key, transactionArray]) => {
-      const transactionsRendered = transactionArray.map((transaction) => (
-        <Transaction key={transaction.systemId} transaction={transaction} loyaltyProgramId={key}/>
-      ));
+      const transactionsRendered = transactionArray.map((transaction) => {
+        if (!uniqueTransactionRefs.has(transaction.referenceNumber)) {
+          // Push the transaction ID to the set to prevent duplicates
+          setUniqueTransactionRefs((prevSet) => new Set(prevSet).add(transaction.referenceNumber));
+
+          return (
+            <Transaction key={transaction.systemId} transaction={transaction} loyaltyProgramId={key} />
+          );
+        }
+        return null; // Skip duplicate transactions
+      });
       array.push(...transactionsRendered);
     });
 
-    // Return the array of Transaction components
-    return array;
-  };
+    // Update the components array
+    setComponentsArray(array);
+  }, [transactions, uniqueTransactionRefs]);
 
   return <div>{Object.keys(transactions).length > 0 && componentsArray}</div>;
 };
