@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { TRANSFER_CONNECT_API_URL } = require('../utils/config.js');
-const { PARTNER_CODE } = require('../utils/config.js');
+const { PARTNERCODE } = require('../utils/config.js');
 const { mongoose } = require('mongoose');
 const transactionSchema = require('../models/transactionEnquiryModel.js').transactionSchema;
 const loyaltyPrograms = require('../models/transactionEnquiryModel.js').loyaltyPrograms;
@@ -136,7 +136,7 @@ class TransactionEnquiryController {
     let string_ids = (id_list).join();
 
     ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
-    let url = TRANSFER_CONNECT_API_URL + '/transferconnect/check/' + PARTNER_CODE + '/' + loyaltyProgram;
+    let url = TRANSFER_CONNECT_API_URL + 'check/' + PARTNERCODE + '/' + loyaltyProgram;
     url = url + "/" + string_ids;
     console.log(url);
     try {

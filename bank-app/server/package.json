@@ -41,6 +41,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "coverageReporters": ["text", "html"]
+    "coverageReporters": [
+      "text",
+      "html"
+    ]
   }
 }
