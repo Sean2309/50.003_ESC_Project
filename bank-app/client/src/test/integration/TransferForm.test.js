@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen, act, waitFor } from '@testing-library/react';
 // import axiosMock from './axiosMock'; // Mock axios for testing purposes
-import TransferForm from '../components/TransferForm';
+import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
 
@@ -95,6 +95,10 @@ describe('TransferForm Component', () => {
         loyaltyProgramId={mockedTransferProps.programId}
         />);
     });
+
+    // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+    const transferButton = screen.getByRole('button');
+    fireEvent.click(transferButton);
 
     // need to simulate fireEvent button for not failing case
     // user would only see these
