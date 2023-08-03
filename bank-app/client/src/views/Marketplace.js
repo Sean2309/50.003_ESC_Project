@@ -6,7 +6,7 @@ function Marketplace() {
     <div data-testid="marketplace-container-test">
       <h1>Marketplace</h1>
       {/* temporarily put userId = 1 */}
-      <LoyaltyPrograms userId={1} />
+      <LoyaltyPrograms />
     </div>
   );
 }

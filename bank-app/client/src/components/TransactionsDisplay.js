@@ -10,7 +10,7 @@ const TransactionsDisplay = (props) => {
 
   const getTransactions = async () => {
     try {
-      const transactionEnquiryResponse = await axios.get(`http://localhost:3001/api/transactions/${userId}`);
+      const transactionEnquiryResponse = await axios.get(`http://localhost:3001/api/transactions/`, { withCredentials: true });
       const transactionEnquiryData = transactionEnquiryResponse.data;
       setTransactions(transactionEnquiryData);
     } catch (error) {
