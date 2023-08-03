@@ -23,7 +23,7 @@ class AccrualFileController {
   }
   startService = async () => {
     let job = new CronJob(
-      '0 30 * * * *',
+      '30 * * * * *',
       this.queryFromDBandUpload,
     )
 
