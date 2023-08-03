@@ -42,10 +42,14 @@ class TransferFormController {
 
       // add partnerCode to transaction data
       transferFormData.partnerCode = PARTNERCODE;
+      
+      // copy transaction over, and drop userId
+      const transaction = {...transferFormData};
+      delete transaction.userId;
 
       // submit Transaction to TransferConnect
       // check for systemId given to us by TransferConnect, tag to the transaction then save to our own DB
-      const postTransactionResponse = await this.postTransaction(transferFormData, loyaltyProgramId);
+      const postTransactionResponse = await this.postTransaction(transaction, loyaltyProgramId);
 
       transferFormData.systemId = postTransactionResponse.systemId;
 

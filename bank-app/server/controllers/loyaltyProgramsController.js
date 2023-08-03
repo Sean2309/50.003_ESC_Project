@@ -9,7 +9,6 @@ class LoyaltyProgramsController {
     cron.schedule('0 0 * * *', () => {
       this.updateLoyaltyPrograms();
     });
-    this.populateDb();
   }
 
   getLoyaltyPrograms = async (request, response) => {

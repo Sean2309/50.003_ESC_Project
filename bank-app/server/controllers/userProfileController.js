@@ -16,7 +16,7 @@ class UserProfileController {
     // Verify token
     try {
       const decoded = jwt.verify(token, SECRET_CODE);
-      request.user = decoded.user;
+      request.userId = decoded.userId;
       next();
     } catch (err) {
       response.status(401).json({ msg: 'Token is not valid' });
@@ -35,7 +35,6 @@ class UserProfileController {
   
       response.json(userProfile);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
       response.status(500).json({ message: 'Server error' });
     }
   };

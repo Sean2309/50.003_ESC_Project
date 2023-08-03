@@ -6,7 +6,6 @@ const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
   constructor() {
-    this.createUser();
   }
 
   // Handle the POST request to authenticate a user
@@ -65,7 +64,6 @@ class AuthManagerController {
       //TODO: we need to protect this somehow
       response.status(200).json({ message: 'Authorized', auth: true, id: decoded.userId});
     } catch (error) {
-      console.error(error);
       response.status(401).json({ message: 'Authorization error', auth: false });
     }
   };
