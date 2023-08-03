@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const UserCredentials = require('../models/userCredentials');
-const config = require('../utils/config');
+const UserCredentials = require('../../models/userCredentials');
+const config = require('../../utils/config');
 
 describe('UserCredentials Model Test', () => {
     let savedUser;
