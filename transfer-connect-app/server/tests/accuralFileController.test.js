@@ -277,36 +277,58 @@ describe('Unit tests', () => {
   });
 });
 
-// test('writeGroupedDataToCsv function should correctly create csv files with the correct headers', async () => {
-//   // Mock the csvWriter
-//   const mockCsvWriter = {
-//     writeRecords: jest.fn().mockResolvedValue(),
-//   };
-//   createObjectCsvWriter.mockReturnValue(mockCsvWriter);
+const mockWriteRecords = jest.fn().mockResolvedValue();
 
-//   // Call the function with the given mock data
-//   const collection = 'collection1';
-//   const groupedData = groupData(mockData[collection]);
-//   await writeGroupedDataToCsv(groupedData, collection);
+describe('Integration tests', () => {
+  beforeEach(() => {
+    fs.existsSync.mockReturnValue(true); // Mock that the directory already exists
+    fs.mkdirSync.mockClear(); // Clear any previous calls to mkdirSync
+    fs.unlinkSync.mockClear(); // Clear any previous calls to unlinkSync
+    createObjectCsvWriter.mockClear(); // Clear any previous calls to createObjectCsvWriter
+    mockWriteRecords.mockClear(); // Clear any previous calls to writeRecords
 
-//   // Expect that createCsvWriter was called with the correct arguments
-//   for (let partnerCode in groupedData) {
-//     expect(createObjectCsvWriter).toHaveBeenCalledWith({
-//       path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
-//       header: [
-//         { id: 'membershipId', title: 'Membership ID' },
-//         { id: 'membershipName', title: 'Membership name' },
-//         { id: 'transferDate', title: 'Transfer date' },
-//         { id: 'transferAmount', title: 'Transfer Amount' },
-//         { id: 'referenceNumber', title: 'Reference number' },
-//         { id: 'partnerCode', title: 'Partner code' },
-//       ],
-//     });
+    createObjectCsvWriter.mockImplementation(() => {
+      return {
+        writeRecords: mockWriteRecords,
+      };
+    });
+  });
 
-//     // Expect that writeRecords was called with the correct data for the partner code
-//     expect(mockCsvWriter.writeRecords).toHaveBeenCalledWith(groupedData[partnerCode]);
-//   }
-// });        
+  afterEach(() => {
+    jest.resetAllMocks();    
+  });
+
+  test('writeGroupedDataToCsv function should correctly create csv files with the correct headers', async () => {
+    // Mock the csvWriter
+    const mockCsvWriter = {
+      writeRecords: jest.fn().mockResolvedValue(),
+    };
+    createObjectCsvWriter.mockReturnValue(mockCsvWriter);
+  
+    // Call the function with the given mock data
+    const collection = 'collection1';
+    const groupedData = groupData(mockData[collection]);
+    await writeGroupedDataToCsv(groupedData, collection);
+  
+    // Expect that createCsvWriter was called with the correct arguments
+    for (let partnerCode in groupedData) {
+      expect(createObjectCsvWriter).toHaveBeenCalledWith({
+        path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
+        header: [
+          { id: 'membershipId', title: 'Membership ID' },
+          { id: 'membershipName', title: 'Membership name' },
+          { id: 'transferDate', title: 'Transfer date' },
+          { id: 'transferAmount', title: 'Transfer Amount' },
+          { id: 'referenceNumber', title: 'Reference number' },
+          { id: 'partnerCode', title: 'Partner code' },
+        ],
+      });
+  
+      // Expect that writeRecords was called with the correct data for the partner code
+      expect(mockCsvWriter.writeRecords).toHaveBeenCalledWith(groupedData[partnerCode]);
+    }
+  }); 
+});
 
 // test('writeCollectionsToCsv function should correctly fetch, group, and write data for each collection', async () => {
 //   // Mock getModel, getDataFromCollection, groupData, writeGroupedDataToCsv functions
