@@ -31,7 +31,7 @@ class LoyaltyPrograms extends Component {
   getUserProfile = async () => {
     try {
       const { userId } = this.props;
-      const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } ,withCredentials: true});
+      const userProfileQueryResponse = await axios.get('http://localhost:3001/api/userprofile', { params: { id: userId } , withCredentials: true}); // added withCredentials
       const userProfileQueryData = userProfileQueryResponse.data || {};
       this.setState({ userProfile: userProfileQueryData });
     } catch (error) {
