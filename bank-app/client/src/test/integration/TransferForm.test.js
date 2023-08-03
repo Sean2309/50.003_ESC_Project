@@ -85,4 +85,47 @@ describe('TransferForm Component', () => {
     expect(screen.getByTestId("member-confirm")).toBeInTheDocument();
     expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
   });
+
+    // render test is already on integration side. technically.
+  // the integration's technically an indirect openModal testing ig
+  it('user can submit the transfer form, no errors are logged', async () => {
+    const spy = jest.spyOn(console, 'error');
+
+    // this is still the button at the end of the loyalty program card
+    const transferForm =
+      render(<TransferForm 
+        membershipFormat={mockedTransferProps.membershipFormat}
+        currencyRate={mockedTransferProps.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+        />);
+
+      
+      // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+      const transferButton = screen.getByRole('button');
+      // user opens transferForm
+      fireEvent.click(transferButton);
+
+      // Find input fields and submit button
+      const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+      const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+      const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+      const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+      const submitButton = screen.getByTestId('submit-form').querySelector('input');
+
+      // Fill in the form
+      fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+      fireEvent.change(membershipIdInput, { target: { value: '123456' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+      fireEvent.change(transferAmountInput, { target: { value: '50' } });
+
+      fireEvent.submit(submitButton);
+
+    
+    // await expect(screen.getByTestId('modal-dialog')).toHaveState('isOpen', false);
+    await waitFor(() => expect(spy).not.toHaveBeenCalled());
+
+    // https://github.com/jestjs/jest/issues/3821
+  
+  });
 });

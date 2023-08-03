@@ -35,7 +35,7 @@ class TransferForm extends Component {
   };
 
   // Returns true if membershipId is of correct format
-  membershipValidation = (membershipId) => {
+  membershipValidation(membershipId){
     // membershipFormat is stored as a regex expression in string format
     const { membershipFormat } = this.props;
 

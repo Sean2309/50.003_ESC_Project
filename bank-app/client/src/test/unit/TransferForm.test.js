@@ -93,8 +93,10 @@ describe('TransferForm Component', () => {
 
       // render test is already on integration side. technically.
       // the integration's technically an indirect openModal testing ig
-      it('user can submit the transfer form', async () => {
-          // this is the button at the end of the loyalty program card
+      it('user can submit the transfer form, no errors are logged', async () => {
+        const spy = jest.spyOn(console, 'error');
+
+        // this is still the button at the end of the loyalty program card
         const transferForm =
           render(<TransferForm 
             membershipFormat={mockedTransferProps.membershipFormat}
@@ -124,56 +126,93 @@ describe('TransferForm Component', () => {
 
           fireEvent.submit(submitButton);
 
-        await expect(screen.getByTestId('modal-dialog')).toHaveAttribute('open');
+        
+        // await expect(screen.getByTestId('modal-dialog')).toHaveState('isOpen', false);
+        await waitFor(() => expect(spy).not.toHaveBeenCalled());
 
         // https://github.com/jestjs/jest/issues/3821
       
       });
 
-      // it('membershipValidation testing', async () => {
-      //   const spy = jest.spyOn(TransferForm.prototype, 'membershipValidation');
-      //   await act(async () => {
-      //     // this is the button at the end of the loyalty program card
-      //       render(<TransferForm 
-      //         membershipFormat={mockedTransferProps.membershipFormat}
-      //         currencyRate={mockedTransferProps.currencyRate}
-      //         userProfile={mockedUserProfile}
-      //         loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
-      //         />);
-      //     });
-          
-      //     // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
-      //     const transferButton = screen.getByRole('button');
-      //     // user opens transferForm
-      //     fireEvent.click(transferButton);
+      it('membershipValidation was called after submission', async () => {
+        // this is the button at the end of the loyalty program card
 
-      //     // simulate user filling it...in....
-      //     // ...how do we simulate text input events
-      //     // ...we need to simulate handle change
-      //     // ...AAAAAAAAH
-
-      //   // https://github.com/jestjs/jest/issues/3821
-      //   await expect(spy).toHaveBeenCalled();
-      
-      // });
-
+      const spy = jest.spyOn(TransferForm.prototype, 'membershipValidation');
+      const transferForm =
+        render(<TransferForm 
+          membershipFormat={mockedTransferProps.membershipFormat}
+          currencyRate={mockedTransferProps.currencyRate}
+          userProfile={mockedUserProfile}
+          loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+          />);
 
         
+        // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+        const transferButton = screen.getByRole('button');
+        // user opens transferForm
+        fireEvent.click(transferButton);
 
-    // membershipValidation
-    // create fuzzer for this ig
+        // Find input fields and submit button
+        const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+        const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+        const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+        const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+        const submitButton = screen.getByTestId('submit-form').querySelector('input');
+
+        // Fill in the form
+        fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+        fireEvent.change(membershipIdInput, { target: { value: '123456' } });
+        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+        fireEvent.change(transferAmountInput, { target: { value: '50' } });
+
+        fireEvent.submit(submitButton);
+
+      await expect(spy).toHaveBeenCalled();
+
+      // https://github.com/jestjs/jest/issues/3821
     
-    // handleSubmit
-    // test preventDefault is called
-    // test axios post aka line 71
+    });
 
-    // handleChange
-    // not much to unit test, can shove to integration testing
+      it('getDate was called after submission', async () => {
+        // this is the button at the end of the loyalty program card
 
-    // handleTransferAmountKeyress
-    // ...simulate user input?
-    // can just fuzz an event
-    // and see if it gets called
+      const spy = jest.spyOn(TransferForm.prototype, 'getDate');
+      const transferForm =
+        render(<TransferForm 
+          membershipFormat={mockedTransferProps.membershipFormat}
+          currencyRate={mockedTransferProps.currencyRate}
+          userProfile={mockedUserProfile}
+          loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+          />);
+
+        
+        // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+        const transferButton = screen.getByRole('button');
+        // user opens transferForm
+        fireEvent.click(transferButton);
+
+        // Find input fields and submit button
+        const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+        const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+        const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+        const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+        const submitButton = screen.getByTestId('submit-form').querySelector('input');
+
+        // Fill in the form
+        fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+        fireEvent.change(membershipIdInput, { target: { value: '123456' } });
+        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+        fireEvent.change(transferAmountInput, { target: { value: '50' } });
+
+        fireEvent.submit(submitButton);
+
+      await expect(spy).toHaveBeenCalled();
+      // getDate returns something!
+      await expect(spy).toHaveReturned();
+
+      // https://github.com/jestjs/jest/issues/3821
+    
+    });
 
     // check if overlay is there in integration
 
