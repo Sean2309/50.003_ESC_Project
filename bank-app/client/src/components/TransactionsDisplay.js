@@ -13,6 +13,7 @@ const TransactionsDisplay = (props) => {
       const transactionEnquiryResponse = await axios.get(`http://localhost:3001/api/transactions/`, { withCredentials: true });
       const transactionEnquiryData = transactionEnquiryResponse.data;
       setTransactions(transactionEnquiryData);
+
     } catch (error) {
       console.error('Error fetching transactions', error);
     }
@@ -25,6 +26,11 @@ const TransactionsDisplay = (props) => {
   useEffect(() => {
     // Call the renderTransactions function to create the components array
     setComponentsArray(renderTransactions());
+    
+    // To prevent duplicate state
+    return () => {
+      setComponentsArray([]);
+    };
   }, [transactions]);
 
   const renderTransactions = () => {
