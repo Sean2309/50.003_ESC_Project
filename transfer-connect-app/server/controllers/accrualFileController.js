@@ -29,7 +29,7 @@ const getDataFromCollection = async (Model, stringToday) => {
 // Helper function to group data by partnerCode
 const groupData = (data) => {
   return data.reduce((acc, doc) => {
-    let partnerCode = doc.get('partnerCode'); 
+    let partnerCode = doc.partnerCode; 
     (acc[partnerCode] = acc[partnerCode] || []).push(doc);
     return acc;
   }, {});
@@ -43,7 +43,7 @@ const writeGroupedDataToCsv = async (groups, collection) => {
       path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
       header: [
         { id: 'membershipId', title: 'Membership ID' },
-        { id: 'memberName', title: 'Membership name' },
+        { id: 'memberName', title: 'Member name' },
         { id: 'transferDate', title: 'Transfer date' },
         { id: 'transferAmount', title: 'Transfer Amount' },
         { id: 'referenceNumber', title: 'Reference number' },
@@ -56,7 +56,6 @@ const writeGroupedDataToCsv = async (groups, collection) => {
 
 // Main function to write collections to CSV
 const writeCollectionsToCsv = async () => {
-  mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
   const stringToday = dateUtil.getFormattedDate();
 
   for (const collection of config.mongoDBCollections) {
@@ -66,8 +65,6 @@ const writeCollectionsToCsv = async () => {
     const groups = groupData(data);
     await writeGroupedDataToCsv(groups, collection);
   }
-
-  mongoose.connection.close();
 }
 
 const uploadFilesToServer = async () => {
@@ -107,7 +104,12 @@ const uploadFilesToServer = async () => {
 }
 
 const clearAccrualFiles = () => {
-  fs.readdirSync('accrual_files').forEach(file => fs.unlinkSync(path.join('accrual_files', file)));
+  try{
+    fs.readdirSync('accrual_files').forEach(file => fs.unlinkSync(path.join('accrual_files', file)));
+  }
+  catch (error) {
+    // No files, just ignore error
+  }
 }
 
 const main = async () => {
@@ -116,7 +118,7 @@ const main = async () => {
   await uploadFilesToServer();
 };
 
-main().catch(console.error);
+main();
 
 const queryFromDBandUpload = async () =>{
   await writeCollectionsToCsv();
