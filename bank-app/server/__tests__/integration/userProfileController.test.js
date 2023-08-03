@@ -10,7 +10,7 @@ describe('authenticateToken middleware', () => {
   it('should pass authentication and call the next middleware if a valid token is provided', () => {
     const mockRequest = {
       cookies: {
-        token: jwt.sign({ user: 'testUser' }, SECRET_CODE),
+        token: jwt.sign({ userId: 'testUser' }, SECRET_CODE),
       },
     };
     const mockResponse = {};
@@ -19,7 +19,7 @@ describe('authenticateToken middleware', () => {
     userProfileController.authenticateToken(mockRequest, mockResponse, mockNext);
 
     expect(mockNext).toHaveBeenCalled();
-    expect(mockRequest.user).toEqual('testUser');
+    expect(mockRequest.userId).toEqual('testUser');
   });
 
   it('should return 403 if no token is provided', () => {
