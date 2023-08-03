@@ -35,6 +35,13 @@ const mockgetOutcomeCodeSuccessData = [
     }));
 
 
+    jest.mock("../controllers/messageNotification", () => ({
+
+      sendMessages: jest.fn(),
+
+    }));
+
+    
 // =========== Test Suite and Cases ======== //
 
 describe ('Unit Tests for processRoute', () => {
