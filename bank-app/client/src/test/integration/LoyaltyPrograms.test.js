@@ -39,9 +39,11 @@ describe('LoyaltyPrograms Component', () => {
 
   it('handles empty loyalty program data by throwing console error', async () => {
     // Mock the axios.get function to return invalid responses
+    // Intended action: console.error shows the issue
+    // the test will still pass though since we handle the error
     axios.get = jest.fn().mockResolvedValue();
 
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const spy = jest.spyOn(console, 'error');
 
     await act(async () => {
       render(<LoyaltyPrograms userId={mockedUserId} />);
