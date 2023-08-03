@@ -2,7 +2,7 @@ const twilio = require('twilio');
 
 //from twilio account, can register for it online
 const accountSid = 'AC3dbfa982e8235525cb238a8c21650a51';
-const authToken = 'b1ced07d76098bad606cd6e043c7e8a1';
+const authToken = 'df87ac57c22b5593a05b5f470bf47adb';
 const client = twilio(accountSid, authToken);
 
 
