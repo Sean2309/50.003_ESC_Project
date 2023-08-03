@@ -2,7 +2,7 @@ import React from 'react';
 
 const Transaction = (props) => {
 
-    const { transaction } = props;
+    const { transaction, loyaltyProgramId } = props;
 
   return (
     <div>
@@ -16,6 +16,9 @@ const Transaction = (props) => {
       </p>
       <p>
         Transaction Ref. No.: {transaction.referenceNumber} 
+      </p>
+      <p>
+        Loyalty Program: {loyaltyProgramId} 
       </p>
     </div>
   )
