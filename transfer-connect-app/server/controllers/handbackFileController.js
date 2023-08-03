@@ -43,20 +43,20 @@ class HandbackFileController {
 
   downloadfromSFTPandUpload = async () => {
     clearFolder(this.sftpHandbackDownloads);
-    await retrieveFromServer(this.formattedDate);
-    await uploadFilesToMongoDB(this.formattedDate);
+    await this.retrieveFromServer(this.formattedDate);
+    await this.uploadFilesToMongoDB(this.formattedDate);
   }
 
-  testAccrualFileFns = async () => {
+  testHandbackFileFns = async () => {
     // Defining Variables
     // Dates
     const testDate = `20200812`;
 
     // Running the functions
-    clearFolder(sftpHandbackDownloads);
-    await retrieveFromServer(testDate);
+    clearFolder(this.sftpHandbackDownloads);
+    await this.retrieveFromServer(testDate);
 
-    await uploadFilesToMongoDB(testDate);
+    await this.uploadFilesToMongoDB(testDate);
     console.log("Done!");
   };
 
@@ -88,7 +88,7 @@ class HandbackFileController {
 
       if (!isBrowser()) {
         // Download to a file on disk
-        await downloadableFile.downloadToFile(path.join(__dirname, `${sftpHandbackDownloads}/${fileName}`));
+        await downloadableFile.downloadToFile(path.join(__dirname, `${this.sftpHandbackDownloads}/${fileName}`));
         console.log(`File ${fileName} downloaded!\n`);
       };
     };
@@ -135,11 +135,11 @@ class HandbackFileController {
   uploadFilesToMongoDB = async (targetDate) => {
 
     for (let i = 0; i < config.sftpCollections.length; i++) {
-      const filePath = path.join(__dirname, `${sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
+      const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
       try {
-        const [partnerCode, results] = await extractDataFromCsv(filePath);
+        const [partnerCode, results] = await this.extractDataFromCsv(filePath);
         // console.log(`Extracting data from ${partnerCode} Handback File`);
-        const Model = getModelForLP(config.mongoDBCollections[i]);
+        const Model = this.getModelForLP(config.mongoDBCollections[i]);
         for (const result of results) {
           let mappedResult = {
             transferDate: convertDateFormat(result['Transfer date']),
