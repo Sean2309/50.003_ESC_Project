@@ -11,8 +11,9 @@ const path = require('path');
 const fs = require('fs');
 const { CronJob } = require('cron');
 
-if (!fs.existsSync(path.join(__dirname, 'accrual_files'))) {
-  fs.mkdirSync(path.join(__dirname, 'accrual_files'));
+const accrual_files_dir = path.join(__dirname, 'accrual_files');
+if (!fs.existsSync(accrual_files_dir)) {
+  fs.mkdirSync(accrual_files_dir);
 }
 
 class AccrualFileController {
@@ -22,14 +23,12 @@ class AccrualFileController {
   }
   startService = async () => {
     let job = new CronJob(
-      '0 30 * * * *',
+      '30 * * * * *',
       this.queryFromDBandUpload,
     )
 
     job.start();
   }
-
-
 
   // Helper function to get a Mongoose model by collection name
   getModel = (collection) => mongoose.model(collection, transactionSchema);
@@ -56,7 +55,7 @@ class AccrualFileController {
   writeGroupedDataToCsv = async (groups, collection) => {
     for (const partnerCode in groups) {
       const csvWriter = createCsvWriter({
-        path: path.join('accrual_files', `${collection}_${partnerCode}.csv`),
+        path: path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`),
         header: [
           { id: 'membershipId', title: 'Membership ID' },
           { id: 'memberName', title: 'Member name' },
@@ -75,11 +74,11 @@ class AccrualFileController {
     const stringToday = dateUtil.getFormattedDate();
 
     for (const collection of config.mongoDBCollections) {
-      const Model = getModel(collection);
-      const data = await getDataFromCollection(Model, stringToday);
+      const Model = this.getModel(collection);
+      const data = await this.getDataFromCollection(Model, stringToday);
       console.log('Data retrieved from ' + collection + ':', data);
-      const groups = groupData(data);
-      await writeGroupedDataToCsv(groups, collection);
+      const groups = this.groupData(data);
+      await this.writeGroupedDataToCsv(groups, collection);
     }
   }
 
@@ -97,14 +96,14 @@ class AccrualFileController {
     // Loop through collections
     for (const collection of config.mongoDBCollections) {
       // Loop through partner codes within each collection
-      const partnerCodes = fs.readdirSync('accrual_files')
+      const partnerCodes = fs.readdirSync(accrual_files_dir)
         .filter(file => file.startsWith(`${collection}_`))
         .map(file => file.replace(`${collection}_`, '').replace('.csv', ''));
 
       for (const partnerCode of partnerCodes) {
         if (!isBrowser()) {
           try {
-            const csvFilePath = path.join('accrual_files', `${collection}_${partnerCode}.csv`);
+            const csvFilePath = path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`);
             const directoryName = collectionMap[collection];
 
             await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${formattedDate}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
@@ -121,7 +120,7 @@ class AccrualFileController {
 
   clearAccrualFiles = () => {
     try {
-      fs.readdirSync('accrual_files').forEach(file => fs.unlinkSync(path.join('accrual_files', file)));
+      fs.readdirSync(accrual_files_dir).forEach(file => fs.unlinkSync(path.join(accrual_files_dir, file)));
     }
     catch (error) {
       // No files, just ignore error
@@ -129,20 +128,11 @@ class AccrualFileController {
   }
 
   queryFromDBandUpload = async () => {
-    await writeCollectionsToCsv();
-    await uploadFilesToServer();
+    await this.clearAccrualFiles();
+    await this.writeCollectionsToCsv();
+    await this.uploadFilesToServer();
   }
 
-}
-// Helper function to get a Mongoose model by collection name
-const getModel = (collection) => mongoose.model(collection, transactionSchema);
-
-// Helper function to get data from a MongoDB collection
-const getDataFromCollection = async (Model, stringToday) => {
-  return Model.find({
-    outcomeCode: { $exists: false },
-    transferDate: stringToday
-  });
 }
 
 const accrualFileController = new AccrualFileController();
