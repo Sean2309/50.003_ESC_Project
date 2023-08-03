@@ -42,6 +42,10 @@ const transferFormSchema = new mongoose.Schema({
     required: true
   },
   outcomeCode: String,
+  userId: {
+    type: String,
+    ref: 'UserCredentials'
+  }
 });
 
 const createTransferForm = (loyaltyProgramId) => {
