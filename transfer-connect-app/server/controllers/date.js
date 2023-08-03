@@ -10,7 +10,7 @@ function getFormattedDate(format = "standard") {
     if (format === "compact") {
       return `${date.getFullYear()}${month}${day}`;
     } else { // "standard" format
-      return `${date.getFullYear()}-${month}-${day}`;
+      return `${day}/${month}/${date.getFullYear()}`;
     }
   }
 
