@@ -62,13 +62,13 @@ class TransactionEnquiryController {
     console.log(url);
     try {
       response = await axios.get(url); // Await the API response
-      if(response.data == null || response.data == undefined){
+      if(response == null || response == undefined){
         console.log("API request response is null");
         return;
       }
       else{
         console.log("returning response.data");
-        console.log(response.data);
+        //console.log(response.data);
         return response.data;
       }
       

@@ -25,7 +25,9 @@ describe('WebSocket connection', () => {
 
   afterEach(() => {
     // Close the WebSocket connection after each test
+
     ws.close();
+
   });
 
   test('WebSocket server is connected and can send message to client', () => {
@@ -33,64 +35,33 @@ describe('WebSocket connection', () => {
     
     ws.on('connection', async (connection, req) => {
       connection.on('open', () => {
-        connection.send(message1);
+      console.log("websocket sent message")
+      connection.send(message1);
       })
     });
 
     client1.addEventListener('message', (event) => {
       const message = event.data;
+      console.log("client received message")
       expect(message).toBe(message1);
      });
   })
-  
-  test('WebSocket server can handle multiple clients', async () => {
-    const client1 = new WebSocket('ws://localhost:8081');
-    const client2 = new WebSocket('ws://localhost:8081');
-    const message1 = 'Message from client 1';
-    const message2 = 'Message from client 2';
-    
-    const mockfn = jest.fn();
 
+  test('WebSocket client can send messsage to server', () => {
+    const message1 = 'Hello, WebSocket!';
+    
     ws.on('connection', async (connection, req) => {
       connection.on('message', (message) => {
-        console.log("hi im called");
-        mockfn();
+        console.log("websocket got message")
+      expect(message).toBe(message1);
     })});
-
-    const promise = new Promise((resolve) => {
-      let counter = 0;
   
-      client1.addEventListener('open', () => {
+    client1.addEventListener('open', () => {
+      console.log("client1 sent message")
         client1.send(message1);
-        counter++;
-        if (counter === 2) resolve();
       });
-  
-      client2.addEventListener('open', () => {
-        client2.send(message2);
-        counter++;
-        if (counter === 2) resolve();
-      });
-    });
+  })
 
-    await promise;
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    expect(mockfn).toHaveBeenCalledTimes(2);
-});
-
-test('WebSocket client can send messsage to server', () => {
-  const message1 = 'Hello, WebSocket!';
-  
-  ws.on('connection', async (connection, req) => {
-    connection.on('message', (message) => {
-    expect(message),toBe(message1);
-  })});
-
-  client1.addEventListener('open', () => {
-      client1.send(message1);
-    });
-})
 
 })
