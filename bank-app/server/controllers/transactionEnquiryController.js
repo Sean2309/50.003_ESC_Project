@@ -78,7 +78,7 @@ class TransactionEnquiryController {
     let string_ids = (id_list).join();
 
     ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
-    let url = TRANSFER_CONNECT_API_URL + '/api/trancheck/' + PARTNERCODE + '/' + loyaltyProgram;
+    let url = TRANSFER_CONNECT_API_URL + '/api/transactionenquiry/check/' + PARTNERCODE + '/' + loyaltyProgram;
     url = url + "/" + string_ids;
     console.log(url);
     try {
@@ -124,7 +124,8 @@ class TransactionEnquiryController {
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
     //find userId 
     const userIdCollection = await collection_connection.find({"systemId": systemId },{"userId": 1});
-    const userId = userIdCollection[0];
+    const userIdObject = userIdCollection[0];
+    const userId = userIdObject["userId"];
     console.log(userId)
     collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
     return userId;

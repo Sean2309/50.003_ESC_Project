@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import NotificationStyle from "./NotificationStyle";
 
 const Notification = ({ children, id }) => {
-  
+
   useEffect(() => {
     const url = `ws://localhost:8080?uuid=${id}`; 
     const socket = new WebSocket(url);
