@@ -14,48 +14,53 @@ class TransactionEnquiryController {
     if (startInterval) {
       this.startEnquiry();
     }
-    this.populateTransactions();
   }
 
   populateTransactions = async () => {
-    const transactionModel = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
-    
-    await transactionModel.deleteMany({});
+    const transactionModelAirAsia = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
+    const transactionModelGoJet = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
 
-    const transactions = [
-      {   
-        "membershipId": "123oij",
-        "memberName": "LX",
+    await transactionModelAirAsia.deleteMany({});
+    await transactionModelGoJet.deleteMany({});
+
+    const transactionsAirAsia = [
+      {
+        "userId": "100430043889",
+        "memberName": "keith low",
         "transferDate": "11-11-11",
-        "transferAmount": 12345,
-        "referenceNumber": "0000",
+        "transferAmount": 300,
+        "referenceNumber": "10023",
         "partnerCode": "DBSSG",
-        "notificationMethod": 1,
-        "emailAddress": "leelxuan@gmail.com",
-        "phoneNumber": "+6588669619",
+        "outcomeCode": "1",
+        "notificationMethod": "0",
+        "emailAddress": "email@address.com",
+        "phoneNumber": "88910101",
         "systemId": "1",
         "userId": "1"
       },
       {
-        "membershipId": "1234",
+        "userId": "100430043889",
         "memberName": "keith low",
         "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "123132",
+        "transferAmount": 250,
+        "referenceNumber": "10001",
         "partnerCode": "DBSSG",
         "outcomeCode": "1",
         "notificationMethod": "0",
         "emailAddress": "email@address.com",
         "phoneNumber": "88910101",
         "systemId": "3",
-        "userId": "2"
+        "userId": "1"
       },
+    ]
+
+    const transactionsGoJet = [
       {
-        "membershipId": "1234",
+        "userId": "1200302J",
         "memberName": "keith low",
         "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "123132",
+        "transferAmount": 100,
+        "referenceNumber": "12422",
         "partnerCode": "DBSSG",
         "outcomeCode": "1",
         "notificationMethod": "0",
@@ -65,29 +70,28 @@ class TransactionEnquiryController {
         "userId": "1"
       }
     ]
-    
-    await transactionModel.create(transactions);
+
+    await transactionModelGoJet.create(transactionsGoJet);
+    await transactionModelAirAsia.create(transactionsAirAsia);
 
   }
 
   getUserTransactions = async (request, response) => {
-    const userId = request.params.userId;
+    const userId = request.body.userId;
 
     // mock transactions ids in userProfile by systemId
-    // TODO: retrieve from userProfile in integration by userId
-    const mockTransactionIds = ["1", "2", "3"];
-    
     this.populateTransactions();
 
-    const allTransactions = [];
+    const allTransactions = {};
 
-    for(const loyaltyProgram of loyaltyPrograms) {
+    for (const loyaltyProgram of loyaltyPrograms) {
 
       const transactionModel = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-      const retrievedTransactions = await transactionModel.find({ systemId: { $in: mockTransactionIds } });
+      const retrievedTransactions = await transactionModel.find({ userId: userId });
 
-      allTransactions.push(retrievedTransactions);
+      allTransactions[loyaltyProgram] = retrievedTransactions;
+
     }
 
     response.json(allTransactions);
@@ -178,7 +182,7 @@ class TransactionEnquiryController {
     //specific loyaltyProgram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
     //find userId 
-    const userIdCollection = await collection_connection.find({"systemId": systemId },{"userId": 1});
+    const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1 });
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
     console.log(userId)
