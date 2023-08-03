@@ -1,11 +1,11 @@
 const request = require('supertest');
-const app = require('../index'); 
-const UserCredentials = require('../models/userCredentials');
+const app = require('../../index'); 
+const UserCredentials = require('../../models/userCredentials');
 const jwt = require('jsonwebtoken');
-const { SECRET_CODE } = require('../utils/config');
+const { SECRET_CODE } = require('../../utils/config');
 
 // Mock UserCredentials.findOne
-jest.mock('../models/userCredentials'); 
+jest.mock('../../models/userCredentials'); 
 
 describe('AuthManagerController - userAuthentication', () => {
   it('should return "User is logged in" with correct login credentials', async () => {

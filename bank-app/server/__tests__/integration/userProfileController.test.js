@@ -1,10 +1,7 @@
 const jwt = require('jsonwebtoken');
-const userProfileController = require('../controllers/userProfileController'); 
-const { SECRET_CODE } = require('../utils/config');
-const UserProfile = require('../models/userProfile');
-
-// Mock implementation of UserProfile.findOne
-UserProfile.findOne = jest.fn();
+const userProfileController = require('../../controllers/userProfileController');
+const { SECRET_CODE } = require('../../utils/config');
+const UserProfile = require('../../models/userProfile');
 
 describe('authenticateToken middleware', () => {
   it('should pass authentication and call the next middleware if a valid token is provided', () => {
@@ -12,6 +9,7 @@ describe('authenticateToken middleware', () => {
       cookies: {
         token: jwt.sign({ userId: 'testUser' }, SECRET_CODE),
       },
+      body: {}
     };
     const mockResponse = {};
     const mockNext = jest.fn();
@@ -19,7 +17,7 @@ describe('authenticateToken middleware', () => {
     userProfileController.authenticateToken(mockRequest, mockResponse, mockNext);
 
     expect(mockNext).toHaveBeenCalled();
-    expect(mockRequest.userId).toEqual('testUser');
+    expect(mockRequest.body.userId).toEqual('testUser');
   });
 
   it('should return 403 if no token is provided', () => {
@@ -60,66 +58,69 @@ describe('authenticateToken middleware', () => {
 });
 
 describe('get User Profile', () => {
-    describe('getUserProfile', () => {
-      it('should return user profile if user exists', async () => {
-        // Arrange
-        const mockUserProfile = { firstName: 'Test', lastName: 'User' };
-        UserProfile.findOne.mockResolvedValue(mockUserProfile);
-        const mockRequest = {
-          query: { id: 'test' },
-        };
-        const mockResponse = {
-          json: jest.fn(),
-          status: jest.fn(() => mockResponse),
-        };
-  
-        // Act
-        await userProfileController.getUserProfile(mockRequest, mockResponse);
-  
-        // Assert
-        expect(UserProfile.findOne).toHaveBeenCalledWith({ userId: 'test' });
-        expect(mockResponse.json).toHaveBeenCalledWith(mockUserProfile);
-      });
-  
-      it('should return 404 if user does not exist', async () => {
-        // Arrange
-        UserProfile.findOne.mockResolvedValue(null);
-        const mockRequest = {
-          query: { id: 'nonexistent' },
-        };
-        const mockResponse = {
-          json: jest.fn(),
-          status: jest.fn(() => mockResponse),
-        };
-  
-        // Act
-        await userProfileController.getUserProfile(mockRequest, mockResponse);
-  
-        // Assert
-        expect(UserProfile.findOne).toHaveBeenCalledWith({ userId: 'nonexistent' });
-        expect(mockResponse.status).toHaveBeenCalledWith(404);
-        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User not found.' });
-      });
-  
-      it('should return 500 if an error occurs', async () => {
-        // Arrange
-        UserProfile.findOne.mockRejectedValue(new Error('Test error'));
-        const mockRequest = {
-          query: { id: 'test' },
-        };
-        const mockResponse = {
-          json: jest.fn(),
-          status: jest.fn(() => mockResponse),
-        };
-  
-        // Act
-        await userProfileController.getUserProfile(mockRequest, mockResponse);
-  
-        // Assert
-        expect(UserProfile.findOne).toHaveBeenCalledWith({ userId: 'test' });
-        expect(mockResponse.status).toHaveBeenCalledWith(500);
-        expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Server error' });
-      });
+  describe('getUserProfile', () => {
+    it('should return user profile if user exists', async () => {
+      // Arrange
+      const mockUserProfile = { firstName: 'Test', lastName: 'User' };
+      
+      jest.spyOn(UserProfile, 'findOne').mockResolvedValue(mockUserProfile);
+
+      const mockRequest = {
+        body: { userId: 'test' },
+      };
+      const mockResponse = {
+        json: jest.fn(),
+        status: jest.fn(() => mockResponse),
+      };
+
+      // Act
+      await userProfileController.getUserProfile(mockRequest, mockResponse);
+
+      // Assert
+      expect(UserProfile.findOne).toHaveBeenCalledWith({ userId: 'test' });
+      expect(mockResponse.json).toHaveBeenCalledWith(mockUserProfile);
+    });
+
+    it('should return 404 if user does not exist', async () => {
+      // Arrange
+      jest.spyOn(UserProfile, 'findOne').mockResolvedValue(null);
+
+      const mockRequest = {
+        body: { userId: 'nonexistent' },
+      };
+      const mockResponse = {
+        json: jest.fn(),
+        status: jest.fn(() => mockResponse),
+      };
+
+      // Act
+      await userProfileController.getUserProfile(mockRequest, mockResponse);
+
+      // Assert
+      expect(UserProfile.findOne).toHaveBeenCalledWith({ userId: 'nonexistent' });
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User not found.' });
+    });
+
+    it('should return 500 if an error occurs', async () => {
+      // Arrange
+      UserProfile.findOne.mockRejectedValue(new Error('Test error'));
+      const mockRequest = {
+        query: { id: 'test' },
+      };
+      const mockResponse = {
+        json: jest.fn(),
+        status: jest.fn(() => mockResponse),
+      };
+
+      // Act
+      await userProfileController.getUserProfile(mockRequest, mockResponse);
+
+      // Assert
+      expect(UserProfile.findOne).toHaveBeenCalledWith({ userId: 'test' });
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Server error' });
     });
   });
+});
 
