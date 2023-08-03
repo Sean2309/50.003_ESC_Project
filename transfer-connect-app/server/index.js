@@ -5,14 +5,16 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const transferconnectController = require('./routes/transactionEnquiryRouter');
+const accrualFileController = require('./controllers/accrualFileController');
+const handbackFileController = require('./controllers/handbackFileController');
 
 const app = express();
 
-accrualFileController.queryFromDBandUpload();
+// accrualFileController.queryFromDBandUpload();
+handbackFileController.testHandbackFileFns();
 
 // connect to mongoDB cloud
-mongoose.connect(config.MONGODB_URL,  { 
-    dbName: config.DB_NAME,
+mongoose.connect(config.MONGODB_URLB,  { 
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then((res) => console.log('connected')).catch((err) => console.log(err))
@@ -33,7 +35,3 @@ app.listen(config.PORT, () => {
 })
 
 module.exports = {app};
-
-
-
-handbackFileController.testHandbackFileFns();
