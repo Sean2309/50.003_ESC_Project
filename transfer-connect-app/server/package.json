@@ -20,6 +20,7 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
+    "cron": "^2.4.0",
     "csv-parser": "^3.0.0",
     "csv-writer": "^1.6.0",
     "debug": "~2.6.9",

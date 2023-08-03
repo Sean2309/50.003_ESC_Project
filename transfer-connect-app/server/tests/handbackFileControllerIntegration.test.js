@@ -169,7 +169,7 @@ describe('uploadFilesToMongoDB function check', () => {
   test('should return success if updates or creates a document in the test collection in mongodb', async () => {
     return new Promise((resolve, reject) => {
       // Writing to mongo db
-      mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
+      mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
       const Model = mongoose.model('testhandbacks', transactionEnquiryModel);
   
       const rawdataFromCSV = [];
