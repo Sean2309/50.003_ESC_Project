@@ -11,7 +11,8 @@ const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 const config = require('../utils/config');
 
 // Importing Helper Functions
-const handbackFileController = require('../controllers/handbackFileController');
+const handbackFileController = require('../controllers/handbackFileController').handbackFileController;
+const job = require('../controllers/handbackFileController').job;
 const convertDateFormat = require('../controllers/convertDateFormat').convertDateFormat;
 
 // Instantiating Variables
@@ -221,4 +222,6 @@ describe('uploadFilesToMongoDB function check', () => {
     });
   });
 });
+
+job.stop();
 // ======== END OF TESTING ===========================

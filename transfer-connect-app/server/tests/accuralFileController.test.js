@@ -7,8 +7,9 @@ const {
   getDataFromCollection,
   groupData,
   writeGroupedDataToCsv,
-} = require('../controllers/accrualFileController');
+} = require('../controllers/accrualFileController').accrualFileController;
 const {clearFolder} = require('../controllers/clearFolder')
+const job = require('../controllers/accrualFileController').job;
 
 jest.mock('fs', () => {
   return {
@@ -328,6 +329,8 @@ describe('Integration tests', () => {
     });
   });
 });
+
+job.stop();
 
 // test('writeCollectionsToCsv function should correctly fetch, group, and write data for each collection', async () => {
 //   // Mock getModel, getDataFromCollection, groupData, writeGroupedDataToCsv functions
