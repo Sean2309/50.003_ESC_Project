@@ -17,17 +17,19 @@ class TransactionEnquiryController {
   }
 
   populateTransactions = async () => {
-    const transactionModel = mongoose.model("AirAsia", transactionSchema, "AirAsia");
-    
-    await transactionModel.deleteMany({});
+    const transactionModelAirAsia = mongoose.model("AirAsia", transactionSchema, "AirAsia");
+    const transactionModelGoJet = mongoose.model("GoJet", transactionSchema, "GoJet");
 
-    const transactions = [
+    await transactionModelAirAsia.deleteMany({});
+    await transactionModelGoJet.deleteMany({});
+
+    const transactionsAirAsia = [
       {
-        "membershipId": "1234",
+        "membershipId": "100430043889",
         "memberName": "keith low",
         "transferDate": "11-11-11",
         "transferAmount": 300,
-        "referenceNumber": "123132",
+        "referenceNumber": "10023",
         "partnerCode": "DBSSG",
         "outcomeCode": "1",
         "notificationMethod": "0",
@@ -36,11 +38,11 @@ class TransactionEnquiryController {
         "systemId": "1"
       },
       {
-        "membershipId": "1234",
+        "membershipId": "100430043889",
         "memberName": "keith low",
         "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "123132",
+        "transferAmount": 250,
+        "referenceNumber": "10001",
         "partnerCode": "DBSSG",
         "outcomeCode": "1",
         "notificationMethod": "0",
@@ -48,12 +50,15 @@ class TransactionEnquiryController {
         "phoneNumber": "88910101",
         "systemId": "3"
       },
+    ]
+
+    const transactionsGoJet = [
       {
-        "membershipId": "1234",
+        "membershipId": "1200302J",
         "memberName": "keith low",
         "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "123132",
+        "transferAmount": 100,
+        "referenceNumber": "12422",
         "partnerCode": "DBSSG",
         "outcomeCode": "1",
         "notificationMethod": "0",
@@ -62,8 +67,9 @@ class TransactionEnquiryController {
         "systemId": "2"
       }
     ]
-    
-    await transactionModel.create(transactions);
+
+    await transactionModelGoJet.create(transactionsGoJet);
+    await transactionModelAirAsia.create(transactionsAirAsia);
 
   }
 
@@ -73,18 +79,18 @@ class TransactionEnquiryController {
     // mock transactions ids in userProfile by systemId
     // TODO: retrieve from userProfile in integration by userId
     const mockTransactionIds = ["1", "2", "3"];
-    
+
     this.populateTransactions();
 
-    const allTransactions = [];
+    const allTransactions = {};
 
-    for(const loyaltyProgram of loyaltyPrograms) {
+    for (const loyaltyProgram of loyaltyPrograms) {
 
       const transactionModel = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
       const retrievedTransactions = await transactionModel.find({ systemId: { $in: mockTransactionIds } });
 
-      allTransactions.push(retrievedTransactions);
+      allTransactions[loyaltyProgram] = retrievedTransactions;
     }
 
     response.json(allTransactions);
