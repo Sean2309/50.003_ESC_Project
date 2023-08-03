@@ -20,14 +20,14 @@ describe('TransferForm Component', () => {
     // Add other properties as needed for your test cases
   };
 
-  const mockedTransferProps = [
+  const mockedTransferProps =
     {
         membershipFormat: "^\\d{9}[a-zA-Z]$",
         loyaltyProgramId: "GOPOINTS",
         userProfile: mockedUserProfile,
         currencyRate: 1.2
     }
-  ];
+  ;
   
   beforeEach(() => {
     jest.mock('axios');
