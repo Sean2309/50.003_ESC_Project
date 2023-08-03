@@ -3,13 +3,11 @@ import Transaction from './Transaction';
 import axios from 'axios';
 
 const TransactionsDisplay = (props) => {
-  // Destructure the userId from the props
   const { userId } = props;
 
   const [transactions, setTransactions] = useState({});
   const [componentsArray, setComponentsArray] = useState([]);
 
-  // Function to fetch transactions from the API
   const getTransactions = async () => {
     try {
       const transactionEnquiryResponse = await axios.get(`http://localhost:3001/api/transactions/${userId}`);
@@ -21,18 +19,14 @@ const TransactionsDisplay = (props) => {
   };
 
   useEffect(() => {
-    // Call the getTransactions function to fetch data
     getTransactions();
   }, [userId]);
 
   useEffect(() => {
     // Call the renderTransactions function to create the components array
     setComponentsArray(renderTransactions());
-    // We want to update the rendered components whenever transactions change,
-    // so we include 'transactions' in the dependency array of useEffect
   }, [transactions]);
 
-  // Function to render the transactions into components
   const renderTransactions = () => {
     const array = [];
 
@@ -48,7 +42,6 @@ const TransactionsDisplay = (props) => {
     return array;
   };
 
-  // Conditional rendering to avoid rendering empty components when transactions are not available
   return <div>{Object.keys(transactions).length > 0 && componentsArray}</div>;
 };
 
