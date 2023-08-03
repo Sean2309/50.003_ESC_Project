@@ -5,12 +5,14 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const transferconnectController = require('./routes/transactionEnquiryRouter');
+const accrualFileController = require('./controllers/accrualFileController');
 
 const app = express();
 
+accrualFileController.queryFromDBandUpload();
+
 // connect to mongoDB cloud
-mongoose.connect(config.MONGODB_URL,  { 
-    dbName: config.DB_NAME,
+mongoose.connect(config.MONGODB_URLB,  { 
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then((res) => console.log('connected')).catch((err) => console.log(err))
