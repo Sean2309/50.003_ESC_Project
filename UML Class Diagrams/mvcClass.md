@@ -246,11 +246,12 @@ class date {
 }
 
 class index {
-    downloadfromSFTPandUpload(): void
+    downloadfromSFTPandUpload(): voidgit 
 }
 
 class HandbackController{
     -confirmedTransactions: List<<list>ConfirmationModel>
+    -convertDateFormat(String date): String date
     -getModelForLP(String loyaltyProgram): mongoose.model[loyaltyProgram]
     -retrieveFromServer(Date targetDate): void
     -extractDataFromCsv(String filePath): String partnerCode, object results
