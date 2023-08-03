@@ -147,7 +147,7 @@ class TransactionEnquiryController {
 
     } catch (error) {
       // Handle any errors
-      console.error(error);
+      //console.error(error);
       return error;
     };
   }
@@ -198,7 +198,7 @@ class TransactionEnquiryController {
         }
         catch (error) {
           // Handle any errors that occur during the promise chain
-          console.error(error);
+          //console.error(error);
           return error;
         };
         console.log('\n');

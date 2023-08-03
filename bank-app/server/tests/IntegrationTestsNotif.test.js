@@ -90,7 +90,6 @@ test('Client receives correct WebSocket message', async () => {
     messageBody: "abc",
     messageType: 1
   }
-  let counter = 0;
   let receivedMessage;
 
   ws.on('connection', async (connection, req) => {
@@ -111,4 +110,24 @@ test('Client receives correct WebSocket message', async () => {
   expect(receivedMessage).toStrictEqual(message1);
 
 })
+
+})
+
+describe('WebSocket identifies unique connections', () => {
+
+  const clients = require('../controllers/notificationServerController').clients;
+
+  test('WebSocket server can store unique client connection', async () => {
+    const clientABC = new WebSocket('ws://localhost:8080?uuid=ABC');
+
+    //wait some time for client to connect
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    
+    const clientPresent = clients.has('ABC');
+    expect(clientPresent).toBe(true);
+
+    clientABC.close();
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }, 6000)
 })
