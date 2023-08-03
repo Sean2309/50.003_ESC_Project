@@ -28,24 +28,7 @@ describe('TransferForm Component', () => {
         currencyRate: 1.2
     }
   ];
-
-
-
-//   it('handles empty loyalty program data by throwing console error', async () => {
-//     // Mock the axios.get function to return invalid responses
-//     axios.get = jest.fn().mockResolvedValue();
-
-//     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-//     await act(async () => {
-//       render(<LoyaltyPrograms userId={mockedUserId} />);
-//     });
-    
-//     // received absolutely zero data
-//     await waitFor(() => expect(spy).toHaveBeenCalled());
-
-//   });
-
+  
   beforeEach(() => {
     jest.mock('axios');
     // Mock the axios.get function to return fake responses

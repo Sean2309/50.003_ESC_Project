@@ -44,10 +44,10 @@ describe('LoyaltyProgram Functions', () => {
   
   
     it('handles empty loyalty program data by throwing console error', async () => {
-  
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-  
       // invalid types, will fail
+
+      const spy = jest.spyOn(console, 'error');
+
       await act(async () => {
         render(<LoyaltyProgram loyaltyProgramData={[]} userProfile={[]}/>);
       });
@@ -55,41 +55,23 @@ describe('LoyaltyProgram Functions', () => {
       // received absolutely zero data
       // should trigger propTypes error
       await waitFor(() => expect(spy).toHaveBeenCalled());
-  
     });
-  
-    // beforeEach(() => {
-    //   jest.mock('axios');
-    //   // Mock the axios.get function to return fake responses
-    //   axios.get = jest.fn().mockResolvedValue((url) => {
-    //     return Promise.reject(new Error('Invalid URL'));
-    //   });
-    // });
-  
-    // afterEach(() => {
-    //   jest.clearAllMocks();
-    // })
-  
-    // it('renders loyalty programs after data is fetched', async () => {
-    //   // Render the LoyaltyPrograms component with mocked data
-    //   const spy = jest.spyOn(LoyaltyPrograms.prototype, 'renderLoyaltyPrograms');
-  
-    //   await act(async () => {
-    //     render(<LoyaltyProgram loyaltyProgramData={mockedLoyaltyProgramData} userProfile={mockedUserProfile}/>);
-    //   });
+
+    it('renders loyalty program data with correct datatypes', async () => {
+
+      const rtl = render(<LoyaltyProgram loyaltyProgramData={mockedLoyaltyProgramData} userProfile={mockedUserProfile}/>);
+
+
+      await waitFor(() => {
+        rtl.getByText("Enrollment Link", {exact: false});
+      });
+
+      console.log(mockedLoyaltyProgramData.description)
+
+      expect(rtl.getByText("Description:", {exact: false})).toBeInTheDocument();
+      expect(rtl.getByText("Processing Time:", {exact: false})).toBeInTheDocument();
+      expect(rtl.getByText("1000 ABC Points =", {exact: false})).toBeInTheDocument();
       
-    //   await expect(spy).toHaveBeenCalled();
-  
-    //   // Wait for the component to fetch data and re-render
-  
-    //   // Assert the loyalty program components are rendered
-    //   expect(screen.getAllByTestId('loyaltyprograms-test')).toHaveLength(mockedLoyaltyPrograms.length);
-  
-    //   expect(screen.getByText('Loyalty Programs')).toBeInTheDocument();
-  
-    //   // note that loyalty program details like gojet points text etc will not be rendered in this test
-    //   // because the component's nested inside loyalty programs logic
-    //   // but it's a separate component
-    //   // see this for details https://stackoverflow.com/questions/65618080/react-testing-library-nested-components-keep-parent-from-rendering-properly
-    // });
+    })
+
   });

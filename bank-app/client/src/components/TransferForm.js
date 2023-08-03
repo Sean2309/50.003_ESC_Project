@@ -24,7 +24,7 @@ class TransferForm extends Component {
   };
 
   // To return the current Date as a string
-  getDate = () => {
+  getDate() {
     const currentDate = new Date();
 
     // To get date without time
