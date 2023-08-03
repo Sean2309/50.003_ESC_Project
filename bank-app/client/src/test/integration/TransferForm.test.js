@@ -63,7 +63,7 @@ describe('TransferForm Component', () => {
     jest.clearAllMocks();
   })
 
-  it('fail to render form when button is not clicked', async () => {
+  it('fail to render form when button is not yet clicked', async () => {
 
     await act(async () => {
       render(<TransferForm 
@@ -82,11 +82,7 @@ describe('TransferForm Component', () => {
     expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
   });
 
-  // this will be broken for now
-  // TODO: fix this
   it('renders form when button is clicked', async () => {
-    // should simulate the transfer form button click
-
     await act(async () => {
       render(<TransferForm 
         membershipFormat={mockedTransferProps.membershipFormat}
@@ -100,8 +96,7 @@ describe('TransferForm Component', () => {
     const transferButton = screen.getByRole('button');
     fireEvent.click(transferButton);
 
-    // need to simulate fireEvent button for not failing case
-    // user would only see these
+    // user would now be able to see these
     expect(screen.getByTestId("member-name")).toBeInTheDocument();
     expect(screen.getByTestId("member-id")).toBeInTheDocument();
     expect(screen.getByTestId("member-confirm")).toBeInTheDocument();
