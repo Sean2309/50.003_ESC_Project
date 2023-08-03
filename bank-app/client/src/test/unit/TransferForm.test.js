@@ -68,10 +68,13 @@ describe('TransferForm Component', () => {
     // getDate
     // just check return value
 
-    it('getDate is called', async () => {
+    // both are only used on submit
+    // tldr we can't unit test/spy on the functions without doing a submission
+    // oh well, this is as close to a unitTest we have
+    it('getDate doesnt get called without submission', async () => {
         const spy = jest.spyOn(TransferForm.prototype, 'getDate');
-        // TODO: just manually pass in 
         await act(async () => {
+          // it renders now!
             render(<TransferForm 
               membershipFormat={mockedTransferProps.membershipFormat}
               currencyRate={mockedTransferProps.currencyRate}
@@ -79,7 +82,7 @@ describe('TransferForm Component', () => {
               loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
               />);
           });
-      
+          
           // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
           const transferButton = screen.getByRole('button');
           fireEvent.click(transferButton);
@@ -87,6 +90,73 @@ describe('TransferForm Component', () => {
         await expect(spy).toHaveBeenCalled();
       
       });
+
+      // render test is already on integration side. technically.
+      // the integration's technically an indirect openModal testing ig
+      it('user can submit the transfer form', async () => {
+          // this is the button at the end of the loyalty program card
+        const transferForm =
+          render(<TransferForm 
+            membershipFormat={mockedTransferProps.membershipFormat}
+            currencyRate={mockedTransferProps.currencyRate}
+            userProfile={mockedUserProfile}
+            loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+            />);
+
+          
+          // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+          const transferButton = screen.getByRole('button');
+          // user opens transferForm
+          fireEvent.click(transferButton);
+
+          // Find input fields and submit button
+          const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+          const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+          const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+          const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+          const submitButton = screen.getByTestId('submit-form').querySelector('input');
+
+          // Fill in the form
+          fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+          fireEvent.change(membershipIdInput, { target: { value: '123456' } });
+          fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+          fireEvent.change(transferAmountInput, { target: { value: '50' } });
+
+          fireEvent.submit(submitButton);
+
+        await expect(screen.getByTestId('modal-dialog')).toHaveAttribute('open');
+
+        // https://github.com/jestjs/jest/issues/3821
+      
+      });
+
+      // it('membershipValidation testing', async () => {
+      //   const spy = jest.spyOn(TransferForm.prototype, 'membershipValidation');
+      //   await act(async () => {
+      //     // this is the button at the end of the loyalty program card
+      //       render(<TransferForm 
+      //         membershipFormat={mockedTransferProps.membershipFormat}
+      //         currencyRate={mockedTransferProps.currencyRate}
+      //         userProfile={mockedUserProfile}
+      //         loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+      //         />);
+      //     });
+          
+      //     // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+      //     const transferButton = screen.getByRole('button');
+      //     // user opens transferForm
+      //     fireEvent.click(transferButton);
+
+      //     // simulate user filling it...in....
+      //     // ...how do we simulate text input events
+      //     // ...we need to simulate handle change
+      //     // ...AAAAAAAAH
+
+      //   // https://github.com/jestjs/jest/issues/3821
+      //   await expect(spy).toHaveBeenCalled();
+      
+      // });
+
 
         
 

@@ -116,8 +116,8 @@ class TransferForm extends Component {
 
     return (
       <div className="overlay">
-        <dialog open={isOpen}>
-          <form onSubmit={this.handleSubmit}>
+        <dialog open={isOpen} data-testid="modal-dialog">
+          <form onSubmit={this.handleSubmit} data-testid="submit-form">
             <label htmlFor="memberName" data-testid="member-name">
               Primary Cardholder Name:
               <input
@@ -173,7 +173,7 @@ class TransferForm extends Component {
             </label>
             <br />
 
-            <input
+            <input 
               type="submit"
               value="Submit"
             />
