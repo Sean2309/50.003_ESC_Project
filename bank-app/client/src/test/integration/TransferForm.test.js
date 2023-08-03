@@ -58,10 +58,10 @@ describe('TransferForm Component', () => {
     // indirect way to test if renderForm was (not) called
     // to simulate how user would interact with the form
     // which is to say, the user should NOT be seeing any of these
-    expect(screen.getByTestId("member-name")).toBeInTheDocument();
-    expect(screen.getByTestId("member-id")).toBeInTheDocument();
-    expect(screen.getByTestId("member-confirm")).toBeInTheDocument();
-    expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
+    expect(screen.queryByTestId("member-name")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("member-id")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("member-confirm")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("transfer-amount")).not.toBeInTheDocument();
   });
 
   it('renders form when button is clicked', async () => {

@@ -76,7 +76,7 @@ describe('TransferForm Component', () => {
           const transferButton = screen.getByRole('button');
           fireEvent.click(transferButton);
 
-        await expect(spy).toHaveBeenCalled();
+        await expect(spy).not.toHaveBeenCalled();
       
       });
 
@@ -96,7 +96,7 @@ describe('TransferForm Component', () => {
           const transferButton = screen.getByRole('button');
           fireEvent.click(transferButton);
 
-        await expect(spy).toHaveBeenCalled();
+        await expect(spy).not.toHaveBeenCalled();
       
       });
 
