@@ -16,14 +16,13 @@ if (!fs.existsSync(accrual_files_dir)) {
   fs.mkdirSync(accrual_files_dir);
 }
 
-var job;
 class AccrualFileController {
   constructor() {
     this.startService();
 
   }
   startService = async () => {
-    job = new CronJob(
+    let job = new CronJob(
       '30 * * * * *',
       this.queryFromDBandUpload,
     )
@@ -138,5 +137,5 @@ class AccrualFileController {
 
 const accrualFileController = new AccrualFileController();
 
-module.exports = {accrualFileController, job};
+module.exports = accrualFileController;
 

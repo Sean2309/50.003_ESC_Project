@@ -7,8 +7,8 @@ const mongoose = require('mongoose');
 const transactionRouter = require('./routes/transactionRouter');
 const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
 const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
-const accrualFileController = require('./controllers/accrualFileController').accrualFileController;
-const handbackFileController = require('./controllers/handbackFileController').handbackFileController;
+const accrualFileController = require('./controllers/accrualFileController');
+const handbackFileController = require('./controllers/handbackFileController');
 const transactionEnquiryModel = require('./models/transactionEnquiryModel');
 
 const app = express();

@@ -18,8 +18,6 @@ var getFormattedDate = require('./date').getFormattedDate;
 var clearFolder = require('./clearFolder').clearFolder;
 var convertDateFormat = require('./convertDateFormat').convertDateFormat;
 
-var job;
-
 // Creates the sftp_handback_downloads folder if it doesn't exist
 if (!fs.existsSync(path.join(__dirname, 'sftp_handback_downloads'))) {
   fs.mkdirSync(path.join(__dirname, 'sftp_handback_downloads'));
@@ -37,7 +35,7 @@ class HandbackFileController {
   }
 
   startService = async () => {
-    job = new CronJob(
+    let job = new CronJob(
       '30 30 * * * *', // Runs at the 30th Second of the 30th Minute of every hour
       this.downloadfromSFTPandUpload,
     )
@@ -194,4 +192,4 @@ class HandbackFileController {
 
 const handbackFileController = new HandbackFileController();
 
-module.exports = {handbackFileController, job};
+module.exports = handbackFileController;
