@@ -14,7 +14,7 @@ const app = express();
 handbackFileController.testHandbackFileFns();
 
 // connect to mongoDB cloud
-mongoose.connect(config.MONGODB_URLB,  { 
+mongoose.connect(config.MONGODB_URL,  { 
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then((res) => console.log('connected')).catch((err) => console.log(err))

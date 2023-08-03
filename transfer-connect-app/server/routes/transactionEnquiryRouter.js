@@ -12,7 +12,7 @@ router.get('/check/:bank_app/:loyalty_program/:systemId', async function(req, re
   console.log(id.loyalty_program);
   console.log(id.bank_app);
   console.log(id.systemId);
-  //const transactionEnquiryController = new transactionController();
+
   transactionController.processRoute(req,res);
 });
 

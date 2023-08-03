@@ -14,6 +14,7 @@ class TransactionEnquiryController {
     if (startInterval) {
       this.startEnquiry();
     }
+    this.populateTransactions();
   }
 
   populateTransactions = async () => {
