@@ -2,7 +2,7 @@ require('dotenv').config({path: __dirname + '/../.env'});
 const config = require('../utils/config');
 const dateUtil = require('./date');
 const mongoose = require('mongoose');
-const sftpModel = require('../models/sftpModel');
+const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const Files = require('files.com/lib/Files').default;
 const File = require('files.com/lib/models/File').default;
@@ -16,7 +16,7 @@ if (!fs.existsSync(path.join(__dirname, 'accrual_files'))) {
 }
 
 // Helper function to get a Mongoose model by collection name
-const getModel = (collection) => mongoose.model(collection, sftpModel);
+const getModel = (collection) => mongoose.model(collection, transactionEnquiryModel);
 
 // Helper function to get data from a MongoDB collection
 const getDataFromCollection = async (Model, stringToday) => {
@@ -108,7 +108,7 @@ const main = async () => {
   await uploadFilesToServer();
 };
 
-// main().catch(console.error);
+main().catch(console.error);
 
 const queryFromDBandUpload = async () =>{
   await writeCollectionsToCsv();
