@@ -21,6 +21,8 @@ const sftpHandbackDownloads = 'sftp_handback_downloads';
 // Cache for storing the created models
 const modelCache = {};
 
+const testMongoDBURL = 'mongodb+srv://tengtjinyang:zagNwPsta2HHTyfE@transferconnect.0papjri.mongodb.net/TransferConnectDB';
+
 // Function to get the model for a given Loyalty Program
 const getModelForLP = (loyaltyProgram) => {
   if (!modelCache[loyaltyProgram]) {
@@ -100,7 +102,7 @@ const extractDataFromCsv = async(filePath) => {
 };
 
 const uploadFilesToMongoDB = async (targetDate) => {
-  await mongoose.connect(config.mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(testMongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
   for (let i = 0; i < config.sftpCollections.length; i++) {
     const filePath = path.join(__dirname, `${sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
@@ -116,24 +118,18 @@ const uploadFilesToMongoDB = async (targetDate) => {
           outcomeCode: result['Outcome Code'],
           transferAmount: parseInt(result['Transfer Amount']),
         };
-        console.log(
-          `Mapped Results\nReference Number: `,mappedResult.referenceNumber,
-          `\nTransfer Date: `,mappedResult.transferDate, 
-          );
-
-        // console.log(`Updating ${partnerCode} Database in Mongo\n`);
+        
         let doc = await Model.findOne({ 
-          referenceNumber: mappedResult.referenceNumber,
-          transferDate: mappedResult.transferDate 
-        }); // Must match the referenceNumber to update
-        console.log(`Doc found: `,doc)
+          $and: [{referenceNumber: mappedResult.referenceNumber},
+          {transferDate: mappedResult.transferDate} ]
+        }); // Must match the referenceNumber and transferDate to update
         if (doc) {
           doc.set(mappedResult);
-          console.log(`Data uploaded: ${doc}`)
+          console.log(`Data uploaded: `, doc)
           await doc.save();
         } else {
-          console.log(`Data uploaded: ${doc}`)
-          await Model.create(mappedResult);
+          const newModel = await Model.create(mappedResult);
+          console.log(`new model: `, newModel)
         }
       }
       
