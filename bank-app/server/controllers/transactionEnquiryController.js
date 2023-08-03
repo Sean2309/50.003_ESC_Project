@@ -14,25 +14,80 @@ class TransactionEnquiryController {
     if (startInterval) {
       this.startEnquiry();
     }
+    this.populateTransactions();
   }
 
+  populateTransactions = async () => {
+    const transactionModel = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
+    
+    await transactionModel.deleteMany({});
 
-  //needs userId -- get from client API request
+    const transactions = [
+      {   
+        "membershipId": "123oij",
+        "memberName": "LX",
+        "transferDate": "11-11-11",
+        "transferAmount": 12345,
+        "referenceNumber": "0000",
+        "partnerCode": "DBSSG",
+        "notificationMethod": 1,
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "1",
+        "userId": "1"
+      },
+      {
+        "membershipId": "1234",
+        "memberName": "keith low",
+        "transferDate": "11-11-11",
+        "transferAmount": 300,
+        "referenceNumber": "123132",
+        "partnerCode": "DBSSG",
+        "outcomeCode": "1",
+        "notificationMethod": "0",
+        "emailAddress": "email@address.com",
+        "phoneNumber": "88910101",
+        "systemId": "3",
+        "userId": "2"
+      },
+      {
+        "membershipId": "1234",
+        "memberName": "keith low",
+        "transferDate": "11-11-11",
+        "transferAmount": 300,
+        "referenceNumber": "123132",
+        "partnerCode": "DBSSG",
+        "outcomeCode": "1",
+        "notificationMethod": "0",
+        "emailAddress": "email@address.com",
+        "phoneNumber": "88910101",
+        "systemId": "2",
+        "userId": "1"
+      }
+    ]
+    
+    await transactionModel.create(transactions);
+
+  }
+
   getUserTransactions = async (request, response) => {
     const userId = request.params.userId;
 
     // mock transactions ids in userProfile by systemId
     // TODO: retrieve from userProfile in integration by userId
+    const mockTransactionIds = ["1", "2", "3"];
+    
+    this.populateTransactions();
 
-    const allTransactions = {};
+    const allTransactions = [];
 
-    for (const loyaltyProgram of loyaltyPrograms) {
+    for(const loyaltyProgram of loyaltyPrograms) {
 
       const transactionModel = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-      const retrievedTransactions = await transactionModel.find({ "userId": userId });
+      const retrievedTransactions = await transactionModel.find({ systemId: { $in: mockTransactionIds } });
 
-      allTransactions[loyaltyProgram] = retrievedTransactions;
+      allTransactions.push(retrievedTransactions);
     }
 
     response.json(allTransactions);
