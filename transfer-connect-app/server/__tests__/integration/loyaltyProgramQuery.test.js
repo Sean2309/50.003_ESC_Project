@@ -1,14 +1,10 @@
 const express = require('express');
 const app = express();
 const request = require('supertest');
-
-
 const mongoose = require('mongoose');
 const { MONGODB_URL } = require('../../utils/config');
-
 const LoyaltyProgramQueryModel = require('../../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../../models/currencyRateModel');
-
 const controller = require('../../controllers/loyaltyProgramQueryController');
 
 
@@ -21,11 +17,9 @@ beforeAll(async () => {
 beforeEach(async () => {
   await LoyaltyProgramQueryModel.deleteMany({});
   await CurrencyRateModel.deleteMany({});
- 
 });
 
 afterEach(async() => {
-  
   await LoyaltyProgramQueryModel.deleteMany({});
   await CurrencyRateModel.deleteMany({});
   jest.clearAllMocks(); // Reset mocked functions before each test
@@ -60,23 +54,31 @@ describe('LoyaltyProgramQueryController', () => {
           currencyRate: 1,
         },
       ];
+
+      // Promise resolved with mock data when fetchLoyaltyProgramsWithRates() called
       controller.fetchLoyaltyProgramsWithRates = jest.fn().mockResolvedValue(mockLoyaltyProgramsWithRates);
 
-     // Mock the app.get() method for 'DBSSG' partner code route 
+     // mocked response for GET request 
      app.get('/api/loyaltyprograms/DBSSG', async (req, res) => {
       const loyaltyProgramsWithRates = await controller.fetchLoyaltyProgramsWithRates('DBSSG');
       res.json(loyaltyProgramsWithRates);
       });
 
+      // make GET request 
       const partnerCode = 'DBSSG';
       const response = await request(app).get(`/api/loyaltyPrograms/${partnerCode}`);
+
+      //Assertions 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockLoyaltyProgramsWithRates);
     });
 
     test('should return 404 when invalid partnerCode is provided ', async () => {
-      const partnerCode = 'DBSG';
+      // GET request with invalid partner code 
+      const partnerCode = 'Invalid';
       const response = await request(app).get(`/api/loyaltyPrograms/${partnerCode}`);
+
+      //Assertions 
       expect(response.status).toBe(404);
       expect(response.body).toEqual({});
     });
@@ -86,16 +88,22 @@ describe('LoyaltyProgramQueryController', () => {
     test('should correctly insert mock data into database ', async () => {
 
 
-      // Call the "populateDb" function
+      // Call populateDb()
       await controller.populateDb();
-        
+      
+      // ====== Data Retrieval and Data Cleaning ===== // 
+
+      // retrieve all documents and remove '__v' & '_id' fields 
       const loyaltyPrograms = await LoyaltyProgramQueryModel.find({}, '-__v -_id');
 
-      //.lean() method converts Mongoose document class to plain Javascript Object
+      // retrieve single document and remove '__v' & '_id' fields 
+      // .lean() method converts Mongoose document class to plain Javascript Object
       const currencyRates = await CurrencyRateModel.findOne({}, '-__v -_id ').lean();
+      // iterate through JS object and remove _.id field
       currencyRates.currencyRates.forEach((cr) => delete cr._id);
   
-      // Expected mock data for loyalty programs
+
+      // Mock data for assertions 
       const expectedLoyaltyPrograms = [
         {
           programId: 'GOPOINTS',
@@ -118,8 +126,6 @@ describe('LoyaltyProgramQueryController', () => {
           membershipFormat: '^\\d{11}$',
         },
       ];
-  
-      // Expected mock data for currency rates
       const expectedCurrencyRates = {
         partnerCode: 'DBSSG',
         currencyRates: [
@@ -133,6 +139,7 @@ describe('LoyaltyProgramQueryController', () => {
           },
         ],
       }
+
       // Assertions
       expect(loyaltyPrograms).toEqual(expect.arrayContaining(expectedLoyaltyPrograms.map(obj => expect.objectContaining(obj))));
       expect(currencyRates).toEqual(expect.objectContaining(expectedCurrencyRates))
