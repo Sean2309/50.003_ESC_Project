@@ -25,7 +25,7 @@ class TransactionEnquiryController {
 
     const transactionsAirAsia = [
       {
-        "membershipId": "100430043889",
+        "userId": "100430043889",
         "memberName": "keith low",
         "transferDate": "11-11-11",
         "transferAmount": 300,
@@ -38,7 +38,7 @@ class TransactionEnquiryController {
         "systemId": "1"
       },
       {
-        "membershipId": "100430043889",
+        "userId": "100430043889",
         "memberName": "keith low",
         "transferDate": "11-11-11",
         "transferAmount": 250,
@@ -54,7 +54,7 @@ class TransactionEnquiryController {
 
     const transactionsGoJet = [
       {
-        "membershipId": "1200302J",
+        "userId": "1200302J",
         "memberName": "keith low",
         "transferDate": "11-11-11",
         "transferAmount": 100,
@@ -167,12 +167,12 @@ class TransactionEnquiryController {
       for (const data of response_data) {
         let systemId = data["systemId"];
         let outcome_code = data["outcomeCode"];
-        let membershipId = data["membershipId"];
+        let userId = data["membershipId"];
         this.updateOutcomeCodes(systemId, outcome_code, loyaltyProgram);
 
         console.log(`Updated ${systemId} of ${loyaltyProgram} with outcomeCode ${outcome_code}`);
-        //membershipId used for WebSocket connection
-        this.sendPushNotification(membershipId, outcome_code);
+        //userId used for WebSocket connection
+        this.sendPushNotification(userId, outcome_code);
       };
     }
   }
@@ -186,9 +186,9 @@ class TransactionEnquiryController {
 
 
   //send web push notif to user whose transaction was just updated
-  sendPushNotification = async (membershipId, outcomeCode) => {
-    console.log("membershipID: " + membershipId);
-    sendMessagetoClient(clients, membershipId, outcomeCode, 0);
+  sendPushNotification = async (userId, outcomeCode) => {
+    console.log("membershipID: " + userId);
+    sendMessagetoClient(clients, userId, outcomeCode, 0);
   }
 
 
