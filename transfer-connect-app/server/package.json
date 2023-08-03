@@ -7,6 +7,13 @@
     "start": "node index.js",
     "test": "jest"
   },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "text",
+      "html"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Sean2309/SoftwareConstructProject.git"

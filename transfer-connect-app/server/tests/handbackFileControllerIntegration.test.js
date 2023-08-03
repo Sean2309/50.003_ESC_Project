@@ -9,6 +9,7 @@ const transactionEnquiryModel = require('../models/transactionEnquiryModel');
 const handbackFileController = require('../controllers/handbackFileController');
 const filePath = path.join(__dirname, `../controllers/testCsvs`);
 const config = require('../utils/config');
+const convertDateFormat = require('../controllers/convertDateFormat').convertDateFormat;
 
 
 /*
@@ -182,16 +183,30 @@ describe('uploadFilesToMongoDB function check', () => {
         .on('end', async () => {
           try {
             // Update or create a document in the collection
-            // console.log(`Data from csv transfer amt: ${rawdataFromCSV[0]["Transfer Amount"]}`)
-            const filter = { referenceNumber: rawdataFromCSV[0]["Reference number"] };
-            const update = {
-              transferDate: rawdataFromCSV[0]["Transfer date"],
-              transferAmount: parseInt(rawdataFromCSV[0]["Transfer Amount"]),
-              outcomeCode: rawdataFromCSV[0]["Outcome Code"],
+            for (let row of rawdataFromCSV) {
+              const convertedDate = convertDateFormat(row['Transfer date']);
+              row['Transfer date'] = convertedDate;
+              let mappedResult = {
+                transferDate: convertedDate,
+                referenceNumber: row['Reference number'],
+                outcomeCode: row['Outcome Code'],
+                transferAmount: parseInt(row['Transfer Amount']),
+              }
+              let doc = await Model.findOne({
+                $and: [
+                  { referenceNumber: mappedResult.referenceNumber },
+                  { transferDate: mappedResult.transferDate }]
+              });
+              if (doc) {
+                doc.set(mappedResult);
+                await doc.save();
+              } else {
+                await Model.create(mappedResult);
+              }
             };
-
-            const options = { upsert: true, new: true }; // "upsert" creates a new document if not found
-            await Model.findOneAndUpdate(filter, update, options);
+            
+            const filter = { referenceNumber: rawdataFromCSV[0]["Reference number"] };
+    
             // Querying from mongo db
             const dataFromDB = await Model.find(filter);
             

@@ -6,10 +6,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const transferconnectController = require('./routes/transactionEnquiryRouter');
 const accrualFileController = require('./controllers/accrualFileController');
+const handbackFileController = require('./controllers/handbackFileController');
 
 const app = express();
 
-accrualFileController.queryFromDBandUpload();
+// accrualFileController.queryFromDBandUpload();
+handbackFileController.testHandbackFileFns();
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URLB,  { 
