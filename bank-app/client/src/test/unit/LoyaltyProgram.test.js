@@ -26,6 +26,13 @@ describe('LoyaltyProgram Functions', () => {
       }
     ;
 
+    it('handles invalid loyalty program data by throwing error', async () => {
+      expect(async () => {
+        render(<LoyaltyProgram key={[]} loyaltyProgramData={[]} userProfile={[]}/>).toThrow();
+      });
+  
+    });
+
     it('renders loyalty program data with correct datatypes', async () => {
 
       const rtl = render(<LoyaltyProgram key={mockedLoyaltyProgramData.programId} loyaltyProgramData={mockedLoyaltyProgramData} userProfile={mockedUserProfile}/>);
