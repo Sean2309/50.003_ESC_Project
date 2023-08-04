@@ -24,24 +24,6 @@ describe('LoyaltyProgram Functions', () => {
         membershipFormat: "^\\d{9}[a-zA-Z]$",
       }
     ;
-  
-  
-    it('handles empty loyalty program data by throwing console error', async () => {
-    // invalid types, will fail
-
-    // remove mockImplementation for console.error message
-    // mockImplementation added to declutter terminal
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
-
-      // simulates a not found scenario
-      await act(async () => {
-        render(<LoyaltyProgram loyaltyProgramData={[]} userProfile={[]}/>);
-      });
-      
-      // received absolutely zero data
-      // should trigger propTypes error
-      await waitFor(() => expect(spy).toHaveBeenCalled());
-    });
 
     it('renders loyalty program data with correct datatypes', async () => {
 

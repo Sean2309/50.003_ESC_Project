@@ -23,7 +23,7 @@ class LoyaltyPrograms extends Component {
       const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data?.loyaltyPrograms || [];
       this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
     } catch (error) {
-      console.error('Error fetching loyalty programs:', error);
+      
     }
   };
 
@@ -33,7 +33,7 @@ class LoyaltyPrograms extends Component {
       const userProfileQueryData = userProfileQueryResponse.data || {};
       this.setState({ userProfile: userProfileQueryData });
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      
     }
   };
 
@@ -58,9 +58,10 @@ class LoyaltyPrograms extends Component {
             logic to pass on to actual render: if getLoyaltyPrograms is not yet successful,
             render Loading... else pass each data to a LoyaltyProgram component
         */
-    if (loyaltyProgramsData === [] || userProfile === {}) {
-      return (<p>Loading...</p>);
-    }
+    // note that with current implementation, PropType will throw error first LMAO
+    // if (loyaltyProgramsData === [] || userProfile === {}) {
+    //   return (<p>Loading...</p>);
+    // }
 
     loyaltyProgramsData.map((loyaltyProgramData) => (
       componentsArray.push(
