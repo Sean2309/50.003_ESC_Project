@@ -2,15 +2,15 @@ const fs = require('fs');
 const path = require('path');
 const { CronJob } = require('cron');
 const mongoose = require('mongoose');
-const filePath = path.join(__dirname, `../controllers`);
-var config = require('../utils/config');
+const filePath = path.join(__dirname, `../../controllers`);
+var config = require('../../utils/config');
 
 // Integration testing example: 
 // Wait for the uploading of files to MongoDB is done, then you pull from the mongo db and see if the data is expected
 
 describe('clearFolder function check', () => {
     test('should return success if clearFolder is executed successfully', async() => {
-      const clearFolder = require('../controllers/clearFolder').clearFolder;
+      const clearFolder = require('../../controllers/clearFolder').clearFolder;
       const folderList = ['accrual_files', 'sftp_handback_downloads'];
       for (let folder in folderList) {
         process.chdir(`${filePath}/${folderList[folder]}`);

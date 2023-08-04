@@ -6,22 +6,20 @@ const csvParser = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 // Importing Config Files + Schemas
-require('dotenv').config({path: __dirname + '/../.env'});
-const transactionEnquiryModel = require('../models/transactionEnquiryModel');
-const config = require('../utils/config');
+const transactionEnquiryModel = require('../../models/transactionEnquiryModel');
+const config = require('../../utils/config');
 
 // Importing Helper Functions
-const handbackFileController = require('../controllers/handbackFileController');
-const convertDateFormat = require('../controllers/convertDateFormat').convertDateFormat;
+const handbackFileController = require('../../controllers/handbackFileController');
+const convertDateFormat = require('../../controllers/convertDateFormat').convertDateFormat;
 
 // Instantiating Variables
-const filePath = path.join(__dirname, `../controllers/testCsvs`);
+const filePath = path.join(__dirname, `../../controllers/testCsvs`);
 const testPartnerCode = 'TESTPARTNERCODE';
 const testDate = '20210923';
 const testCsvName = `${testPartnerCode}_HANDBACK_${testDate}.csv`;
-const testCsvDir = path.join(__dirname, '../controllers/testCsvs')
+const testCsvDir = path.join(__dirname, '../../controllers/testCsvs')
 const testCsvPath = `${testCsvDir}/${testCsvName}`;
-const testMongoDBURL = 'mongodb+srv://tengtjinyang:zagNwPsta2HHTyfE@transferconnect.0papjri.mongodb.net/TransferConnectDB';
 const records = [
   {
     transferDate: '23/9/2021',
@@ -162,7 +160,7 @@ describe('uploadFilesToMongoDB function check', () => {
   test('should return success if updates or creates a document in the test collection in mongodb', async () => {
     return new Promise((resolve, reject) => {
       // Writing to mongo db
-      mongoose.connect(testMongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
+      mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
       const Model = mongoose.model('testhandbacks', transactionEnquiryModel);
   
       const rawdataFromCSV = [];

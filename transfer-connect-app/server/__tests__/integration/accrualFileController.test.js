@@ -2,13 +2,18 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 const { createObjectCsvWriter } = require('csv-writer');
+const dateUtil = require('../../controllers/date');
+const config = require('../../utils/config');
+const File = require('files.com/lib/models/File').default;
 const {
   getModel,
   getDataFromCollection,
   groupData,
   writeGroupedDataToCsv,
-} = require('../controllers/accrualFileController');
-const {clearFolder} = require('../controllers/clearFolder')
+} = require('../../controllers/accrualFileController');
+const {clearFolder} = require('../../controllers/clearFolder')
+const accrualFileController = require('../../controllers/accrualFileController');
+const accrual_files_dir = path.join(__dirname, '../../controllers/accrual_files');
 
 jest.mock('fs', () => {
   return {
@@ -22,12 +27,21 @@ jest.mock('fs', () => {
   };
 });
 jest.mock('mongoose');
-jest.mock('../utils/config');
+jest.mock('../../utils/config');
 jest.mock('csv-writer', () => ({
   createObjectCsvWriter: jest.fn(() => ({
     writeRecords: jest.fn().mockResolvedValue(),
   })),
 }));
+jest.mock('../../controllers/date', () => ({
+  getFormattedDate: jest.fn()
+}));
+jest.mock('files.com/lib/models/File', () => ({
+  default: {
+    uploadFile: jest.fn(),
+  },
+}));
+
 
 // Mock Mongoose document
 class MockDocument {
@@ -100,7 +114,7 @@ describe('Unit tests', () => {
       close: jest.fn(),
     };
 
-    testDir = '../controllers/clearFolder';
+    testDir = '../../controllers/clearFolder';
   });
 
   afterEach(() => {
@@ -285,8 +299,6 @@ describe('Unit tests', () => {
   });
 });
 
-const mockWriteRecords = jest.fn().mockResolvedValue();
-
 describe('Integration tests', () => {
   describe('writeGroupedDataToCsv function check', () => {
     const testGroupedData = {
@@ -302,52 +314,104 @@ describe('Integration tests', () => {
       ]
     };
     const testCollection = 'testCollection';
+    const csvWriter = {
+      writeRecords: jest.fn().mockResolvedValue()
+    };
+    const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
 
-    beforeAll(async () => {
+    beforeEach(() => {
+      createObjectCsvWriter.mockReturnValue(csvWriter);
+      fs.existsSync.mockReturnValue(true);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('createObjectCsvWriter should be called with correct params', async () => {
       await writeGroupedDataToCsv(testGroupedData, testCollection);
-    });
-
-    test('should return success if writeGroupedDataToCsv is executed successfully', () => {
-      // Here we just check if the file exists
-      const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
-      expect(fs.existsSync(filePath)).toBeTruthy();
-    });
-
-    test('should return success if the data in the csv file matches the input data', done => {
-      // Read the written CSV and compare it with the input data
-      const filePath = path.join('accrual_files', `${testCollection}_partner1.csv`);
-      const results = [];
+      expect(createObjectCsvWriter).toHaveBeenCalledWith({
+        path: path.resolve(__dirname, "../..", "controllers", "accrual_files", "testCollection_partner1.csv"),
+        header: [
+          {id: 'membershipId', title: 'Membership ID'},
+          {id: 'memberName', title: 'Member name'},
+          {id: 'transferDate', title: 'Transfer date'},
+          {id: 'transferAmount', title: 'Transfer Amount'},
+          {id: 'referenceNumber', title: 'Reference number'},
+          {id: 'partnerCode', title: 'Partner code'},
+        ],
+      });
       
-      createReadStream(filePath)
-        .pipe(csvParser())
-        .on('data', (data) => results.push(data))
-        .on('end', () => {
-          expect(results).toEqual(testGroupedData['partner1']);
-          done();
-        });
+    });
+
+    test('writeRecords should be called with correct data', async () => {
+      await writeGroupedDataToCsv(testGroupedData, testCollection);
+
+      expect(csvWriter.writeRecords).toHaveBeenCalledWith(testGroupedData['partner1']);
+    });
+  });
+
+  describe('writeCollectionsToCsv function check', () => {
+    const stringToday = '2023-08-03';
+    const mockData = [{test: 'data'}];
+    const mockGroups = {partner1: mockData};
+
+    beforeEach(() => {
+      dateUtil.getFormattedDate.mockReturnValue(stringToday);
+      config.mongoDBCollections = ['testCollection1', 'testCollection2'];
+      accrualFileController.getModel = jest.fn();
+      accrualFileController.getDataFromCollection = jest.fn().mockResolvedValue(mockData);
+      accrualFileController.groupData = jest.fn().mockReturnValue(mockGroups);
+      accrualFileController.writeGroupedDataToCsv = jest.fn().mockResolvedValue();
+      console.log = jest.fn();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('should correctly retrieve, group and write data for each collection', async () => {
+      await accrualFileController.writeCollectionsToCsv();
+
+      for (const collection of config.mongoDBCollections) {
+        expect(accrualFileController.getModel).toHaveBeenCalledWith(collection);
+        expect(accrualFileController.getDataFromCollection).toHaveBeenCalledWith(accrualFileController.getModel(collection), stringToday);
+        expect(accrualFileController.groupData).toHaveBeenCalledWith(mockData);
+        expect(accrualFileController.writeGroupedDataToCsv).toHaveBeenCalledWith(mockGroups, collection);
+        expect(console.log).toHaveBeenCalledWith('Data retrieved from ' + collection + ':', mockData);
+      }
+    });
+  });
+
+  describe('uploadFilesToServer function', () => {
+    let controller;
+
+    beforeEach(() => {
+      // Setup the mocks before each test
+      fs.readdirSync.mockImplementation(() => ['collection1_1.csv', 'collection2_2.csv']);
+      File.uploadFile.mockResolvedValue(true);
+      dateUtil.getFormattedDate.mockReturnValue('20230803');
+      config.mongoDBCollections = ['collection1', 'collection2'];
+      config.sftpCollections = ['sftpCollection1', 'sftpCollection2'];
+      config.kaligoURL = '<mocked-kaligo-url>';
+      config.kaligoAPIKey = '<mocked-api-key>';
+    });
+
+    it('should upload files to the server', async () => {
+      await accrualFileController.uploadFilesToServer();
+
+      expect(fs.readdirSync).toHaveBeenCalledWith(accrual_files_dir);
+      expect(File.uploadFile).toHaveBeenCalledTimes(2);
+      expect(File.uploadFile).toHaveBeenCalledWith(
+        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/sftpCollection1/20230803/1_ACCRUAL_20230803.csv',
+        path.join(accrual_files_dir, 'collection1_1.csv'),
+        { mkdir_parents: true }
+      );
+      expect(File.uploadFile).toHaveBeenCalledWith(
+        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/sftpCollection2/20230803/2_ACCRUAL_20230803.csv',
+        path.join(accrual_files_dir, 'collection2_2.csv'),
+        { mkdir_parents: true }
+      );
     });
   });
 });
-
-// test('writeCollectionsToCsv function should correctly fetch, group, and write data for each collection', async () => {
-//   // Mock getModel, getDataFromCollection, groupData, writeGroupedDataToCsv functions
-//   const mockGetModel = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([]) });
-//   const mockGetDataFromCollection = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([])});
-//   const mockGroupData = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([])});
-//   const mockWriteGroupedDataToCsv = jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue([])});
-
-//   // Call the function
-//   await writeCollectionsToCsv();
-
-//   // Expect that each helper function was called the correct number of times
-//   for (const collection of config.mongoDBCollections) {
-//     expect(mockGetModel).toHaveBeenCalledWith(collection);
-//     expect(mockGetDataFromCollection).toHaveBeenCalledWith(expect.anything(), '2023-07-23'); // We're not testing the model here, so we don't care what it is
-//     expect(mockGroupData).toHaveBeenCalledWith([]);
-//     expect(mockWriteGroupedDataToCsv).toHaveBeenCalledWith({}, collection);
-//   }
-// });
-
-// test('uploadFilesToServer should correctly upload files', async () => {
-//   // Mocking this function depends on how you're uploading the files
-// });

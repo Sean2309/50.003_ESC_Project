@@ -2,28 +2,23 @@ const express = require('express');
 const app = express();
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MONGODB_URL } = require('../../utils/config');
+const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
 const LoyaltyProgramQueryModel = require('../../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../../models/currencyRateModel');
 const controller = require('../../controllers/loyaltyProgramQueryController');
 
 
 beforeAll(async () => {
-  await mongoose.connect(MONGODB_URL);
-  await LoyaltyProgramQueryModel.deleteMany({});
-  await CurrencyRateModel.deleteMany({});
+  await mongoose.connect(MONGODB_URL, MONGODB_OPTIONS);
 });
 
 beforeEach(async () => {
   await LoyaltyProgramQueryModel.deleteMany({});
   await CurrencyRateModel.deleteMany({});
-});
+})
 
 afterEach(async() => {
-  await LoyaltyProgramQueryModel.deleteMany({});
-  await CurrencyRateModel.deleteMany({});
   jest.clearAllMocks(); // Reset mocked functions before each test
-
 });
 
 describe('LoyaltyProgramQueryController', () => {

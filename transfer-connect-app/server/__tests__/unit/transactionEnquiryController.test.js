@@ -1,7 +1,7 @@
-const transactionEnquiryController = require('../controllers/transactionEnquiryController');
+const transactionEnquiryController = require('../../controllers/transactionEnquiryController');
 const mongoose = require('mongoose');
-const emailNotification = require('../controllers/emailNotification');
-const messageNotification = require('../controllers/messageNotification');
+const emailNotification = require('../../controllers/emailNotification');
+const messageNotification = require('../../controllers/messageNotification');
 
 
 // ========== processRoute Mock Params ============= //
@@ -35,7 +35,7 @@ const mockgetOutcomeCodeSuccessData = [
     }));
 
 
-    jest.mock("../controllers/messageNotification", () => ({
+    jest.mock("../../controllers/messageNotification", () => ({
 
       sendMessages: jest.fn(),
 
