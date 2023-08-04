@@ -63,6 +63,8 @@ class LoyaltyPrograms extends Component {
     //   return (<p>Loading...</p>);
     // }
 
+    // for element loyaltyProgramData in state-stored loyaltyProgramsData
+    // push...
     loyaltyProgramsData.map((loyaltyProgramData) => (
       componentsArray.push(
         <LoyaltyProgram
@@ -79,7 +81,7 @@ class LoyaltyPrograms extends Component {
   render() {
     return (
       <div>
-        <div className="marketplace-page-bg" data-testid="loyaltyprograms-test">
+        <div className="marketplace-page-bg">
           <h2>Loyalty Programs</h2>
           {this.renderLoyaltyPrograms()}
         </div>

@@ -7,7 +7,7 @@ function LoyaltyProgram(props) {
   const { loyaltyProgramData, userProfile } = props;
 
   return (
-    <div className="loyalty-box">
+    <div className="loyalty-box" data-testid="loyaltyprograms-test">
       <h3>{loyaltyProgramData.programName}</h3>
       <p>
         Description:

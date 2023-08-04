@@ -11,35 +11,39 @@ describe('LoyaltyProgram Functions', () => {
       notificationMethod: "Bank",
     };
   
+    // not an array!
     const mockedLoyaltyProgramData = 
       {
+        programId: "GOPOINTS",
         programName: "GoJet Points",
-        description: "Feel free to adjust this",
-        processingTime: "Instant",
-        currencyRate: 1.2,
         currencyName: "GoPoints",
+        processingTime: "Instant",
+        description: "Feel free to adjust this",
         enrollmentLink: "https://www.gojet.com/member/",
         tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
-        programId: "GOPOINTS",
         membershipFormat: "^\\d{9}[a-zA-Z]$",
+        currencyRate: 1.2
       }
     ;
 
     it('renders loyalty program data with correct datatypes', async () => {
 
-      const rtl = render(<LoyaltyProgram loyaltyProgramData={mockedLoyaltyProgramData} userProfile={mockedUserProfile}/>);
+      const rtl = render(<LoyaltyProgram key={mockedLoyaltyProgramData.programId} loyaltyProgramData={mockedLoyaltyProgramData} userProfile={mockedUserProfile}/>);
 
 
       await waitFor(() => {
         rtl.getByText("Enrollment Link", {exact: false});
       });
 
-      console.log(mockedLoyaltyProgramData.description)
-
-      expect(rtl.getByText("Description:", {exact: false})).toBeInTheDocument();
-      expect(rtl.getByText("Processing Time:", {exact: false})).toBeInTheDocument();
-      expect(rtl.getByText("1000 ABC Points =", {exact: false})).toBeInTheDocument();
-      
+      expect(screen.getByText("GoJet Points")).toBeInTheDocument();
+      expect(screen.getByText("Feel free to adjust this", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("Instant", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("1200", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("GoPoints", {exact: false})).toBeInTheDocument();
+      // https://stackoverflow.com/questions/57827126/how-to-test-anchors-href-with-react-testing-library
+      expect(screen.getByRole('link', { name: 'Enrollment Link' })).toHaveAttribute('href', 'https://www.gojet.com/member/');
+      expect(screen.getByRole('link', { name: 'Terms and Conditions' })).toHaveAttribute('href', 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html');
+      expect(screen.getByRole('button', { name: 'Transfer' }));
     })
 
   });

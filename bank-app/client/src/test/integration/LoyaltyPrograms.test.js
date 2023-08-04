@@ -27,6 +27,17 @@ describe('LoyaltyPrograms Component', () => {
       tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
       membershipFormat: "^\\d{9}[a-zA-Z]$",
       currencyRate: 1.2
+    },
+    {
+      programId: 'ASIAMILES',
+      programName: 'Asia Miles+',
+      currencyName: 'Asia Points',
+      processingTime: '1 day',
+      description: 'Your Asian miles',
+      enrollmentLink: 'https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html',
+      tncLink: 'https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html',
+      membershipFormat: '^\\d{11}$',
+      currencyRate: 1.1,
     }
   ];
 
@@ -66,14 +77,26 @@ describe('LoyaltyPrograms Component', () => {
     await waitFor(() => {
       expect(screen.getByText('Loyalty Programs')).toBeInTheDocument();
       expect(screen.getAllByTestId('loyaltyprograms-test')).toHaveLength(mockedLoyaltyPrograms.length);
+      const [firstEnrollmentLink, secondEnrollmentLink] = screen.getAllByRole('link', { name: 'Enrollment Link' });
+      const [firstTermsLink, secondTermsLink] = screen.getAllByRole('link', { name: 'Terms and Conditions' });
+      // first loyalty program rendered
       expect(screen.getByText("GoJet Points")).toBeInTheDocument();
       expect(screen.getByText("Feel free to adjust this", {exact: false})).toBeInTheDocument();
       expect(screen.getByText("Instant", {exact: false})).toBeInTheDocument();
       expect(screen.getByText("1200", {exact: false})).toBeInTheDocument();
       expect(screen.getByText("GoPoints", {exact: false})).toBeInTheDocument();
       // https://stackoverflow.com/questions/57827126/how-to-test-anchors-href-with-react-testing-library
-      expect(screen.getByRole('link', { name: 'Enrollment Link' })).toHaveAttribute('href', 'https://www.gojet.com/member/');
-      expect(screen.getByRole('link', { name: 'Terms and Conditions' })).toHaveAttribute('href', 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html');
+      expect(firstEnrollmentLink).toHaveAttribute('href', 'https://www.gojet.com/member/');
+      expect(firstTermsLink).toHaveAttribute('href', 'https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html');
+      // second loyalty program rendered
+      expect(screen.getByText("Asia Miles+")).toBeInTheDocument();
+      expect(screen.getByText("Your Asian miles", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("1 day", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("1100", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("Asia Points", {exact: false})).toBeInTheDocument();
+      // https://stackoverflow.com/questions/57827126/how-to-test-anchors-href-with-react-testing-library
+      expect(secondEnrollmentLink).toHaveAttribute('href', 'https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html');
+      expect(secondTermsLink).toHaveAttribute('href', 'https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html');
     });
   });
 });
