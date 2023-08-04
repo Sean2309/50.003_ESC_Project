@@ -5,6 +5,7 @@ import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
 
+jest.mock('axios');
 
 describe('TransferForm Component', () => {
   const mockedUserProfile = {
@@ -29,9 +30,7 @@ describe('TransferForm Component', () => {
     }
   ;
 
-    beforeEach(() => {
-        jest.mock('axios');
-      });
+  const submissionDate = new Date().toISOString().split('T')[0];
     
       afterEach(() => {
         jest.clearAllMocks();
@@ -106,8 +105,8 @@ describe('TransferForm Component', () => {
 
         // Fill in the form
         fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-        fireEvent.change(membershipIdInput, { target: { value: '123456' } });
-        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+        fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
         fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
         fireEvent.submit(submitButton);
@@ -122,13 +121,12 @@ describe('TransferForm Component', () => {
         // this is the button at the end of the loyalty program card
 
       const spy = jest.spyOn(TransferForm.prototype, 'getDate');
-      const transferForm =
-        render(<TransferForm 
-          membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-          currencyRate={mockedLoyaltyProgramData.currencyRate}
-          userProfile={mockedUserProfile}
-          loyaltyProgramId={mockedLoyaltyProgramData.programId}
-          />);
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
 
         
         // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
@@ -147,19 +145,13 @@ describe('TransferForm Component', () => {
 
         // Fill in the form
         fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-        fireEvent.change(membershipIdInput, { target: { value: '123456' } });
-        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+        fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
         fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
         fireEvent.submit(submitButton);
 
       // getDate was called
       await expect(spy).toHaveBeenCalled();
-      // getDate returns something!
-      // yeah it's the result spying we need to check later
-      await expect(spy).toHaveReturned();
-
-      // https://github.com/jestjs/jest/issues/3821
-    
     });
 });

@@ -13,7 +13,7 @@ describe('TransferForm Component', () => {
   const mockedUserProfile = {
     abcPoints : 12367,
     emailAddress: "abc@gmail.com",
-    phoneNumber: "3267352",
+    phoneNumber: "88100110",
     notificationMethod: "Bank",
   };
 
@@ -30,44 +30,24 @@ describe('TransferForm Component', () => {
     currencyRate: 1.2
   }
 
-    // simulate successful response from sending POST request to TransferConnect API endpoint
-    const mockServerSuccessfulResponse = {
-      status: 201,
-      data: {
-        memberName: "mockUser",
-        membershipId: "01",
-        transferDate: "11-11-11",
-        transferAmount: 2000,
-        referenceNumber: "101",
-        partnerCode: "mockApp",
-        notificationMethod: "1",
-        emailAddress: "mock@email.com",
-        phoneNumber: "88100110",
-  
-      }
-    };
+  const submissionDate = new Date().toISOString().split('T')[0];
 
-
-  // for line 71
-  // axios.post = jest.fn().mockResolvedValue();
-  // yeah should do this ig?
-  // check how axios.get is simulated
   // simulate successful response from sending POST request to TransferConnect API endpoint
-  // const mockServerSuccessfulResponse = {
-  //     status: 201,
-  //     data: {
-  //         memberName: "mockUser",
-  //         membershipId: "01",
-  //         transferDate: "11-11-11",
-  //         transferAmount: 2000,
-  //         referenceNumber: "101",
-  //         partnerCode: "mockApp",
-  //         notificationMethod: "1",
-  //         emailAddress: "mock@email.com",
-  //         phoneNumber: "88100110",
+  const mockServerSuccessfulResponse = {
+    status: 201,
+    data: {
+      membershipId: '123456789S',
+      memberName: 'John Doe',
+      transferDate: submissionDate,
+      transferAmount: "50",
+      emailAddress: "abc@gmail.com",
+      notificationMethod: "Bank",
+      phoneNumber: "88100110",
 
-  //     }
-  // };
+    }
+  };
+
+    
   
   beforeEach(() => {
     
@@ -123,15 +103,9 @@ describe('TransferForm Component', () => {
   });
 
     it('form submission sends axios POST request to transferConnect endpoint', async () => {
-    // might need to spy
-    // or see the github link again I just saw
-    // especially regarding form submission props, how do I ensure it submits from fireEvent...
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
-    // this is still the button at the end of the loyalty program card
-
-    // const spy = jest.spyOn(TransferForm.prototype, 'getDate');
-    
+    // since it is not clicked yet, this is still the button at the end of the loyalty program card
     render(<TransferForm 
       membershipFormat={mockedLoyaltyProgramData.membershipFormat}
       currencyRate={mockedLoyaltyProgramData.currencyRate}
@@ -162,10 +136,7 @@ describe('TransferForm Component', () => {
       // User presses the submit button on the form
       submitForm.submit();
 
-    // const response = await transferFormController.postTransaction(mockFormData, loyaltyProgramId);
-    // expect(response).toEqual(mockServerSuccessfulResponse.data);
-
-    const submissionDate = new Date().toISOString().split('T')[0];
+    
     await act(async () => {
       await waitFor(() => {
         // Assertions based on the API response (assuming success)
@@ -177,7 +148,7 @@ describe('TransferForm Component', () => {
             transferDate: submissionDate,
             transferAmount: "50",
             emailAddress: "abc@gmail.com",
-            phoneNumber: "3267352",
+            phoneNumber: "88100110",
             notificationMethod: "Bank",
           },
           { withCredentials: true }
@@ -189,72 +160,4 @@ describe('TransferForm Component', () => {
     // https://github.com/jestjs/jest/issues/3821
   
   });
-
-  // it('form submission sends axios POST request to transferConnect endpoint', async () => {
-  //   // might need to spy
-  //   // or see the github link again I just saw
-  //   // especially regarding form submission props, how do I ensure it submits from fireEvent...
-  //   axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
-
-  //   // this is still the button at the end of the loyalty program card
-
-  //   // const spy = jest.spyOn(TransferForm.prototype, 'getDate');
-    
-  //   render(<TransferForm 
-  //     membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-  //     currencyRate={mockedLoyaltyProgramData.currencyRate}
-  //     userProfile={mockedUserProfile}
-  //     loyaltyProgramId={mockedLoyaltyProgramData.programId}
-  //     />);
-
-      
-  //     // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
-  //     const transferButton = screen.getByRole('button');
-  //     // user opens transferForm
-  //     fireEvent.click(transferButton);
-
-  //     // User finds input fields and submit button
-  //     const memberNameInput = screen.getByTestId('member-name').querySelector('input');
-  //     const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
-  //     const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
-  //     const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-  //     // const submitButton = screen.getByTestId('submit-button');
-  //     const submitForm = screen.getByTestId('submit-form');
-
-  //     // User fills in the form
-  //     fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-  //     fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
-  //     fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
-  //     fireEvent.change(transferAmountInput, { target: { value: '50' } });
-
-  //     // User presses the submit button on the form
-  //     submitForm.submit();
-
-  //   // const response = await transferFormController.postTransaction(mockFormData, loyaltyProgramId);
-  //   // expect(response).toEqual(mockServerSuccessfulResponse.data);
-
-  //   // const submissionDate = new Date().toISOString().split('T')[0];
-  //   await act(async () => {
-  //     await waitFor(() => {
-  //       // Assertions based on the API response (assuming success)
-  //       expect(axios.post).toHaveBeenCalledWith(
-  //         `http://localhost:3001/api/transferformsubmit/${mockedLoyaltyProgramData.programId}`,
-  //         {
-  //           membershipId: '123456789S',
-  //           memberName: 'John Doe',
-  //           transferDate: expect.any(String),
-  //           transferAmount: 50,
-  //           emailAddress: "abc@gmail.com",
-  //           phoneNumber: "3267352",
-  //           notificationMethod: "Bank",
-  //         },
-  //         { withCredentials: true }
-  //       );
-
-  //         expect(axios.post).toHaveBeenCalledTimes(1);
-  //       });
-  //     });
-  //   // https://github.com/jestjs/jest/issues/3821
-  
-  // });
 });
