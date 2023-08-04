@@ -67,6 +67,7 @@ class TransferForm extends Component {
       };
 
       // withCredentials
+      // 
       axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form, { withCredentials: true })
         .then((response) => {
           console.log(response.data);
@@ -172,10 +173,15 @@ class TransferForm extends Component {
             </label>
             <br />
 
-            <input 
+            <input data-testid="submit-button"
               type="submit"
               value="Submit"
             />
+
+            {/* <button data-testid="submit-button"
+              type="submit"
+              value="Submit"
+            /> */}
           </form>
           <button onClick={this.closeModal} type="button">Close</button>
         </dialog>
