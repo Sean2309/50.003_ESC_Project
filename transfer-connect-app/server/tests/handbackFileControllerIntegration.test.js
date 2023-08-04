@@ -21,7 +21,7 @@ const testDate = '20210923';
 const testCsvName = `${testPartnerCode}_HANDBACK_${testDate}.csv`;
 const testCsvDir = path.join(__dirname, '../controllers/testCsvs')
 const testCsvPath = `${testCsvDir}/${testCsvName}`;
-const testMongoDBURL = 'mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/';
+const testMongoDBURL = 'mongodb+srv://tengtjinyang:zagNwPsta2HHTyfE@transferconnect.0papjri.mongodb.net/TransferConnectDB';
 const records = [
   {
     transferDate: '23/9/2021',
