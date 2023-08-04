@@ -27,9 +27,11 @@ describe('LoyaltyProgram Functions', () => {
   
   
     it('handles empty loyalty program data by throwing console error', async () => {
-      // invalid types, will fail
+    // invalid types, will fail
 
-      const spy = jest.spyOn(console, 'error');
+    // remove mockImplementation for console.error message
+    // mockImplementation added to declutter terminal
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
 
       // simulates a not found scenario
       await act(async () => {
