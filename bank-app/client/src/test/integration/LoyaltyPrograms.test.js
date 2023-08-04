@@ -45,7 +45,7 @@ describe('LoyaltyPrograms Component', () => {
     jest.clearAllMocks();
   });
 
-  it('handles empty loyalty program data by throwing console error', async () => {
+  it('handles invalid loyalty program data by throwing error', async () => {
     // Mock the axios.get function to return invalid responses
     // the test will still pass though since we handle the error
     axios.get = jest.fn().mockResolvedValue();
