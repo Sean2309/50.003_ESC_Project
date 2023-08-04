@@ -39,7 +39,7 @@ describe('AuthManagerController - userAuthentication', () => {
       .expect(200);
 
     expect(response.text).toBe("\"The password is incorrect\"");
-    //expect(response.header['set-cookie']).toBeUndefined();  --> Still recieving some values so the test is failed
+    
   });
 
   it('should return "User not found" if the user does not exist', async () => {
@@ -52,7 +52,7 @@ describe('AuthManagerController - userAuthentication', () => {
       .expect(200);
 
     expect(response.text).toBe("\"User not found\"");
-    //expect(response.header['set-cookie']).toBeUndefined(); --> Still recieving some values so the test is failed
+   
   });
 
   it('should return "Server error" if an error occurs during user authentication', async () => {
@@ -95,7 +95,7 @@ describe('AuthManagerController - userAuthentication', () => {
   it('should return 401 and auth: false if token is invalid', async () => {
     const token = 'invalid token';
     const res = await request(app)
-      .get('/login') // replace with your actual endpoint
+      .get('/login')
       .set('Cookie', [`token=${token}`]);
 
     expect(res.statusCode).toEqual(401);

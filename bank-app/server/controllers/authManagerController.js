@@ -54,7 +54,6 @@ class AuthManagerController {
   // Retrieve token set in cookies and verify, if verified, set auth to true
   userAuthorization = async (request, response) => {
     const { token } = request.cookies;
-    //console.log("Auth: ",token)
 
     try {
       jwt.verify(token, SECRET_CODE);
