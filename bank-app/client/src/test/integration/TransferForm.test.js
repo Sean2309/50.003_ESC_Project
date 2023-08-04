@@ -122,45 +122,6 @@ describe('TransferForm Component', () => {
     expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
   });
 
-  // this is an indirect openModal testing
-  // from the viewpoint of a user
-  it('user can submit the transfer form, no errors are logged', async () => {
-
-    // this is still the button at the end of the loyalty program card
-    
-    render(<TransferForm 
-      membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-      currencyRate={mockedLoyaltyProgramData.currencyRate}
-      userProfile={mockedUserProfile}
-      loyaltyProgramId={mockedLoyaltyProgramData.programId}
-      />);
-
-      
-      // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
-      const transferButton = screen.getByRole('button');
-      // user opens transferForm
-      fireEvent.click(transferButton);
-
-      // User finds input fields and submit button
-      const memberNameInput = screen.getByTestId('member-name').querySelector('input');
-      const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
-      const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
-      const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-      const submitButton = screen.getByTestId('submit-form').querySelector('input');
-
-      // User fills in the form
-      fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-      fireEvent.change(membershipIdInput, { target: { value: '123456' } });
-      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
-      fireEvent.change(transferAmountInput, { target: { value: '50' } });
-
-      // User presses the submit button on the form
-      fireEvent.submit(submitButton);
-
-    // https://github.com/jestjs/jest/issues/3821
-  
-  });
-
     it('form submission sends axios POST request to transferConnect endpoint', async () => {
     // might need to spy
     // or see the github link again I just saw
@@ -194,8 +155,8 @@ describe('TransferForm Component', () => {
 
       // User fills in the form
       fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-      fireEvent.change(membershipIdInput, { target: { value: '123456' } });
-      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+      fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
       fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
       // User presses the submit button on the form
@@ -204,17 +165,17 @@ describe('TransferForm Component', () => {
     // const response = await transferFormController.postTransaction(mockFormData, loyaltyProgramId);
     // expect(response).toEqual(mockServerSuccessfulResponse.data);
 
-    // const submissionDate = new Date().toISOString().split('T')[0];
+    const submissionDate = new Date().toISOString().split('T')[0];
     await act(async () => {
       await waitFor(() => {
         // Assertions based on the API response (assuming success)
         expect(axios.post).toHaveBeenCalledWith(
           `http://localhost:3001/api/transferformsubmit/${mockedLoyaltyProgramData.programId}`,
           {
-            membershipId: '123456',
+            membershipId: '123456789S',
             memberName: 'John Doe',
-            transferDate: expect.any(String),
-            transferAmount: 50,
+            transferDate: submissionDate,
+            transferAmount: "50",
             emailAddress: "abc@gmail.com",
             phoneNumber: "3267352",
             notificationMethod: "Bank",
@@ -262,8 +223,8 @@ describe('TransferForm Component', () => {
 
   //     // User fills in the form
   //     fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-  //     fireEvent.change(membershipIdInput, { target: { value: '123456' } });
-  //     fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+  //     fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+  //     fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
   //     fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
   //     // User presses the submit button on the form
@@ -279,7 +240,7 @@ describe('TransferForm Component', () => {
   //       expect(axios.post).toHaveBeenCalledWith(
   //         `http://localhost:3001/api/transferformsubmit/${mockedLoyaltyProgramData.programId}`,
   //         {
-  //           membershipId: '123456',
+  //           membershipId: '123456789S',
   //           memberName: 'John Doe',
   //           transferDate: expect.any(String),
   //           transferAmount: 50,
