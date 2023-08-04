@@ -4,71 +4,48 @@ import { render, fireEvent, screen, act, waitFor } from '@testing-library/react'
 import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
+
+
 describe('TransferForm Component', () => {
-    const mockedUserProfile = {
-        abcPoints : 12367,
-        emailAddress: "abc@gmail.com",
-        phoneNumber: "3267352",
-        notificationMethod: "Bank",
-    };
+  const mockedUserProfile = {
+    abcPoints : 12367,
+    emailAddress: "abc@gmail.com",
+    phoneNumber: "3267352",
+    notificationMethod: "Bank",
+  };
 
-    const mockedTransferProps = 
-        {
-            membershipFormat: "^\\d{9}[a-zA-Z]$",
-            loyaltyProgramId: "GOPOINTS",
-            userProfile: mockedUserProfile,
-            currencyRate: 1.2
-        }
-    ;
-
-// for line 71
-// axios.post = jest.fn().mockResolvedValue();
-    // simulate successful response from sending POST request to TransferConnect API endpoint
-    // const mockServerSuccessfulResponse = {
-    //     status: 201,
-    //     data: {
-    //         memberName: "mockUser",
-    //         membershipId: "01",
-    //         transferDate: "11-11-11",
-    //         transferAmount: 2000,
-    //         referenceNumber: "101",
-    //         partnerCode: "mockApp",
-    //         notificationMethod: "1",
-    //         emailAddress: "mock@email.com",
-    //         phoneNumber: "88100110",
-
-    //     }
-    // };
+  // not an array!
+  const mockedLoyaltyProgramData = 
+    {
+      programId: "GOPOINTS",
+      programName: "GoJet Points",
+      currencyName: "GoPoints",
+      processingTime: "Instant",
+      description: "Feel free to adjust this",
+      enrollmentLink: "https://www.gojet.com/member/",
+      tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
+      membershipFormat: "^\\d{9}[a-zA-Z]$",
+      currencyRate: 1.2
+    }
+  ;
 
     beforeEach(() => {
         jest.mock('axios');
-        // Mock the axios.get function to return fake responses
-        axios.get = jest.fn().mockResolvedValue((url) => {
-          if (url === 'http://localhost:3001/api/userprofile') {
-            return { data: mockedUserProfile };
-          } else if (url === 'http://localhost:3001/api/loyaltyprograms') {
-            return { data: { loyaltyPrograms: mockedLoyaltyPrograms } };
-          }
-          return Promise.reject(new Error('Invalid URL'));
-        });
       });
     
       afterEach(() => {
         jest.clearAllMocks();
       })
 
-    // both are only used on submit
-    // tldr we can't unit test/spy on the functions without doing a submission
-    // oh well, this is as close to a unitTest we have
-    it('getDate doesnt get called without submission', async () => {
+    it('getDate will not get called without submission', async () => {
         const spy = jest.spyOn(TransferForm.prototype, 'getDate');
         await act(async () => {
           // it renders now!
             render(<TransferForm 
-              membershipFormat={mockedTransferProps.membershipFormat}
-              currencyRate={mockedTransferProps.currencyRate}
+              membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+              currencyRate={mockedLoyaltyProgramData.currencyRate}
               userProfile={mockedUserProfile}
-              loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+              loyaltyProgramId={mockedLoyaltyProgramData.loyaltyProgramId}
               />);
           });
           
@@ -80,15 +57,15 @@ describe('TransferForm Component', () => {
       
       });
 
-      it('membershipValidation doesnt get called without submission', async () => {
+      it('membershipValidation will not get called without submission', async () => {
         const spy = jest.spyOn(TransferForm.prototype, 'membershipValidation');
         await act(async () => {
           // it renders now!
             render(<TransferForm 
-              membershipFormat={mockedTransferProps.membershipFormat}
-              currencyRate={mockedTransferProps.currencyRate}
+              membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+              currencyRate={mockedLoyaltyProgramData.currencyRate}
               userProfile={mockedUserProfile}
-              loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+              loyaltyProgramId={mockedLoyaltyProgramData.loyaltyProgramId}
               />);
           });
           
@@ -106,10 +83,10 @@ describe('TransferForm Component', () => {
       const spy = jest.spyOn(TransferForm.prototype, 'membershipValidation');
       const transferForm =
         render(<TransferForm 
-          membershipFormat={mockedTransferProps.membershipFormat}
-          currencyRate={mockedTransferProps.currencyRate}
+          membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+          currencyRate={mockedLoyaltyProgramData.currencyRate}
           userProfile={mockedUserProfile}
-          loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+          loyaltyProgramId={mockedLoyaltyProgramData.loyaltyProgramId}
           />);
 
         
@@ -147,10 +124,10 @@ describe('TransferForm Component', () => {
       const spy = jest.spyOn(TransferForm.prototype, 'getDate');
       const transferForm =
         render(<TransferForm 
-          membershipFormat={mockedTransferProps.membershipFormat}
-          currencyRate={mockedTransferProps.currencyRate}
+          membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+          currencyRate={mockedLoyaltyProgramData.currencyRate}
           userProfile={mockedUserProfile}
-          loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+          loyaltyProgramId={mockedLoyaltyProgramData.loyaltyProgramId}
           />);
 
         
@@ -179,11 +156,14 @@ describe('TransferForm Component', () => {
       // getDate was called
       await expect(spy).toHaveBeenCalled();
       // getDate returns something!
+      // yeah it's the result spying we need to check later
       await expect(spy).toHaveReturned();
 
       // https://github.com/jestjs/jest/issues/3821
     
     });
+
+    // we can later check if axios.post is actually called on submit and that should be the end of our transferForm test
 
 
   // if need to test out axios post: https://stackoverflow.com/questions/47716844/how-do-you-verify-that-a-request-was-made-with-axios-mock-adapter/66564315#66564315
@@ -194,10 +174,10 @@ describe('TransferForm Component', () => {
   //   const spy = jest.spyOn(axios, 'post');
   //   const transferForm =
   //     render(<TransferForm 
-  //       membershipFormat={mockedTransferProps.membershipFormat}
-  //       currencyRate={mockedTransferProps.currencyRate}
+  //       membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+  //       currencyRate={mockedLoyaltyProgramData.currencyRate}
   //       userProfile={mockedUserProfile}
-  //       loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+  //       loyaltyProgramId={mockedLoyaltyProgramData.loyaltyProgramId}
   //       />);
 
       
