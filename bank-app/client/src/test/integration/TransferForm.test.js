@@ -47,13 +47,6 @@ describe('TransferForm Component', () => {
     }
   };
 
-    
-  
-  beforeEach(() => {
-    
-    // Need to mock axios.post here
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   })
@@ -100,6 +93,52 @@ describe('TransferForm Component', () => {
     expect(screen.getByTestId("member-id")).toBeInTheDocument();
     expect(screen.getByTestId("member-confirm")).toBeInTheDocument();
     expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
+  });
+
+  it('submission will not be posted if membershipID is not valid', async () => {
+    axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
+
+    // since it is not clicked yet, this is still the button at the end of the loyalty program card
+    render(<TransferForm 
+      membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+      currencyRate={mockedLoyaltyProgramData.currencyRate}
+      userProfile={mockedUserProfile}
+      loyaltyProgramId={mockedLoyaltyProgramData.programId}
+      />);
+
+      
+      // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+      const transferButton = screen.getByRole('button');
+      // user opens transferForm
+      fireEvent.click(transferButton);
+
+      // User finds input fields and submit button
+      const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+      const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+      const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+      const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+      // const submitButton = screen.getByTestId('submit-button');
+      const submitForm = screen.getByTestId('submit-form');
+
+      // User fills in the form
+      fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+      // invalid membershipId
+      fireEvent.change(membershipIdInput, { target: { value: '12345' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '12345' } });
+      fireEvent.change(transferAmountInput, { target: { value: '50' } });
+
+      // User presses the submit button on the form
+      submitForm.submit();
+
+    
+    
+      await waitFor(() => {
+
+
+          expect(axios.post).not.toHaveBeenCalled();
+        });
+    // https://github.com/jestjs/jest/issues/3821
+  
   });
 
     it('form submission sends axios POST request to transferConnect endpoint', async () => {
