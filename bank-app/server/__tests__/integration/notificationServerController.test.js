@@ -109,8 +109,8 @@ test('Client receives correct WebSocket message', async () => {
 
 describe('WebSocket identifies unique connections', () => {
 
-  const wss = require('../controllers/notificationServerController').wss;
-  const clients = require('../controllers/notificationServerController').clients;
+  const wss = require('../../controllers/notificationServerController').wss;
+  const clients = require('../../controllers/notificationServerController').clients;
 
   test('WebSocket server can store unique client connection', async () => {
     const clientABC = new WebSocket('ws://localhost:8080?uuid=ABC');

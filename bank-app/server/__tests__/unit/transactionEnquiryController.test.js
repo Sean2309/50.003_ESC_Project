@@ -1,6 +1,6 @@
-const transactionEnquiryController = require('../controllers/transactionEnquiryController');
+const transactionEnquiryController = require('../../controllers/transactionEnquiryController');
 const axios = require('axios');
-const wss = require('../controllers/notificationServerController').wss;
+const wss = require('../../controllers/notificationServerController').wss;
 
 
 
@@ -12,7 +12,7 @@ jest.mock('axios', () => ({
 
 
 //used for testing makeApiRequest
-jest.mock('../utils/config', () => ({
+jest.mock('../../utils/config', () => ({
   TRANSFER_CONNECT_API_URL: 'localhost',
   PARTNER_CODE: 'DBS'
 }));
