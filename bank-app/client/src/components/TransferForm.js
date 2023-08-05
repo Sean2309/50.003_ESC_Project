@@ -114,13 +114,13 @@ class TransferForm extends Component {
   };
 
   renderSuccess = () => {
-    const { submissionStatus, transferAmount } = this.state;
+    const { submissionStatus } = this.state;
     const { userProfile } = this.props;
     const { abcPoints } = userProfile;
     return (
       <div>
         {submissionStatus === 'success' ? (
-          <div>Transaction submitted successfully! You have {abcPoints - transferAmount} left!</div>
+          <div>Transaction submitted successfully! You have {abcPoints} left!</div>
         ) : submissionStatus === 'membershipIdValidation' ? (
           <div>Incorrect Membership ID format.</div>
         ) : submissionStatus === 'membershipIdConfirmation' ? (
