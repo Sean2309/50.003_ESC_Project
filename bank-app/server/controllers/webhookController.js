@@ -10,7 +10,7 @@ class WebhookController {
 
   processData = async (request, response) => {
     let [transaction, loyaltyProgramId] = await this.processResponse(request, response);
-    await this.updateDBandNotifs(transaction, loyaltyProgramId);
+    //await this.updateDBandNotifs(transaction, loyaltyProgramId);
   } 
   processResponse = async (request, response) => {
     try {
