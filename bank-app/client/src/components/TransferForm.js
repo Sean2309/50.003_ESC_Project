@@ -12,6 +12,7 @@ class TransferForm extends Component {
       membershipIdConfirmation: '',
       transferAmount: '',
       isOpen: false, // to render form as popup
+      submissionStatus: ''
     };
   }
 
@@ -35,7 +36,7 @@ class TransferForm extends Component {
   };
 
   // Returns true if membershipId is of correct format
-  membershipValidation(membershipId){
+  membershipValidation(membershipId) {
     // membershipFormat is stored as a regex expression in string format
     const { membershipFormat } = this.props;
 
@@ -50,12 +51,18 @@ class TransferForm extends Component {
     const {
       membershipId, memberName, membershipIdConfirmation, transferAmount,
     } = this.state;
-    const { userProfile, loyaltyProgramId } = this.props;
+    const { userProfile, loyaltyProgramId, updateUserProfile } = this.props;
     const { emailAddress, phoneNumber, notificationMethod } = userProfile;
 
     const transferDate = this.getDate();
 
-    if (membershipId === membershipIdConfirmation && this.membershipValidation(membershipId)) {
+    if (membershipId !== membershipIdConfirmation) {
+      this.setState({ submissionStatus: 'membershipIdConfirmation' });
+    }
+    else if (this.membershipValidation(membershipId)) {
+      this.setState({ submissionStatus: 'membershipIdValidation' });
+    }
+    else {
       const form = {
         membershipId,
         memberName,
@@ -70,14 +77,14 @@ class TransferForm extends Component {
       // 
       axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form, { withCredentials: true })
         .then((response) => {
-          console.log(response.data);
+          this.setState({ submissionStatus: 'success' });
+          updateUserProfile();
         })
         .catch((error) => {
-          console.error(error);
+          this.setState({ submissionStatus: 'failure' });
         });
-    } else {
-      // TODO if the membershipId is not valid or not of confirmation
 
+      //TODO: change userProfile points value
     }
   };
 
@@ -105,6 +112,27 @@ class TransferForm extends Component {
       event.preventDefault();
     }
   };
+
+  renderSuccess = () => {
+    const { submissionStatus, transferAmount } = this.state;
+    const { userProfile } = this.props;
+    const { abcPoints } = userProfile;
+    return (
+      <div>
+        {submissionStatus === 'success' ? (
+          <div>Transaction submitted successfully! You have {abcPoints - transferAmount} left!</div>
+        ) : submissionStatus === 'membershipIdValidation' ? (
+          <div>Incorrect Membership ID format.</div>
+        ) : submissionStatus === 'membershipIdConfirmation' ? (
+          <div>Membership ID did not match.</div>
+        ) : submissionStatus === 'failure' ? (
+          <div>Something went wrong, please try again.</div>
+        ) : (
+          <div></div>
+        )}
+      </div>
+    );
+  }
 
   renderForm = () => {
     const {
@@ -184,6 +212,8 @@ class TransferForm extends Component {
             /> */}
           </form>
           <button onClick={this.closeModal} type="button">Close</button>
+
+          {this.renderSuccess()}
         </dialog>
       </div>
 

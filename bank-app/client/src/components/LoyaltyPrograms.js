@@ -26,6 +26,10 @@ class LoyaltyPrograms extends Component {
       
     }
   };
+  
+  updateUserProfile = () => {
+    this.getUserProfile();
+  }
 
   getUserProfile = async () => {
     try {
@@ -71,6 +75,7 @@ class LoyaltyPrograms extends Component {
           key={loyaltyProgramData.programId}
           loyaltyProgramData={loyaltyProgramData}
           userProfile={userProfile}
+          updateUserProfile={this.updateUserProfile}
         />,
       )
     ));
