@@ -133,17 +133,30 @@ describe('validateTransaction middleware function unit tests', () => {
   })
     
   test("if mongoose related errors occur, validateTransaction will catch and return status code 500", async () => {
-    const mockTransactionData = null;
+    const mockTransactionData = {
+      memberName: 'mockUser',
+      membershipId: '1234567AA',
+      transferDate: '11-11-11',
+      transferAmount: 2000,
+      notificationMethod: '1',
+      emailAddress: 'mock@email.com',
+      phoneNumber: '88100110',
+      partnerCode: 'DBSSG',
+    };
 
     const request = { body: mockTransactionData, params: { loyaltyProgramId: loyaltyProgramId }};
       
     const response = new MockResponse();
       
     next = jest.fn();
+    
+    mockLoyaltyProgramsFindOne = jest.spyOn(LoyaltyPrograms, 'findOne').mockImplementation((a) => { throw Error() });
 
     await validateTransaction(request, response, next);
       
     expect(response.status).toEqual(500);
+    
+    mockLoyaltyProgramsFindOne.mockRestore();
   })
     
 });
