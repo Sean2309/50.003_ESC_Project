@@ -10,12 +10,14 @@ const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
 const accrualFileController = require('./controllers/accrualFileController');
 const handbackFileController = require('./controllers/handbackFileController');
 const transactionEnquiryModel = require('./models/transactionEnquiryModel');
+const createMongoDBCollection = require('./controllers/createMongoDBCollection');
 
 const app = express();
 
 // createMongoDBCollection.createNewCollection();
 // accrualFileController.queryFromDBandUpload();
 handbackFileController.testHandbackFileFns();
+
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
