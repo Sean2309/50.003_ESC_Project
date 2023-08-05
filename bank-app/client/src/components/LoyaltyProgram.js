@@ -4,7 +4,7 @@ import TransferForm from './TransferForm';
 import '../css/loyalty-styles.css';
 
 function LoyaltyProgram(props) {
-  const { loyaltyProgramData, userProfile } = props;
+  const { loyaltyProgramData, userProfile, updateUserProfile } = props;
 
   return (
     <div className="loyalty-box" data-testid="loyaltyprograms-test">
@@ -36,6 +36,7 @@ function LoyaltyProgram(props) {
         currencyRate={loyaltyProgramData.currencyRate}
         userProfile={userProfile}
         loyaltyProgramId={loyaltyProgramData.programId}
+        updateUserProfile={updateUserProfile}
       />
     </div>
   );
