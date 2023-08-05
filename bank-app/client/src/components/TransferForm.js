@@ -59,7 +59,7 @@ class TransferForm extends Component {
     if (membershipId !== membershipIdConfirmation) {
       this.setState({ submissionStatus: 'membershipIdConfirmation' });
     }
-    else if (this.membershipValidation(membershipId)) {
+    else if (!this.membershipValidation(membershipId)) {
       this.setState({ submissionStatus: 'membershipIdValidation' });
     }
     else {
