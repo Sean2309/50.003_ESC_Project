@@ -1,16 +1,49 @@
 describe('Loyalty Programs', () => {
-    it('Should display loyalty programs data', () => {
-      cy.visit('http://localhost:3000'); // Visit your app's URL
-  
-      // Assuming there's a button or link to view loyalty programs
-      cy.contains('Login').click();
-  
-      // Assert that the loyalty programs data is visible on the page
-      cy.get('form').submit()
 
+    it('successful loads', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
+  
+    });
+
+    it('successful login', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
+     
+      cy.contains('Login').click();
+      
       cy.get("#loginId").type("john123");
       cy.get("#password").type("password");
       cy.get('form').submit()
+      
     });
+
+    it('successful click transfer button', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
+     
+      cy.contains('Login').click();
+      
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
+      cy.contains("Transfer").click();
+      
+      
+    });
+
+    it('successful click transfer button', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
+     
+      cy.contains('Login').click();
+      
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
+      cy.contains("Transfer").click();
+      cy.get("#memberName").type("john");
+      cy.get("#membershipId").type("123456789A");
+      cy.get("#membershipIdConfirmation").type("123456789A");
+      cy.get("#transferAmount").type("100");
+      cy.get('[data-testid="submit-button"]').click();
+    });
+
   });
   
