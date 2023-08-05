@@ -188,8 +188,6 @@ class HandbackFileController {
         console.log(error);
       }
     };
-    mongoose.connection.close();
-
   };
   // END OF MAIN FUNCTIONS ======================
 
