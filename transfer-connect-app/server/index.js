@@ -19,8 +19,8 @@ const app = express();
 mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
 
 // createMongoDBCollection.createNewCollection();
-// accrualFileController.queryFromDBandUpload();
-handbackFileController.testHandbackFileFns();
+accrualFileController.queryFromDBandUpload();
+// handbackFileController.testHandbackFileFns();
 
 
 // to allow request from different origins (domain, port etc)
