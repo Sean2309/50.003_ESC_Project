@@ -10,6 +10,7 @@ const updateLoyaltyProgramsRouter = require('./routes/updateLoyaltyProgramsRoute
 const authManagerRouter = require('./routes/authManagerRouter');
 const userProfileRouter = require('./routes/userProfileRouter'); 
 const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
+const webhookRouter = require('./routes/webhookRouter');
 const cookieParser = require('cookie-parser');
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/updateLoyaltyProgramsRouter',updateLoyaltyProgramsRouter);
 app.use('/api/userprofile', userProfileRouter);
 app.use('/api/transactions', transactionEnquiryRouter);
 app.use('/login', authManagerRouter);
+app.use('/api/webhook', webhookRouter);
 
 
 app.listen(config.PORT);

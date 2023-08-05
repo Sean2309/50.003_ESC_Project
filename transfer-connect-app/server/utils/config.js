@@ -13,7 +13,7 @@ const sftpCollections = ['DBSSG', `QFlyers`, `GoJets`];
 const TRANSFER_CONNECT_API_URL = process.env.TRANSFER_CONNECT_API_URL;
 const DB_NAME = process.env.DB_NAME;
 const TWILIO_AUTHTOKEN = process.env.TWILIO_AUTHTOKEN;
-
+const BANK_APP_URL = process.env.BANK_APP_URL;
 module.exports = {
     MONGODB_URL, MONGODB_URLB, PORT, DB_NAME,
     kaligoURL,
@@ -22,5 +22,6 @@ module.exports = {
     sftpCollections,
     TRANSFER_CONNECT_API_URL,
     MONGODB_OPTIONS,
-    TWILIO_AUTHTOKEN
+    TWILIO_AUTHTOKEN,
+    BANK_APP_URL
 }
