@@ -29,9 +29,9 @@ beforeEach(async () => {
 afterEach(async () => {
   const MockLoyaltyProgramsModel = LoyaltyPrograms;
   await MockLoyaltyProgramsModel.deleteMany({});
-  try {
-    await MockLoyaltyProgramsModel.collection.drop();
-  } catch (error) {}
+  // try {
+  //   await MockLoyaltyProgramsModel.collection.drop();
+  // } catch (error) {}
 });
 
 describe('LoyaltyProgramsController - API Integration', () => {

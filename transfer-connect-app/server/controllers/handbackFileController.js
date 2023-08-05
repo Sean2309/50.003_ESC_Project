@@ -168,9 +168,10 @@ class HandbackFileController {
           };
           
           let doc = await Model.findOne({
-            $and: [{ referenceNumber: mappedResult.referenceNumber },
-            { transferDate: mappedResult.transferDate }]
-          }); // Must match the referenceNumber and transferDate to update
+            $and: [
+              { referenceNumber: mappedResult.referenceNumber },
+              { transferDate: mappedResult.transferDate }]
+            }); // Must match the referenceNumber and transferDate to update
           if (doc) {
             doc.set(mappedResult);
             console.log(`Data uploaded: `, doc)
@@ -186,7 +187,8 @@ class HandbackFileController {
       } catch (error) {
         console.log(error);
       }
-    }
+    };
+    mongoose.connection.close();
 
   };
   // END OF MAIN FUNCTIONS ======================
