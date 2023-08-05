@@ -31,7 +31,7 @@ class TransferFormController {
   };
 
   // submit to TransferConnect app, then save to db
-  submitTransferForm = async (request, response) => {
+  submitTransferForm = async (request, response, next) => {
     try {
       const transferFormData = request.body; // see sample data comments above
 
@@ -54,8 +54,9 @@ class TransferFormController {
       transferFormData.systemId = postTransactionResponse.systemId;
 
       await this.saveTransactionToDb(loyaltyProgramId, transferFormData);
-
-      response.status(201).json(transferFormData);
+      
+      // since the transaction is considered successful unless Loyalty Programs tell us otherwise, we update UserProfile by directing to userProfileController
+      next();
     } catch (error) {
       response.status(500).json({ error: error.message });
     }
