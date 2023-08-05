@@ -8,6 +8,7 @@ const transactionRouter = require('./routes/transactionRouter');
 const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
 const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
 const accrualFileController = require('./controllers/accrualFileController');
+const webhookTestRouter = require('./routes/webhookTestRouter');
 const handbackFileController = require('./controllers/handbackFileController');
 const transactionEnquiryModel = require('./models/transactionEnquiryModel');
 const createMongoDBCollection = require('./controllers/createMongoDBCollection');
@@ -38,7 +39,9 @@ app.use('/api/transactions', transactionRouter)
 // routes based on bankapp to to retrieve loyalty program information
 app.use('/api/loyaltyprograms', loyaltyProgramQueryRouter);
 
-app.use('/api/transactionenquiry', transactionEnquiryRouter)
+app.use('/api/transactionenquiry', transactionEnquiryRouter);
+
+app.use('/api/webhook', webhookTestRouter);
 
 app.listen(config.PORT);
 

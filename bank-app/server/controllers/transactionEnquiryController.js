@@ -226,7 +226,7 @@ class TransactionEnquiryController {
 
 }
 
-const transactionEnquiryController = new TransactionEnquiryController();
+const transactionEnquiryController = new TransactionEnquiryController(startInterval = false);
 
 
 module.exports = transactionEnquiryController;

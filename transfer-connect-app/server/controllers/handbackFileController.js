@@ -7,6 +7,7 @@ const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const { CronJob } = require('cron');
+const webhookController = require('./webhookController');
 
 // Importing Config Files + Schemas
 require('dotenv').config({ path: __dirname + '/../.env' });
@@ -156,6 +157,7 @@ class HandbackFileController {
       try {
         const [partnerCode, results] = await this.extractDataFromCsv(filePath);
         const Model = this.getModelForLP(config.mongoDBCollections[i]);
+
         for (const result of results) {
           let mappedResult = {
             transferDate: convertDateFormat(result['Transfer date']),
@@ -164,7 +166,7 @@ class HandbackFileController {
             outcomeCode: result['Outcome Code'],
             transferAmount: parseInt(result['Transfer Amount']),
           };
-
+          
           let doc = await Model.findOne({
             $and: [
               { referenceNumber: mappedResult.referenceNumber },
@@ -174,6 +176,7 @@ class HandbackFileController {
             doc.set(mappedResult);
             console.log(`Data uploaded: `, doc)
             await doc.save();
+            webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.mongoDBCollections[i]);
           } else {
             const newModel = await Model.create(mappedResult);
             console.log(`new model: `, newModel)
