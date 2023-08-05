@@ -31,7 +31,7 @@ class AccrualFileController {
   }
 
   // Helper function to get a Mongoose model by collection name
-  getModel = (collection) => mongoose.model(collection, transactionSchema);
+  getModel = (collection) => mongoose.model(collection, transactionSchema, collection);
 
   // Helper function to get data from a MongoDB collection
   getDataFromCollection = async (Model, stringToday) => {
