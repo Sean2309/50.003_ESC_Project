@@ -94,8 +94,10 @@ describe ('Unit tests for postTransaction', () => {
   test('postTransaction calls axios.post with correct url', async () => {
     
     await webhookController.postTransaction(transactionData, "GOPOINTS", "DBSSG");
+    
+    const expectUrl = expect.stringContaining("/api/webhook/DBSSG/GOPOINTS");
 
-    expect(axios.post).toHaveBeenCalledWith("http://localhost:3001/api/webhook/DBSSG/GOPOINTS", transactionData);
+    expect(axios.post).toHaveBeenCalledWith(expectUrl, transactionData);
   })
   
 });

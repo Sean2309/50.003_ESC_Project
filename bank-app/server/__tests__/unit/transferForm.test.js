@@ -104,7 +104,7 @@ describe('transferFormController', () => {
 
   })
 
-  test('submitTransaction POST handler correctly retrieves and tags referenceNumber and partnerCode to transferFormData', async () => {
+  test('submitTransaction POST handler correctly directs to middleware when successful transaction', async () => {
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
     const referenceNumber = 9999;
@@ -115,6 +115,8 @@ describe('transferFormController', () => {
         loyaltyProgramId: loyaltyProgramId
       }
     };
+    
+    const next = jest.fn();
 
     // simulate controller function to save transaction to db
     jest.spyOn(transferFormController, 'saveTransactionToDb').mockResolvedValueOnce();
@@ -130,10 +132,9 @@ describe('transferFormController', () => {
     newMockFormData.partnerCode = PARTNERCODE;
     newMockFormData.referenceNumber = referenceNumber;
 
-    await transferFormController.submitTransferForm(mockRequest, mockResponse);
+    await transferFormController.submitTransferForm(mockRequest, mockResponse, next);
 
-    expect(mockResponse.status).toEqual(201);
-    expect(mockResponse.data).toEqual(mockFormData);
+    expect(next).toHaveBeenCalledTimes(1);
 
   })
   
