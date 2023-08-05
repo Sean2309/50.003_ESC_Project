@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 // import axiosMock from './axiosMock'; // Mock axios for testing purposes
 import LoyaltyPrograms from '../../components/LoyaltyPrograms';
 import axios from 'axios';
@@ -57,7 +57,7 @@ describe('LoyaltyPrograms Component', () => {
   });
 
 
-  it('renders loyalty programs after data is fetched', async () => {
+  it('correct loyalty program details are received and user can access desired transfer form', async () => {
     // this covers line 23-33 in the code
     // despite coverage table putting a warning
     axios.get.mockResolvedValueOnce({ data: { loyaltyPrograms: mockedLoyaltyPrograms } })
@@ -65,7 +65,7 @@ describe('LoyaltyPrograms Component', () => {
     // Render the LoyaltyPrograms component with mocked data
     const spy = jest.spyOn(LoyaltyPrograms.prototype, 'renderLoyaltyPrograms');
 
-    render(<LoyaltyPrograms userId={mockedUserId} />);
+    await render(<LoyaltyPrograms userId={mockedUserId} />);
 
 
     // Wait for the component to fetch data and re-render
@@ -97,6 +97,19 @@ describe('LoyaltyPrograms Component', () => {
       // https://stackoverflow.com/questions/57827126/how-to-test-anchors-href-with-react-testing-library
       expect(secondEnrollmentLink).toHaveAttribute('href', 'https://www.cathaypacific.com/cx/en_HK/membership/sign-up.html');
       expect(secondTermsLink).toHaveAttribute('href', 'https://www.cathaypacific.com/cx/en_HK/legal-and-privacy/data-privacy-and-security-policy.html');
+      expect(screen.getAllByRole('button')).toBeInTheDocument;
+      const [transferButton1, transferButton2] = screen.getAllByRole('button');
+      // user opens transferForm
+      fireEvent.click(transferButton1);
+
+      // User is able to find transfer form input fields and submit button
+      expect(screen.getByTestId('member-name').querySelector('input')).toBeInTheDocument;
+      expect(screen.getByTestId('member-id').querySelector('input')).toBeInTheDocument;
+      expect(screen.getByTestId('member-confirm').querySelector('input')).toBeInTheDocument;
+      expect(screen.getByTestId('transfer-amount').querySelector('input')).toBeInTheDocument;
+
+      expect(screen.getByTestId('submit-form')).toBeInTheDocument;
     });
   });
+
 });
