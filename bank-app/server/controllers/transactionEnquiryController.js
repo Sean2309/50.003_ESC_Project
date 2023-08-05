@@ -14,6 +14,16 @@ class TransactionEnquiryController {
     if (startInterval) {
       this.startEnquiry();
     }
+    // for easy debug, clear all transactions on each startup
+    this.clearTransactions();
+  }
+  
+  clearTransactions = async () => {
+    const transactionModelAirAsia = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
+    const transactionModelGoJet = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
+
+    await transactionModelAirAsia.deleteMany({});
+    await transactionModelGoJet.deleteMany({});
   }
 
   populateTransactions = async () => {
@@ -78,9 +88,6 @@ class TransactionEnquiryController {
 
   getUserTransactions = async (request, response) => {
     const userId = request.body.userId;
-
-    // mock transactions ids in userProfile by systemId
-    this.populateTransactions();
 
     const allTransactions = {};
 

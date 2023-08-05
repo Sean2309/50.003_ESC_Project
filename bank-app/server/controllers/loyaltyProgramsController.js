@@ -8,9 +8,9 @@ class LoyaltyProgramsController {
     // cron scheduler to do a GET request from TransferConnect daily at 12am
     cron.schedule('0 0 * * *', () => {
       this.updateLoyaltyPrograms();
-    
-    this.populateDb();
     });
+
+    this.populateDb();
   }
 
   getLoyaltyPrograms = async (request, response) => {
@@ -66,7 +66,7 @@ class LoyaltyProgramsController {
 
     } catch (error) {
       // TODO: try again by rescheduling?
-      
+
     }
   };
 }
