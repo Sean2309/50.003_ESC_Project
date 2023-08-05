@@ -176,7 +176,7 @@ class HandbackFileController {
             doc.set(mappedResult);
             console.log(`Data uploaded: `, doc)
             await doc.save();
-            webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.mongoDBCollections[i]);
+            //webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.mongoDBCollections[i]);
           } else {
             const newModel = await Model.create(mappedResult);
             console.log(`new model: `, newModel)

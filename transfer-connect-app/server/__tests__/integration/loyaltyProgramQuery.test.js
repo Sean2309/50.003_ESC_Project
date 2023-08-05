@@ -2,10 +2,11 @@ const express = require('express');
 const app = express();
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
+const { MONGODB_OPTIONS } = require('../../utils/config');
 const LoyaltyProgramQueryModel = require('../../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../../models/currencyRateModel');
 const controller = require('../../controllers/loyaltyProgramQueryController');
+const MONGODB_URL="mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TESTDB?retryWrites=true&w=majority";
 
 
 beforeAll(async () => {

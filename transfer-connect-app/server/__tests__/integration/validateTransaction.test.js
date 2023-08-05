@@ -1,9 +1,10 @@
 const validateTransaction = require('../../utils/validateTransaction');
 const { default: mongoose } = require('mongoose');
-const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
+const { MONGODB_OPTIONS } = require('../../utils/config');
 const LoyaltyProgramQueryModel = require('../../models/loyaltyProgramQueryModel');
 const CurrencyRateModel = require('../../models/currencyRateModel');
 const loyaltyProgramId = "mock";
+const MONGODB_URL = "mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TESTDB?retryWrites=true&w=majority";
 
 // Mock Response class to simulate responses
 class MockResponse {
