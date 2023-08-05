@@ -47,7 +47,7 @@ class UserProfileController {
       const userProfile = await UserProfile.findOne({ userId: userId });
       userProfile.abcPoints -= transferAmount;
       await userProfile.save();
-      response.status(200).json(request.body);
+      response.status(201).json(request.body);
     }
     catch (error) {
       throw error;
