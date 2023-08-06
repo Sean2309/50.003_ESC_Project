@@ -96,7 +96,7 @@ class TransferForm extends Component {
         const { userProfile } = this.props;
         const { abcPoints } = userProfile;
         // Make sure that the value entered does not exceed user's number of points
-        if (parseInt(value, 10) <= abcPoints || value === '') {
+        if (parseInt(value, 10) <= abcPoints || value === '' || value === 0) {
           this.setState({ [name]: value });
         }
         break;
