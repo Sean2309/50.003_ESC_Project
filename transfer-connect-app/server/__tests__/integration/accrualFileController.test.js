@@ -372,15 +372,14 @@ describe('Integration tests', () => {
 
     test('should correctly retrieve, group and write data for each collection', async () => {
       await accrualFileController.writeCollectionsToCsv();
-
-      for (const collection of config.mongoDBCollections) {
+    
+      for (const collection of config.collections) {
         expect(accrualFileController.getModel).toHaveBeenCalledWith(collection);
         expect(accrualFileController.getDataFromCollection).toHaveBeenCalledWith(accrualFileController.getModel(collection), stringToday);
         expect(accrualFileController.groupData).toHaveBeenCalledWith(mockData);
         expect(accrualFileController.writeGroupedDataToCsv).toHaveBeenCalledWith(mockGroups, collection);
-        expect(console.log).toHaveBeenCalledWith('Data retrieved from ' + collection + ':', mockData);
       }
-    });
+    });    
   });
 
   describe('uploadFilesToServer function', () => {
@@ -391,8 +390,7 @@ describe('Integration tests', () => {
       fs.readdirSync.mockImplementation(() => ['collection1_1.csv', 'collection2_2.csv']);
       File.uploadFile.mockResolvedValue(true);
       dateUtil.getFormattedDate.mockReturnValue('20230803');
-      config.mongoDBCollections = ['collection1', 'collection2'];
-      config.sftpCollections = ['sftpCollection1', 'sftpCollection2'];
+      config.collections = ['collection1', 'collection2'];
       config.kaligoURL = '<mocked-kaligo-url>';
       config.kaligoAPIKey = '<mocked-api-key>';
     });
@@ -403,12 +401,12 @@ describe('Integration tests', () => {
       expect(fs.readdirSync).toHaveBeenCalledWith(accrual_files_dir);
       expect(File.uploadFile).toHaveBeenCalledTimes(2);
       expect(File.uploadFile).toHaveBeenCalledWith(
-        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/sftpCollection1/20230803/1_ACCRUAL_20230803.csv',
+        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/collection1/1_ACCRUAL_20230803.csv',
         path.join(accrual_files_dir, 'collection1_1.csv'),
         { mkdir_parents: true }
       );
       expect(File.uploadFile).toHaveBeenCalledWith(
-        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/sftpCollection2/20230803/2_ACCRUAL_20230803.csv',
+        '/transfer_connect_sutd_case_study_2023/c4i1/Accrual/collection2/2_ACCRUAL_20230803.csv',
         path.join(accrual_files_dir, 'collection2_2.csv'),
         { mkdir_parents: true }
       );
