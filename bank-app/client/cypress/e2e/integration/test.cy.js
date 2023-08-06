@@ -29,7 +29,7 @@ describe('Loyalty Programs', () => {
       
     });
 
-    it('successful click transfer button', () => {
+    it('successful fill up transfer form and click submit', () => {
       cy.visit('http://localhost:3000/login'); // Visit your app's URL
      
       cy.contains('Login').click();
@@ -37,7 +37,9 @@ describe('Loyalty Programs', () => {
       cy.get("#loginId").type("john123");
       cy.get("#password").type("password");
       cy.get('form').submit()
-      cy.contains("Transfer").click();
+
+      cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
+      cy.get('@loyaltyBox').contains("Transfer").click();
       cy.get("#memberName").type("john");
       cy.get("#membershipId").type("123456789A");
       cy.get("#membershipIdConfirmation").type("123456789A");
