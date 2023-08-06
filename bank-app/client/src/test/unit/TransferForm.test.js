@@ -29,8 +29,6 @@ describe('TransferForm Component', () => {
       currencyRate: 1.2
     }
   ;
-
-  const submissionDate = new Date().toISOString().split('T')[0];
     
       afterEach(() => {
         jest.clearAllMocks();
