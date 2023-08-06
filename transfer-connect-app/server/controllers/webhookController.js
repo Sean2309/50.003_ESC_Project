@@ -22,6 +22,7 @@ class WebhookController {
     let userNumber = transaction["phoneNumber"];
     let notificationMethod = transaction["notificationMethod"];
     let outcomeCode = transaction["outcomeCode"];
+    console.log("transaction", transaction);
     await transactionEnquiryController.sendNotification(userNumber, userEmail, notificationMethod, outcomeCode, partnerCode, loyaltyProgram, transferAmount);
   };
 
