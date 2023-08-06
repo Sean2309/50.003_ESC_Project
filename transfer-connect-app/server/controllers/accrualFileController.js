@@ -73,7 +73,7 @@ class AccrualFileController {
   writeCollectionsToCsv = async () => {
     const stringToday = dateUtil.getFormattedDate();
 
-    for (const collection of config.mongoDBCollections) {
+    for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
       console.log('Data retrieved from ' + collection + ':', data);
@@ -89,12 +89,12 @@ class AccrualFileController {
     const formattedDate = dateUtil.getFormattedDate("compact");
 
     const collectionMap = {};
-    config.mongoDBCollections.forEach((collection, index) => {
-      collectionMap[collection] = config.sftpCollections[index];
+    config.collections.forEach((collection, index) => {
+      collectionMap[collection] = config.collections[index];
     });
 
     // Loop through collections
-    for (const collection of config.mongoDBCollections) {
+    for (const collection of config.collections) {
       // Loop through partner codes within each collection
       const partnerCodes = fs.readdirSync(accrual_files_dir)
         .filter(file => file.startsWith(`${collection}_`))
@@ -106,7 +106,7 @@ class AccrualFileController {
             const csvFilePath = path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`);
             const directoryName = collectionMap[collection];
 
-            await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${formattedDate}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
+            await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
             console.log('File uploaded successfully.');
           } catch (error) {
             console.error('An error occurred while uploading file for collection ' + collection + ':', error);

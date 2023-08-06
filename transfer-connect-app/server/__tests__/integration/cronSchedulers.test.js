@@ -11,12 +11,15 @@ var config = require('../../utils/config');
 describe('clearFolder function check', () => {
     test('should return success if clearFolder is executed successfully', async() => {
       const clearFolder = require('../../controllers/clearFolder').clearFolder;
-      const folderList = ['accrual_files', 'sftp_handback_downloads'];
-      for (let folder in folderList) {
-        process.chdir(`${filePath}/${folderList[folder]}`);
-        await clearFolder(folderList[folder]);
-        const files = fs.readdirSync(`./`);
-        expect(files.length).toBe(0);
+      const folderList = ['sftp_handback_downloads'];
+      for (const folder of folderList) {
+        for (const lp of config.collections) {
+          console.log(`file dir: ${filePath}/${folder}/${lp}`)
+          process.chdir(`${filePath}/${folder}/${lp}`);
+          await clearFolder(`${folder}/${lp}`);
+          const files = fs.readdirSync(`./`);
+          expect(files.length).toBe(0);
+        }
       }
     });
   });

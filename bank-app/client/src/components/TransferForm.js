@@ -62,6 +62,9 @@ class TransferForm extends Component {
     else if (!this.membershipValidation(membershipId)) {
       this.setState({ submissionStatus: 'membershipIdValidation' });
     }
+    else if (parseInt(transferAmount) === 0) {
+      this.setState({ submissionStatus: 'transferAmountZero'});
+    }
     else {
       const form = {
         membershipId,
@@ -125,6 +128,8 @@ class TransferForm extends Component {
           <div>Incorrect Membership ID format.</div>
         ) : submissionStatus === 'membershipIdConfirmation' ? (
           <div>Membership ID did not match.</div>
+        ) : submissionStatus === 'transferAmountZero' ? (
+          <div>Transfer Amount cannot be zero.</div>
         ) : submissionStatus === 'failure' ? (
           <div>Something went wrong, please try again.</div>
         ) : (

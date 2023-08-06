@@ -20,6 +20,7 @@ const testDate = '20210923';
 const testCsvName = `${testPartnerCode}_HANDBACK_${testDate}.csv`;
 const testCsvDir = path.join(__dirname, '../../controllers/testCsvs')
 const testCsvPath = `${testCsvDir}/${testCsvName}`;
+const mongoDBURL = 'mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TransferConnectDB?retryWrites=true&w=majority';
 const records = [
   {
     transferDate: '23/9/2021',
@@ -52,11 +53,7 @@ beforeAll(async() => {
       { id: 'outcomeCode', title: 'Outcome Code' },
     ]
   });
-  csvWriter.writeRecords(records)
-    .then(() => {
-      console.log(`${testCsvName} Created`);
-    });
-}, 50000)
+  csvWriter.writeRecords(records)}, 50000)
 
 
 
@@ -120,7 +117,7 @@ describe('extractDataFromCSV function check', () => {
   */
 
   test('should return success if extractDataFromCSV is executed successfully', async () => {
-    for (let i = 0; i < config.sftpCollections.length; i++) {
+    for (let i = 0; i < config.collections.length; i++) {
       const filePathIter = path.join(filePath, `/${testPartnerCode}_HANDBACK_${testDate}.csv`);
       const [partnerCode, results] = await handbackFileController.extractDataFromCsv(filePathIter);
       expect(partnerCode).toBe(testPartnerCode);
@@ -160,8 +157,8 @@ describe('uploadFilesToMongoDB function check', () => {
   test('should return success if updates or creates a document in the test collection in mongodb', async () => {
     return new Promise((resolve, reject) => {
       // Writing to mongo db
-      mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-      const Model = mongoose.model('testhandbacks', transactionEnquiryModel);
+      mongoose.connect(mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
+      const Model = mongoose.model('testhandbacks', transactionEnquiryModel, 'testhandbacks');
   
       const rawdataFromCSV = [];
       fs.createReadStream(testCsvPath)
