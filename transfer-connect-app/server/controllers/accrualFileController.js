@@ -106,7 +106,7 @@ class AccrualFileController {
             const csvFilePath = path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`);
             const directoryName = collectionMap[collection];
 
-            await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${formattedDate}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
+            await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
             console.log('File uploaded successfully.');
           } catch (error) {
             console.error('An error occurred while uploading file for collection ' + collection + ':', error);
