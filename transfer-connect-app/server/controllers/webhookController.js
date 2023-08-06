@@ -5,19 +5,6 @@ const mongoose = require('mongoose');
 const transactionEnquiryController = require('../controllers/transactionEnquiryController');
 
 
-const transactionData = {
-    "membershipId": "123oij",
-    "memberName": "LX",
-    "transferDate": "11-11-11",
-    "transferAmount": 12345,
-    "referenceNumber": "0000",
-    "partnerCode": "DBSSG",
-    "outcomeCode": "9999",
-    "notificationMethod": 1,
-    "emailAddress": "leelxuan@gmail.com",
-    "phoneNumber": "+6588669619",
-    "systemId": "0000"
-  };
 
 class WebhookController {
   // to route to transferConnect transaction submission API endpoint
