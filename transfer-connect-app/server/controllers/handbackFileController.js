@@ -7,7 +7,6 @@ const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const { CronJob } = require('cron');
-const webhookController = require('./webhookController');
 
 // Importing Config Files + Schemas
 require('dotenv').config({ path: __dirname + '/../.env' });
@@ -192,8 +191,6 @@ class HandbackFileController {
               await Model.create(mappedResult);
             }
           }
-
-          console.log(`Data updated for ${partnerCodeOut} successfully\n`);
         } catch (error) {
           console.log(error);
         }
