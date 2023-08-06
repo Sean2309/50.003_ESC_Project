@@ -4,6 +4,6 @@ function convertDateFormat(date) {
   const year = dateArr[2];
   const month = dateArr[1];
   const day = dateArr[0];
-  return `${year}/${month}/${day}`;
+  return `${year}-${month}-${day}`;
 }
 module.exports.convertDateFormat = convertDateFormat;

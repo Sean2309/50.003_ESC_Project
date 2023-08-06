@@ -80,7 +80,7 @@ class HandbackFileController {
     - stores the files in the sftp_handback_downloads folder
     */
     let fileName;
-    for (const collection of config.sftpCollections) {
+    for (const collection of config.collections) {
       // Config Details
       Files.setBaseUrl(config.kaligoURL);
       Files.setApiKey(config.kaligoAPIKey);
@@ -107,7 +107,6 @@ class HandbackFileController {
     */
 
     return new Promise((resolve, reject) => {
-      
       // Parses the string to extract partnerCode data
       const str1 = filePath.split('\\');
       const splitStr = str1[str1.length - 1].split(/_/);
@@ -133,7 +132,6 @@ class HandbackFileController {
           results.push(data);
         })
         .on('end', () => {
-          console.log(`Extracted Data:`, results);
           resolve([partnerCode, results]);
         })
         .on(`error`, (error) => {
@@ -152,11 +150,11 @@ class HandbackFileController {
     -updates the document with the new data
     */
 
-    for (let i = 0; i < config.sftpCollections.length; i++) {
-      const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${config.sftpCollections[i]}_HANDBACK_${targetDate}.csv`);
+    for (let i = 0; i < config.collections.length; i++) {
+      const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${config.collections[i]}_HANDBACK_${targetDate}.csv`);
       try {
-        const [partnerCode, results] = await this.extractDataFromCsv(filePath);
-        const Model = this.getModelForLP(config.mongoDBCollections[i]);
+        const [partnerCode, results] = await this.extractDataFromCsv(filePath);     
+        const Model = mongoose.model(config.collections[i], transactionEnquiryModel, config.collections[i]);
 
         for (const result of results) {
           let mappedResult = {
@@ -174,16 +172,14 @@ class HandbackFileController {
             }); // Must match the referenceNumber and transferDate to update
           if (doc) {
             doc.set(mappedResult);
-            console.log(`Data uploaded: `, doc)
             await doc.save();
-            //webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.mongoDBCollections[i]);
+            //webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.collections[i]);
           } else {
-            const newModel = await Model.create(mappedResult);
-            console.log(`new model: `, newModel)
+            await Model.create(mappedResult);
           }
         }
 
-        // console.log(`Data updated for ${partnerCode} successfully\n`);
+        console.log(`Data updated for ${partnerCode} successfully\n`);
       } catch (error) {
         console.log(error);
       }

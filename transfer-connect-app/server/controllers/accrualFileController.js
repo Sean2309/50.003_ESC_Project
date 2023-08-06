@@ -73,7 +73,7 @@ class AccrualFileController {
   writeCollectionsToCsv = async () => {
     const stringToday = dateUtil.getFormattedDate();
 
-    for (const collection of config.mongoDBCollections) {
+    for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
       console.log('Data retrieved from ' + collection + ':', data);
@@ -89,12 +89,12 @@ class AccrualFileController {
     const formattedDate = dateUtil.getFormattedDate("compact");
 
     const collectionMap = {};
-    config.mongoDBCollections.forEach((collection, index) => {
-      collectionMap[collection] = config.sftpCollections[index];
+    config.collections.forEach((collection, index) => {
+      collectionMap[collection] = config.collections[index];
     });
 
     // Loop through collections
-    for (const collection of config.mongoDBCollections) {
+    for (const collection of config.collections) {
       // Loop through partner codes within each collection
       const partnerCodes = fs.readdirSync(accrual_files_dir)
         .filter(file => file.startsWith(`${collection}_`))
