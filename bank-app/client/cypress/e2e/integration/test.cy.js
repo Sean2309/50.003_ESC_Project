@@ -43,9 +43,28 @@ describe('Loyalty Programs', () => {
       cy.get("#memberName").type("john");
       cy.get("#membershipId").type("123456789A");
       cy.get("#membershipIdConfirmation").type("123456789A");
-      cy.get("#transferAmount").type("100");
+      cy.get("#transferAmount").type("1");
       cy.get('[data-testid="submit-button"]').click();
+      cy.get('.overlay').should('be.visible').contains('div', 'Transaction submitted successfully! You have ');
     });
 
+    it('filling wrong membership ID should fail submission', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
+     
+      cy.contains('Login').click();
+      
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
+
+      cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
+      cy.get('@loyaltyBox').contains("Transfer").click();
+      cy.get("#memberName").type("john");
+      cy.get("#membershipId").type("123456789A");
+      cy.get("#membershipIdConfirmation").type("123456789B");
+      cy.get("#transferAmount").type("1");
+      cy.get('[data-testid="submit-button"]').click();
+      cy.get('.overlay').should('be.visible').contains('div', 'Membership ID did not match.');
+    });
   });
   
