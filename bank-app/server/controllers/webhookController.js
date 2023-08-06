@@ -3,6 +3,20 @@ const sendMessagetoClient = require('./notificationSendingController.js').sendMe
 const { mongoose } = require('mongoose');
 const transactionSchema = require('../models/transactionEnquiryModel.js').transactionSchema;
 
+const transactionData = {
+  "membershipId": "123oij",
+  "memberName": "LX",
+  "transferDate": "11-11-11",
+  "transferAmount": 12345,
+  "referenceNumber": "0000",
+  "partnerCode": "DBSSG",
+  "notificationMethod": 1,
+  "emailAddress": "leelxuan@gmail.com",
+  "phoneNumber": "+6588669619",
+  "systemId": "0000",
+  "userId": "1"
+};
+
 class WebhookController {
   // to route to transferConnect transaction submission API endpoint
   constructor() {
@@ -10,7 +24,7 @@ class WebhookController {
 
   processData = async (request, response) => {
     let [transaction, loyaltyProgramId] = await this.processResponse(request, response);
-    //await this.updateDBandNotifs(transaction, loyaltyProgramId);
+    await this.updateDBandNotifs(transaction, loyaltyProgramId);
   } 
   processResponse = async (request, response) => {
     try {
@@ -50,7 +64,13 @@ class WebhookController {
     //specific loyaltyProgram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
     //find userId 
-    const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1 });
+    console.log(systemId,outcome_code, loyaltyProgram);
+
+    let dataSave = new collection_connection(transactionData);
+    await dataSave.save();
+
+    const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1, "_id" :0 });
+    console.log(userIdCollection);
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
     console.log(userId)

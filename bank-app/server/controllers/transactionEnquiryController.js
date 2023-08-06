@@ -19,70 +19,67 @@ class TransactionEnquiryController {
   }
   
   clearTransactions = async () => {
-    const transactionModelAirAsia = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
-    const transactionModelGoJet = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
+    const transactionModelGOPOINTS = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
+    const transactionModelASIAMILES = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
 
-    await transactionModelAirAsia.deleteMany({});
-    await transactionModelGoJet.deleteMany({});
+    await transactionModelGOPOINTS.deleteMany({});
+    await transactionModelASIAMILES.deleteMany({});
   }
 
   populateTransactions = async () => {
-    const transactionModelAirAsia = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
-    const transactionModelGoJet = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
+    const transactionModelGOPOINTS = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
+    const transactionModelASIAMILES = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
 
-    await transactionModelAirAsia.deleteMany({});
-    await transactionModelGoJet.deleteMany({});
+    await transactionModelGOPOINTS.deleteMany({});
+    await transactionModelASIAMILES.deleteMany({});
 
-    const transactionsAirAsia = [
+    const transactionsGOPOINTS = [
       {
-        "userId": "100430043889",
-        "memberName": "keith low",
+        "membershipId": "123oij",
+        "memberName": "LX",
         "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "10023",
+        "transferAmount": 12345,
+        "referenceNumber": "0000",
         "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "1",
+        "notificationMethod": 1,
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "0000",
         "userId": "1"
       },
       {
-        "userId": "100430043889",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 250,
-        "referenceNumber": "10001",
+        "memberName": "keve",
+        "membershipId": "123456789A",
+        "transferDate": "2023-08-05",
+        "transferAmount": 3000,
+        "referenceNumber": "3410692",
         "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "3",
-        "userId": "1"
+        "notificationMethod": "1",
+        "emailAddress": "lowweikangkeith@gmail.com",
+        "phoneNumber": "89083135",
+        "systemId": "6802389",
+        "userId" : "1"
       },
     ]
 
-    const transactionsGoJet = [
+    const transactionsASIAMILES = [
       {
-        "userId": "1200302J",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 100,
-        "referenceNumber": "12422",
+        "membershipId": "2342345bc",
+        "memberName": "Thomas Doe",
+        "transferDate": "2023/08/05",
+        "transferAmount": 100000,
+        "referenceNumber": "3av456b",
         "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "2",
-        "userId": "1"
+        "notificationMethod": 1,
+        "emailAddress": "thomasdoe@email.com",
+        "phoneNumber": "+1234567890",
+        "systemId": "system1234",
+        "userId" : "1"
       }
-    ]
+      ]
 
-    await transactionModelGoJet.create(transactionsGoJet);
-    await transactionModelAirAsia.create(transactionsAirAsia);
+    await transactionModelASIAMILES.create(transactionsASIAMILES);
+    await transactionModelGOPOINTS.create(transactionsGOPOINTS);
 
   }
 
