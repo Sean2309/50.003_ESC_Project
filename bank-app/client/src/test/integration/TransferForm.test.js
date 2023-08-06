@@ -3,9 +3,10 @@ import { render, fireEvent, screen, act, waitFor } from '@testing-library/react'
 import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
-// easiest way is to partial the transferform with makesut
-// https://blog.bitsrc.io/complete-guide-to-unit-tests-with-react-af6ed372244b
-
+// the tests pass fine
+// unfortunately, there will be issues with the act warning
+// due to a bug from react that is not yet fixed
+// https://github.com/testing-library/react-testing-library/issues/1061
 jest.mock('axios');
 
 describe('TransferForm Component', () => {
@@ -99,12 +100,15 @@ describe('TransferForm Component', () => {
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
     // since it is not clicked yet, this is still the button at the end of the loyalty program card
-    render(<TransferForm 
-      membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-      currencyRate={mockedLoyaltyProgramData.currencyRate}
-      userProfile={mockedUserProfile}
-      loyaltyProgramId={mockedLoyaltyProgramData.programId}
-      />);
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
 
       
       // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
@@ -145,12 +149,15 @@ describe('TransferForm Component', () => {
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
     // since it is not clicked yet, this is still the button at the end of the loyalty program card
-    render(<TransferForm 
-      membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-      currencyRate={mockedLoyaltyProgramData.currencyRate}
-      userProfile={mockedUserProfile}
-      loyaltyProgramId={mockedLoyaltyProgramData.programId}
-      />);
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
 
       
       // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
@@ -191,12 +198,15 @@ describe('TransferForm Component', () => {
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
     // since it is not clicked yet, this is still the button at the end of the loyalty program card
-    render(<TransferForm 
-      membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-      currencyRate={mockedLoyaltyProgramData.currencyRate}
-      userProfile={mockedUserProfile}
-      loyaltyProgramId={mockedLoyaltyProgramData.programId}
-      />);
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
 
       
       // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
@@ -215,8 +225,8 @@ describe('TransferForm Component', () => {
       // User fills in the form
       fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
       // invalid membershipId
-      fireEvent.change(membershipIdInput, { target: { value: '12345' } });
-      fireEvent.change(membershipIdConfirmationInput, { target: { value: '12345' } });
+      fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
       fireEvent.change(transferAmountInput, { target: { value: '0' } });
 
       // User presses the submit button on the form
@@ -237,12 +247,15 @@ describe('TransferForm Component', () => {
     axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
     // since it is not clicked yet, this is still the button at the end of the loyalty program card
-    render(<TransferForm 
-      membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-      currencyRate={mockedLoyaltyProgramData.currencyRate}
-      userProfile={mockedUserProfile}
-      loyaltyProgramId={mockedLoyaltyProgramData.programId}
-      />);
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
 
       
       // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
@@ -270,7 +283,7 @@ describe('TransferForm Component', () => {
     
     await act(async () => {
       await waitFor(() => {
-        // Assertions based on the API response (assuming success)
+        //check if axios posted with the correct details
         expect(axios.post).toHaveBeenCalledWith(
           `http://localhost:3001/api/transferformsubmit/${mockedLoyaltyProgramData.programId}`,
           {
