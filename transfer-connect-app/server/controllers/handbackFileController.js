@@ -20,9 +20,12 @@ var clearFolder = require('./clearFolder').clearFolder;
 var convertDateFormat = require('./convertDateFormat').convertDateFormat;
 
 // Creates the sftp_handback_downloads folder if it doesn't exist
-if (!fs.existsSync(path.join(__dirname, 'sftp_handback_downloads'))) {
-  fs.mkdirSync(path.join(__dirname, 'sftp_handback_downloads'));
-}
+for (const lp of config.collections) {
+  const lpFolderPath = path.join(__dirname, `sftp_handback_downloads/${lp}`);
+  if (!fs.existsSync(lpFolderPath)) {
+    fs.mkdirSync(lpFolderPath);
+  }
+};
 
 // Class for the Handback File Controller
 class HandbackFileController {
@@ -41,11 +44,11 @@ class HandbackFileController {
       this.downloadfromSFTPandUpload,
     )
     job.start();
-  }
+  };
 
 
   downloadfromSFTPandUpload = async () => {
-    clearFolder(this.sftpHandbackDownloads);
+    this.clearFolders();
     await this.retrieveFromServer(this.formattedDate);
     await this.uploadFilesToMongoDB(this.formattedDate);
   }
@@ -56,7 +59,7 @@ class HandbackFileController {
     const testDate = `20200812`;
 
     // Running the functions
-    clearFolder(this.sftpHandbackDownloads);
+    this.clearFolders();
     await this.retrieveFromServer(testDate);
 
     await this.uploadFilesToMongoDB(testDate);
@@ -73,6 +76,16 @@ class HandbackFileController {
   };
 
   // =========== START OF MAIN FUNCTIONS ======================
+  clearFolders = async () => {
+    /*
+    Functionalities:
+    - iteratively clears the sftp_handback_downloads folder
+    */
+    for (const lp of config.collections) {
+      clearFolder(`${this.sftpHandbackDownloads}/${lp}`);
+    };
+  };
+
   retrieveFromServer = async (targetDate) => {
     /*
     Functionalities:
@@ -80,21 +93,22 @@ class HandbackFileController {
     - stores the files in the sftp_handback_downloads folder
     */
     let fileName;
-    for (const collection of config.collections) {
+    for (const lp of config.collections) {
       // Config Details
       Files.setBaseUrl(config.kaligoURL);
       Files.setApiKey(config.kaligoAPIKey);
       // Downloading the handback file from the server
       console.log("Retrieving the files from the SFTP server");
+      for (const bank of config.banks) {
+        fileName = `${bank}_HANDBACK_${targetDate}.csv`;
+        const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, { mkdir_parents: true });
+        const downloadableFile = await foundFile.download();
 
-      fileName = `${collection}_HANDBACK_${targetDate}.csv`;
-      const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${collection}/${fileName}`, { mkdir_parents: true });
-      const downloadableFile = await foundFile.download();
-
-      if (!isBrowser()) {
-        // Download to a file on disk
-        await downloadableFile.downloadToFile(path.join(__dirname, `${this.sftpHandbackDownloads}/${fileName}`));
-        console.log(`File ${fileName} downloaded!\n`);
+        if (!isBrowser()) {
+          // Download to a file on disk
+          await downloadableFile.downloadToFile(path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${fileName}`));
+          console.log(`File ${fileName} downloaded!\n`);
+        };
       };
     };
   };
@@ -138,7 +152,6 @@ class HandbackFileController {
           reject(error);
         })
     });
-
   };
 
   uploadFilesToMongoDB = async (targetDate) => {
@@ -149,45 +162,46 @@ class HandbackFileController {
     -finds the document with matching referenceNumber + transferDate
     -updates the document with the new data
     */
+    for (const lp of config.collections) {
+      for (let i = 0; i < config.banks.length; i++) {
+        const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${config.banks[i]}_HANDBACK_${targetDate}.csv`);
+        try {
+          const [partnerCodeOut, results] = await this.extractDataFromCsv(filePath);     
+          const Model = mongoose.model(lp, transactionEnquiryModel, lp);
 
-    for (let i = 0; i < config.collections.length; i++) {
-      const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${config.collections[i]}_HANDBACK_${targetDate}.csv`);
-      try {
-        const [partnerCode, results] = await this.extractDataFromCsv(filePath);     
-        const Model = mongoose.model(config.collections[i], transactionEnquiryModel, config.collections[i]);
-
-        for (const result of results) {
-          let mappedResult = {
-            transferDate: convertDateFormat(result['Transfer date']),
-            partnerCode: partnerCode,
-            referenceNumber: result['Reference number'],
-            outcomeCode: result['Outcome Code'],
-            transferAmount: parseInt(result['Transfer Amount']),
-          };
-          
-          let doc = await Model.findOne({
-            $and: [
-              { referenceNumber: mappedResult.referenceNumber },
-              { transferDate: mappedResult.transferDate }]
-            }); // Must match the referenceNumber and transferDate to update
-          if (doc) {
-            doc.set(mappedResult);
-            await doc.save();
-            //webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.collections[i]);
-          } else {
-            await Model.create(mappedResult);
+          for (const result of results) {
+            console.log('current partner code: ', partnerCodeOut)
+            let mappedResult = {
+              transferDate: convertDateFormat(result['Transfer date']),
+              partnerCode: partnerCodeOut,
+              referenceNumber: result['Reference number'],
+              outcomeCode: result['Outcome Code'],
+              transferAmount: parseInt(result['Transfer Amount']),
+            };
+            
+            let doc = await Model.findOne({
+              $and: [
+                { referenceNumber: mappedResult.referenceNumber },
+                { transferDate: mappedResult.transferDate }]
+              }); // Must match the referenceNumber and transferDate to update
+            if (doc) {
+              doc.set(mappedResult);
+              await doc.save();
+              //webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.collections[i]);
+            } else {
+              await Model.create(mappedResult);
+            }
           }
-        }
 
-        console.log(`Data updated for ${partnerCode} successfully\n`);
-      } catch (error) {
-        console.log(error);
-      }
+          console.log(`Data updated for ${partnerCodeOut} successfully\n`);
+        } catch (error) {
+          console.log(error);
+        }
+        };
+      };
     };
   };
   // END OF MAIN FUNCTIONS ======================
-
-}
 
 const handbackFileController = new HandbackFileController();
 
