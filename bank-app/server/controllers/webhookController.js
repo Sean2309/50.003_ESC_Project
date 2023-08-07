@@ -20,8 +20,6 @@ class WebhookController {
   
         const { loyaltyProgramId } = request.params; // grab loyaltyProgramId from path params
 
-        console.log("transactionData");
-        console.log(transactionData);
 
         return [transactionData[0], loyaltyProgramId];
 
@@ -51,14 +49,10 @@ class WebhookController {
   updateOutcomeCodes = async (systemId, outcome_code, loyaltyProgram) => {
     //specific loyaltyProgram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
-    //find userId 
-    console.log(systemId,outcome_code, loyaltyProgram);
 
     const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1, "_id" :0 });
-    console.log(userIdCollection);
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
-    console.log(userId)
     collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
     return userId;
   };

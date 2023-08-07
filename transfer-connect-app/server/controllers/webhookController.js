@@ -22,14 +22,12 @@ class WebhookController {
     let userNumber = transaction["phoneNumber"];
     let notificationMethod = transaction["notificationMethod"];
     let outcomeCode = transaction["outcomeCode"];
-    console.log("transaction", transaction);
     await transactionEnquiryController.sendNotification(userNumber, userEmail, notificationMethod, outcomeCode, partnerCode, loyaltyProgram, transferAmount);
   };
 
     // this function posts transaction details to Bank App API endpoint
     postTransaction = async (transactionData, loyaltyProgramId, partnerCode) => {
         await axios.post(`${this.submissionRoute}${partnerCode}/${loyaltyProgramId}`, transactionData);
-        console.log("webhook posted");
       };
 
   //find all transaction details from database
