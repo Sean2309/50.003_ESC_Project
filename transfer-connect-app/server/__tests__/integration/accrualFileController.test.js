@@ -60,7 +60,7 @@ const mockData = {
     {
       _id: "649fb6ad87d672d8f30e98e5",
       transferDate: "2023-07-23",
-      referenceNumber: "3av456b",
+      systemId: "3av456b",
       partnerCode: "DBSSG",
       membershipId: "2342345bc",
       memberName: "Thomas Doe",
@@ -70,7 +70,7 @@ const mockData = {
     {
       _id: "759fb6ad87d672d8f30e99b6",
       transferDate: "2023-07-23",
-      referenceNumber: "4bx456c",
+      systemId: "4bx456c",
       partnerCode: "HSBC",
       membershipId: "1231235cd",
       memberName: "Jane Doe",
@@ -79,7 +79,7 @@ const mockData = {
     {
       _id: "869fb6ad87d672d8f30e99d8",
       transferDate: "2023-07-24",
-      referenceNumber: "6dy456e",
+      systemId: "6dy456e",
       partnerCode: "HSBC",
       membershipId: "8908908ij",
       memberName: "Jane Smith",
@@ -88,7 +88,7 @@ const mockData = {
     {
       _id: "879fb6ad87d672d8f30e99e9",
       transferDate: "2023-07-23",
-      referenceNumber: "7ez456f",
+      systemId: "7ez456f",
       partnerCode: "DBSSG",
       membershipId: "9109109kl",
       memberName: "John Doe",
@@ -99,7 +99,7 @@ const mockData = {
     {
       _id: "859fb6ad87d672d8f30e99c7",
       transferDate: "2023-07-23",
-      referenceNumber: "5cy456d",
+      systemId: "5cy456d",
       partnerCode: "DBSSG",
       membershipId: "5675675ef",
       memberName: "Richard Roe",
@@ -190,7 +190,7 @@ describe('Unit tests', () => {
       {
         _id: "759fb6ad87d672d8f30e99b6",
         transferDate: "2023-07-23",
-        referenceNumber: "4bx456c",
+        systemId: "4bx456c",
         partnerCode: "HSBC",
         membershipId: "1231235cd",
         memberName: "Jane Doe",
@@ -199,7 +199,7 @@ describe('Unit tests', () => {
       {
         _id: "879fb6ad87d672d8f30e99e9",
         transferDate: "2023-07-23",
-        referenceNumber: "7ez456f",
+        systemId: "7ez456f",
         partnerCode: "DBSSG",
         membershipId: "9109109kl",
         memberName: "John Doe",
@@ -208,7 +208,7 @@ describe('Unit tests', () => {
       {
         _id: "859fb6ad87d672d8f30e99c7",
         transferDate: "2023-07-23",
-        referenceNumber: "5cy456d",
+        systemId: "5cy456d",
         partnerCode: "DBSSG",
         membershipId: "5675675ef",
         memberName: "Richard Roe",
@@ -230,7 +230,7 @@ describe('Unit tests', () => {
         {
           _id: "649fb6ad87d672d8f30e98e5",
           transferDate: "2023-07-23",
-          referenceNumber: "3av456b",
+          systemId: "3av456b",
           partnerCode: "DBSSG",
           membershipId: "2342345bc",
           memberName: "Thomas Doe",
@@ -240,7 +240,7 @@ describe('Unit tests', () => {
         {
           _id: "879fb6ad87d672d8f30e99e9",
           transferDate: "2023-07-23",
-          referenceNumber: "7ez456f",
+          systemId: "7ez456f",
           partnerCode: "DBSSG",
           membershipId: "9109109kl",
           memberName: "John Doe",
@@ -249,7 +249,7 @@ describe('Unit tests', () => {
         {
           _id: "859fb6ad87d672d8f30e99c7",
           transferDate: "2023-07-23",
-          referenceNumber: "5cy456d",
+          systemId: "5cy456d",
           partnerCode: "DBSSG",
           membershipId: "5675675ef",
           memberName: "Richard Roe",
@@ -260,7 +260,7 @@ describe('Unit tests', () => {
         {
           _id: "759fb6ad87d672d8f30e99b6",
           transferDate: "2023-07-23",
-          referenceNumber: "4bx456c",
+          systemId: "4bx456c",
           partnerCode: "HSBC",
           membershipId: "1231235cd",
           memberName: "Jane Doe",
@@ -269,7 +269,7 @@ describe('Unit tests', () => {
         {
           _id: "869fb6ad87d672d8f30e99d8",
           transferDate: "2023-07-24",
-          referenceNumber: "6dy456e",
+          systemId: "6dy456e",
           partnerCode: "HSBC",
           membershipId: "8908908ij",
           memberName: "Jane Smith",
@@ -308,7 +308,7 @@ describe('Integration tests', () => {
           memberName: 'John Doe',
           transferDate: '2023-07-23',
           transferAmount: '1000',
-          referenceNumber: 'ref123',
+          systemId: 'ref123',
           partnerCode: 'partner1' 
         }
       ]
@@ -337,7 +337,7 @@ describe('Integration tests', () => {
           {id: 'memberName', title: 'Member name'},
           {id: 'transferDate', title: 'Transfer date'},
           {id: 'transferAmount', title: 'Transfer Amount'},
-          {id: 'referenceNumber', title: 'Reference number'},
+          {id: 'systemId', title: 'System Id'},
           {id: 'partnerCode', title: 'Partner code'},
         ],
       });
