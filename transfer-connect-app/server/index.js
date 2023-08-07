@@ -18,7 +18,7 @@ const app = express();
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
 
- createMongoDBCollection.createData();
+ createMongoDBCollection.populateTransactions();
 // accrualFileController.queryFromDBandUpload();
 //handbackFileController.testHandbackFileFns();
 
