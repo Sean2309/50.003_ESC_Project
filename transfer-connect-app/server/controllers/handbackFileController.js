@@ -204,9 +204,10 @@ class HandbackFileController {
               // console.log('doc: ', doc)
               doc.set(mappedResult);
               await doc.save();
-              // if (partnerCodeOut == "DBSSG"){
-              //   webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
-              // };
+              if (partnerCodeOut == "DBSSG"){
+                console.log(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
+                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
+              };
             } else {
               await Model.create(mappedResult);
             }

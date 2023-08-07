@@ -111,6 +111,7 @@ class TransactionEnquiryController {
     catch (error) {
       return error;
     };
+    console.log(loyaltyProgram, systemIds);
     return systemIds;
   }
 

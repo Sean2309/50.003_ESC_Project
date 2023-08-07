@@ -1,6 +1,6 @@
 function getFormattedDate(format = "standard") {
     const date = new Date();
-    date.setDate(date.getDate()); // Subtract a day if requested
+    date.setDate(date.getDate()+1); // Subtract a day if requested
     let month = date.getMonth() + 1; // getMonth() is zero-indexed
     let day = date.getDate();
   
