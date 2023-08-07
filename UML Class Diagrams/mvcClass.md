@@ -36,9 +36,9 @@ class AuthManagerController{
 }
 
 class UserProfileController {
-    + authenticateToken(request, response, next)
-    + getUserProfile(request, response)
-    + updateSuccessfulTransaction(request, response)
+    authenticateToken(request, response, next)
+    getUserProfile(request, response)
+    updateSuccessfulTransaction(request, response)
   }
   
 
