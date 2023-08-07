@@ -3,6 +3,7 @@ const app = require('../../index');
 const UserCredentials = require('../../models/userCredentials');
 const jwt = require('jsonwebtoken');
 const { SECRET_CODE } = require('../../utils/config');
+const { randomBytes } = require('crypto');
 
 // Mock UserCredentials.findOne
 jest.mock('../../models/userCredentials'); 
