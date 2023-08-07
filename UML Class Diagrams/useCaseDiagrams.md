@@ -8,6 +8,7 @@ graph LR
         TF([fa:fa-user TransferConnect App]) --- C([query TransferConnect DB])
         TF([fa:fa-user TransferConnect App]) --- D([compile data into accrual file])
         TF([fa:fa-user TransferConnect App]) --- E([send accrual file via SFTP server])
+        TF([fa:fa-user TransferConnect App]) --- F([send outcome code when transaction is updated])
 
 
 ```

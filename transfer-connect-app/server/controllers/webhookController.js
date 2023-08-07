@@ -39,8 +39,7 @@ class WebhookController {
       collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
     }
     try{
-        //let dataSave = new collection_connection(transactionData);
-        //await dataSave.save();
+
         let transaction = await collection_connection.find({ "referenceNumber": referenceNumber, "partnerCode": partnerCode, "transferAmount": transferAmount }, { "outcomeCode": 1, "systemId": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress": 1, "transferAmount": 1}).lean().exec()
         return transaction;
     }
@@ -48,10 +47,6 @@ class WebhookController {
         return error;
     }
   };
-
-
-
-  
 }
 
 const webhookController = new WebhookController();

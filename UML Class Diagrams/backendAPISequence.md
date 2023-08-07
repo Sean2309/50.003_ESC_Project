@@ -32,5 +32,7 @@ sequenceDiagram
         activate TransferConnectApp
         TransferConnectApp ->> TransferConnectApp: uploadFilesToMongoDB()
         deactivate TransferConnectApp
+        TransferConnectApp ->> BankApp: webhookPost()
     end
 ```
+
