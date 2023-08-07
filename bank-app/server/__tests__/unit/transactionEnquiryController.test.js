@@ -1,6 +1,6 @@
 const transactionEnquiryController = require('../../controllers/transactionEnquiryController');
 const axios = require('axios');
-const wss = require('../../controllers/notificationServerController').wss;
+const wss = require('../../controllers/notificationServerController').wss.close();
 
 
 
@@ -183,5 +183,3 @@ describe('Unit Tests for startEnquiry', () => {
   })
 
 })
-
-wss.close();
