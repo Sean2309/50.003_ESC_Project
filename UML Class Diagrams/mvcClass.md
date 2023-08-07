@@ -162,6 +162,35 @@ class TransactionModel{
   phoneNumber: String
 }
 ```
+### Receive Webhook Post
+
+```mermaid
+classDiagram
+class WebhookController 
+WebhookController "1" --> "*" TransactionModel
+
+
+class WebhookController{
+    transactionSchema: TransactionEnquiryModel
+    processData()
+    processResponse()
+    updateDBandNotifs()
+    updateOutcomeCodes()
+    sendPushNotification()
+}
+
+class TransactionModel{
+  membershipId: String,
+  membershipName: String,
+  transferDate: String,
+  transferAmount: Number,
+  referenceNumber: String,
+  partnerCode: String,
+  notificationMethod: String,
+  emailAddress: String,
+  phoneNumber: String
+}
+```
 
 # TransferConnect
 
@@ -227,6 +256,36 @@ class TransactionModel{
 
 
 ```
+
+### Post Webhook 
+```mermaid
+classDiagram
+class WebhookController 
+WebhookController "1" --> "*" TransactionModel
+
+
+class WebhookController{
+    transactionSchema: TransactionEnquiryModel
+    processData()
+    processResponse()
+    updateDBandNotifs()
+    updateOutcomeCodes()
+    sendPushNotification()
+}
+
+class TransactionModel{
+  membershipId: String,
+  membershipName: String,
+  transferDate: String,
+  transferAmount: Number,
+  referenceNumber: String,
+  partnerCode: String,
+  notificationMethod: String,
+  emailAddress: String,
+  phoneNumber: String
+}
+```
+
 
 ### Notify Transaction Status
 
@@ -412,6 +471,12 @@ sequenceDiagram
     activate BankApp
     BankApp ->> BankApp: updateOutcomeCodes()
     deactivate BankApp
+
+    TransferConnectApp->>BankApp: 
+    alt OutcomeCode updated
+    TransferConnectApp->>BankApp: webhookPost()
+    end
+    
 ```
 
    
@@ -434,3 +499,42 @@ sequenceDiagram
     deactivate NotifController
 
 ```
+
+# Backend API
+```mermaid
+sequenceDiagram
+
+    %% Initialising Actors
+    participant BankApp
+    participant TransferConnectApp
+    participant LoyaltyProgram
+
+    %% Connections
+
+    %% Transaction Enquiry API
+    loop Every hour
+        BankApp ->> TransferConnectApp: transactionEnquiryAPI()
+    activate TransferConnectApp
+    TransferConnectApp -) TransferConnectApp: transactionEnquiryAPI()
+    deactivate TransferConnectApp
+    TransferConnectApp -->> BankApp: transactionEnquiryAPI()
+    end
+    
+    %% TransferFile Sending API
+    loop Every day 
+        activate TransferConnectApp
+        TransferConnectApp ->> TransferConnectApp: downloadFilesFromMongoDB()
+        deactivate TransferConnectApp
+        TransferConnectApp ->> LoyaltyProgram: sendToServer()
+    end
+
+    %% TransferFile Retrieving API
+    loop Every day
+        TransferConnectApp ->> LoyaltyProgram: retrieveFromServer()
+        activate TransferConnectApp
+        TransferConnectApp ->> TransferConnectApp: uploadFilesToMongoDB()
+        deactivate TransferConnectApp
+        TransferConnectApp ->> BankApp: webhookPost()
+    end
+```
+
