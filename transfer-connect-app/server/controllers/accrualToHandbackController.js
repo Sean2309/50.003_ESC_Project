@@ -79,7 +79,6 @@ class AccrualToHandbackController {
 
   // Main function to write collections to CSV
   writeCollectionsToCsv = async () => {
-    mongoose.connect('mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TransferConnectDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
     const stringToday = dateUtil.getFormattedDate();
 
     for (const collection of config.collections) {

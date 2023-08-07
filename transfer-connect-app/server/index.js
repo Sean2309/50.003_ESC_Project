@@ -26,6 +26,7 @@ const transferConnectSimulation = async () => {
     const partnerCodeList = await accrualFileController.queryFromDBandUpload();
     await accrualToHandbackController.queryFromDBandUpload();
     await handbackFileController.downloadfromSFTPandUpload(partnerCodeList);
+    console.log('Finished running all functions');
 };
 
 transferConnectSimulation();
