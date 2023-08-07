@@ -142,6 +142,7 @@ class AccrualToHandbackController {
     await this.clearAccrualFiles();
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();
+    console.log('accrual to handback controller done');
   }
 
 }
