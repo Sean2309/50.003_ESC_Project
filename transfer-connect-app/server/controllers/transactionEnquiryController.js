@@ -42,14 +42,10 @@ class TransactionEnquiryController {
       let user = await this.find_transaction(collection_connection, id, bank_name);
       if (user[0] != null) {
         let user1 = user[0];
-        console.log('Found transactions:', user);
         outcomeCodes.push(user[0]);
         this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1.outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
-      }
-      else {
-        console.log('Outcome code not updated or transaction not found.');
-      }
-    }
+      };
+    };
     return outcomeCodes;
   };
 
@@ -69,20 +65,16 @@ class TransactionEnquiryController {
   sendNotification = async (phoneNumber, email, notificationMethod, outcomeCode, bank_name, loyalty_program_name, transferAmount) => {
     if (notificationMethod == 0) {
       //only email
-      console.log('sent email');
       emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount);
     }
     else if (notificationMethod == 1) {
       //only phone number
-      console.log("sent message")
       messageNotification.sendMessages(phoneNumber, bank_name, loyalty_program_name, outcomeCode, transferAmount);
     }
     else {
       //both
-      console.log('sent email');
       emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount);
 
-      console.log("sent message")
       messageNotification.sendMessages(phoneNumber, bank_name, loyalty_program_name, outcomeCode, transferAmount);
     }
   }

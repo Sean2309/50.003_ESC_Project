@@ -63,7 +63,6 @@ class HandbackFileController {
     await this.retrieveFromServer(testDate);
 
     await this.uploadFilesToMongoDB(testDate);
-    console.log("Done!");
   };
 
   // Function that compares the existing model with the new one. If needed, it will replace the existing model with the new one
@@ -188,7 +187,6 @@ class HandbackFileController {
               doc.set(mappedResult);
               await doc.save();
               if (partnerCodeOut == "DBSSG"){
-                console.log(mappedResult.referenceNumber, partnerCodeOut, mappedResult.transferAmount, lp);
                 webhookController.processRoute(mappedResult.referenceNumber, partnerCodeOut, mappedResult.transferAmount, lp);
               };
             } else {

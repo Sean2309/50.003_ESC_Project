@@ -13,7 +13,6 @@ async function sendMessages(phoneNumber, bank_name, loyalty_program_name, outcom
         from: '+12512973255', //twilio generated number
         to: phoneNumber //taken from user info in transferconnectDB
     })
-    .then(message => console.log('Message sent:', message.sid))
     .catch(error => console.error('Error:', error));
 }
 
