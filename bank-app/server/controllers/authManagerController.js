@@ -5,6 +5,7 @@ const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
   constructor() {
+    // this.createUser();
   }
 
   // Handle the POST request to authenticate a user

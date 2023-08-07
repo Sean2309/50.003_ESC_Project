@@ -25,13 +25,13 @@ const records = [
   {
     transferDate: '23/9/2021',
     transferAmount: '85',
-    referenceNumber: '998877665b',
+    systemId: '998877665b',
     outcomeCode: '0005',
   },
   {
     transferDate: '24/9/2022',
     transferAmount: '99',
-    referenceNumber: '556677889a',
+    systemId: '556677889a',
     outcomeCode: '0099',
   }
 ];
@@ -49,7 +49,7 @@ beforeAll(async() => {
     header: [
       { id: 'transferDate', title: 'Transfer date' },
       { id: 'transferAmount', title: 'Transfer Amount' },
-      { id: 'referenceNumber', title: 'Reference number' },
+      { id: 'systemId', title: 'System Id' },
       { id: 'outcomeCode', title: 'Outcome Code' },
     ]
   });
@@ -91,7 +91,7 @@ describe('retrieveFromServer function check', () => {
   });
 
   test('should return success if csv headers are correct', (done) => {
-      const expectedHeaders = ['Transfer date', 'Transfer Amount', 'Reference number', 'Outcome Code'];
+      const expectedHeaders = ['Transfer date', 'Transfer Amount', 'System Id', 'Outcome Code'];
       let completed = 0;
       process.chdir(filePath);
       const files = fs.readdirSync(`./`);
@@ -174,13 +174,13 @@ describe('uploadFilesToMongoDB function check', () => {
               row['Transfer date'] = convertedDate;
               let mappedResult = {
                 transferDate: convertedDate,
-                referenceNumber: row['Reference number'],
+                systemId: row['System Id'],
                 outcomeCode: row['Outcome Code'],
                 transferAmount: parseInt(row['Transfer Amount']),
               }
               let doc = await Model.findOne({
                 $and: [
-                  { referenceNumber: mappedResult.referenceNumber },
+                  { systemId: mappedResult.systemId },
                   { transferDate: mappedResult.transferDate }]
               });
               if (doc) {
@@ -191,7 +191,7 @@ describe('uploadFilesToMongoDB function check', () => {
               }
             };
             
-            const filter = { referenceNumber: rawdataFromCSV[0]["Reference number"] };
+            const filter = { systemId: rawdataFromCSV[0]["System Id"] };
     
             // Querying from mongo db
             const dataFromDB = await Model.find(filter);
@@ -200,7 +200,7 @@ describe('uploadFilesToMongoDB function check', () => {
             const dataFromCSV = [{
               transferDate: rawdataFromCSV[0]['Transfer date'],
               transferAmount: parseInt(rawdataFromCSV[0]['Transfer Amount'], 10),
-              referenceNumber: rawdataFromCSV[0]['Reference number'],
+              systemId: rawdataFromCSV[0]['System Id'],
               outcomeCode: rawdataFromCSV[0]['Outcome Code'],
             }];
   
