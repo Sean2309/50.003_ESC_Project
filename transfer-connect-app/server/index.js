@@ -12,15 +12,23 @@ const webhookTestRouter = require('./routes/webhookTestRouter');
 const handbackFileController = require('./controllers/handbackFileController');
 const transactionEnquiryModel = require('./models/transactionEnquiryModel');
 const createMongoDBCollection = require('./controllers/createMongoDBCollection');
+const accrualToHandbackController = require('./controllers/accrualToHandbackController');
 
 const app = express();
 
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
 
- createMongoDBCollection.populateTransactions();
-// accrualFileController.queryFromDBandUpload();
-//handbackFileController.testHandbackFileFns();
+createMongoDBCollection.populateTransactions();
+
+ const transferConnectSimulation = async () => {
+    // await createMongoDBCollection.populateTransactions();
+    await accrualFileController.queryFromDBandUpload();
+    await accrualToHandbackController.queryFromDBandUpload();
+    await handbackFileController.downloadfromSFTPandUpload();
+};
+
+transferConnectSimulation();
 
 
 // to allow request from different origins (domain, port etc)

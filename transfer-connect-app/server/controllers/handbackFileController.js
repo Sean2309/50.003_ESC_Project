@@ -8,6 +8,7 @@ const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const { CronJob } = require('cron');
 const webhookController = require('./webhookController');
+const accrualFileController = require('./accrualFileController');
 
 // Importing Config Files + Schemas
 require('dotenv').config({ path: __dirname + '/../.env' });
@@ -29,12 +30,12 @@ for (const lp of config.collections) {
 
 // Class for the Handback File Controller
 class HandbackFileController {
-
+  
   constructor() {
     this.formattedDate = getFormattedDate("compact"); // Example 20200823
     this.sftpHandbackDownloads = 'sftp_handback_downloads'; // SFTP Directory for the downloaded files to be stored in
     this.modelCache = {}; // Cache for storing the created models
-
+    this.initializeBanks();
     this.startService(); // Starts the Cron Job
   }
 
@@ -48,6 +49,7 @@ class HandbackFileController {
 
 
   downloadfromSFTPandUpload = async () => {
+    console.log('handback file controller running')
     this.clearFolders();
     await this.retrieveFromServer(this.formattedDate);
     await this.uploadFilesToMongoDB(this.formattedDate);
@@ -64,6 +66,14 @@ class HandbackFileController {
 
     await this.uploadFilesToMongoDB(testDate);
   };
+
+  async initializeBanks() {
+    try {
+      this.banks = await accrualFileController.getPartnerCodes();
+    } catch (error) {
+    }
+  }
+
 
   // Function that compares the existing model with the new one. If needed, it will replace the existing model with the new one
   getModelForLP = (loyaltyProgram) => {
@@ -97,8 +107,8 @@ class HandbackFileController {
       Files.setBaseUrl(config.kaligoURL);
       Files.setApiKey(config.kaligoAPIKey);
       // Downloading the handback file from the server
-      console.log("Retrieving the files from the SFTP server");
-      for (const bank of config.banks) {
+      // console.log("Retrieving the files from the SFTP server");
+      for (const bank of this.banks) {
         fileName = `${bank}_HANDBACK_${targetDate}.csv`;
         const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, { mkdir_parents: true });
         const downloadableFile = await foundFile.download();
@@ -106,7 +116,6 @@ class HandbackFileController {
         if (!isBrowser()) {
           // Download to a file on disk
           await downloadableFile.downloadToFile(path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${fileName}`));
-          console.log(`File ${fileName} downloaded!\n`);
         };
       };
     };
@@ -162,39 +171,38 @@ class HandbackFileController {
     -updates the document with the new data
     */
     for (const lp of config.collections) {
-      for (let i = 0; i < config.banks.length; i++) {
-        const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${config.banks[i]}_HANDBACK_${targetDate}.csv`);
+      for (let i = 0; i < this.banks.length; i++) {
+        const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${this.banks[i]}_HANDBACK_${targetDate}.csv`);
         try {
           const [partnerCodeOut, results] = await this.extractDataFromCsv(filePath);     
           const Model = mongoose.model(lp, transactionEnquiryModel, lp);
 
           for (const result of results) {
-            console.log('current partner code: ', partnerCodeOut)
             let mappedResult = {
               transferDate: convertDateFormat(result['Transfer date']),
               partnerCode: partnerCodeOut,
-              referenceNumber: result['Reference number'],
+              systemId: result['System Id'],
               outcomeCode: result['Outcome Code'],
               transferAmount: parseInt(result['Transfer Amount']),
             };
             
             let doc = await Model.findOne({
               $and: [
-                { referenceNumber: mappedResult.referenceNumber },
+                { systemId: mappedResult.systemId },
                 { transferDate: mappedResult.transferDate }]
               }); // Must match the referenceNumber and transferDate to update
             if (doc) {
               doc.set(mappedResult);
               await doc.save();
               if (partnerCodeOut == "DBSSG"){
-                webhookController.processRoute(mappedResult.referenceNumber, partnerCodeOut, mappedResult.transferAmount, lp);
+                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
               };
             } else {
               await Model.create(mappedResult);
             }
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
         };
       };

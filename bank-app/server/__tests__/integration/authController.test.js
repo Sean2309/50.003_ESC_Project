@@ -5,6 +5,11 @@ const jwt = require('jsonwebtoken');
 const { SECRET_CODE } = require('../../utils/config');
 const { randomBytes } = require('crypto');
 
+const fuzzaldrin = require('fuzzaldrin');
+const fuzzysort = require('fuzzysort');
+const { faker } = require('@faker-js/faker');
+const assert = require('assert');
+
 // Mock UserCredentials.findOne
 jest.mock('../../models/userCredentials'); 
 
@@ -104,15 +109,36 @@ describe('AuthManagerController - userAuthentication', () => {
 });
 
 describe('Fuzz testing', () => {
-  it('should handle random loginId and password', async () => {
-    const randomLoginId = randomBytes(20).toString('hex');
-    const randomPassword = randomBytes(20).toString('hex');
+  const numIterations = 10; // Change this to the desired number of iterations
 
-    const response = await request(app)
-      .post('/login')
-      .send({ loginId: randomLoginId, password: randomPassword })
-      .expect(200);
+  for (let i = 0; i < numIterations; i++) {
+    it(`should handle random loginId and password - Iteration ${i + 1}`, async () => {
+      const randomLoginId = randomBytes(20).toString('hex');
+      const randomPassword = randomBytes(20).toString('hex');
 
-    expect(response.text).toBe("\"User not found\"");
+      const response = await request(app)
+        .post('/login')
+        .send({ loginId: randomLoginId, password: randomPassword })
+        .expect(200);
+
+      expect(response.text).toBe("\"User not found\"");
+    });
+  }
+});
+
+describe('Fuzz testing for login system using faker', function () {
+  it('should not crash under fuzzing', async function () {
+    // this.timeout(5000);
+    for (let i = 0; i < 100; i++) {
+      const fuzzeduserid = faker.internet.userName(); // Generate realistic usernames
+      const fuzzedPassword = faker.internet.password(); // Generate realistic passwords
+      const res = await request(app)
+        .post('/login')
+        .send({ loginId: fuzzeduserid, password: fuzzedPassword });
+      assert(res.status === 200 || res.status === 400);
+    }
   });
 });
+
+
+
