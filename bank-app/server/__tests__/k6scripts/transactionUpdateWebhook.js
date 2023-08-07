@@ -57,8 +57,6 @@ const main = (transaction) => {
 
     let response = http.post(url, JSON.stringify([transaction]), { headers: { 'Content-Type': 'application/json' } });
 
-    console.log(response)
-
     check(response, {
         "is status 201": (r) => r.status === 201
     });

@@ -11,25 +11,28 @@ class WebhookController {
 
   processData = async (request, response) => {
     let [transaction, loyaltyProgramId] = await this.processResponse(request, response);
-    await this.updateDBandNotifs(transaction, loyaltyProgramId);
-    
+    try {
+      await this.updateDBandNotifs(transaction, loyaltyProgramId);
+    }
+    catch (error) {
+      response.status(500).json({ error: error.message });
+    }
+
     return response.status(201).json({ message: 'updated transaction' });
-  } 
+  }
 
   processResponse = async (request, response) => {
     try {
-        const transactionData = request.body; // see sample data comments above
-  
-        const { loyaltyProgramId } = request.params; // grab loyaltyProgramId from path params
+      const transactionData = request.body; // see sample data comments above
 
-        console.log(transactionData[0]);
+      const { loyaltyProgramId } = request.params; // grab loyaltyProgramId from path params
 
-        return [transactionData[0], loyaltyProgramId];
+      return [transactionData[0], loyaltyProgramId];
 
-      } catch (error) {
-        response.status(500).json({ error: error.message });
-      }
-    };
+    } catch (error) {
+      response.status(500).json({ error: error.message });
+    }
+  };
 
   //to update bank-app database
   updateDBandNotifs = async (data, loyaltyProgram) => {
@@ -43,16 +46,16 @@ class WebhookController {
 
       //userId used for WebSocket connection
       this.sendPushNotification(userId, outcome_code);
-      };
-    }
-  
+    };
+  }
+
 
   //update bank app database if outcomeCode is updated
   updateOutcomeCodes = async (systemId, outcome_code, loyaltyProgram) => {
     //specific loyaltyProgram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-    const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1, "_id" :0 });
+    const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1, "_id": 0 });
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
     collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
