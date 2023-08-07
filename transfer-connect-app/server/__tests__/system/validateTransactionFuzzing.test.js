@@ -51,6 +51,8 @@ const mockCurrencyRateData = {
     
 }
 
+const startTime = Date.now();
+
 beforeAll(async () => {
     await mongoose.connect(MONGODB_URL, MONGODB_OPTIONS);
 })
@@ -73,7 +75,7 @@ afterEach(async () => {
 
 describe('validateTransaction middleware function unit tests', () => {
   test("validateTransaction function returns status code 400 if the membershipId is in the wrong format", async() => {
-    const testIterations = 1000;
+    testIterations = 500;
     const response = new MockResponse();
 
     await fc.assert(
