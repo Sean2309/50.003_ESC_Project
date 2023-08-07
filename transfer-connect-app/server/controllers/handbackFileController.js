@@ -8,11 +8,13 @@ const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const { CronJob } = require('cron');
 const webhookController = require('./webhookController');
+const accrualFileController = require('./accrualFileController');
 
 // Importing Config Files + Schemas
 require('dotenv').config({ path: __dirname + '/../.env' });
 var config = require('../utils/config');
 const transactionEnquiryModel = require('../models/transactionEnquiryModel');
+const banks = accrualFileController.getPartnerCodes();
 
 // Importing Helper Functions
 var getFormattedDate = require('./date').getFormattedDate;
@@ -98,7 +100,7 @@ class HandbackFileController {
       Files.setApiKey(config.kaligoAPIKey);
       // Downloading the handback file from the server
       console.log("Retrieving the files from the SFTP server");
-      for (const bank of config.banks) {
+      for (const bank of banks) {
         fileName = `${bank}_HANDBACK_${targetDate}.csv`;
         const foundFile = await File.find(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${lp}/${fileName}`, { mkdir_parents: true });
         const downloadableFile = await foundFile.download();
@@ -162,8 +164,8 @@ class HandbackFileController {
     -updates the document with the new data
     */
     for (const lp of config.collections) {
-      for (let i = 0; i < config.banks.length; i++) {
-        const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${config.banks[i]}_HANDBACK_${targetDate}.csv`);
+      for (let i = 0; i < banks.length; i++) {
+        const filePath = path.join(__dirname, `${this.sftpHandbackDownloads}/${lp}/${banks[i]}_HANDBACK_${targetDate}.csv`);
         try {
           const [partnerCodeOut, results] = await this.extractDataFromCsv(filePath);     
           const Model = mongoose.model(lp, transactionEnquiryModel, lp);

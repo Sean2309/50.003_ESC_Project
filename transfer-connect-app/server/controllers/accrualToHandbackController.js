@@ -11,24 +11,34 @@ const path = require('path');
 const fs = require('fs');
 const { CronJob } = require('cron');
 
-const accrual_files_dir = path.join(__dirname, 'accrual_files');
+const accrual_files_dir = path.join(__dirname, 'accrual_to_handback_files');
 if (!fs.existsSync(accrual_files_dir)) {
   fs.mkdirSync(accrual_files_dir);
 }
 
-class AccrualFileController {
+class AccrualToHandbackController {
   constructor() {
-    this.startService();
+    // this.startService();
 
   }
   startService = async () => {
     let job = new CronJob(
-      '* 0 * * * *',
+      '30 * * * * *',
       this.queryFromDBandUpload,
     )
 
     job.start();
   }
+
+  // Helper function to generate random outcome code
+  genRandOutcomeCode = async (data) => {
+    const outcomeCodeList = ['"0000"', '"0001"', '"0002"', '"0003"', '"0004"', '"0005"', '"0099"'];
+    for (let row of data) {
+      const randOutcomeCode = outcomeCodeList[Math.floor(Math.random() * outcomeCodeList.length)];
+      row['outcomeCode'] = randOutcomeCode;
+    };
+    return data;
+  };
 
   // Helper function to get a Mongoose model by collection name
   getModel = (collection) => mongoose.model(collection, transactionSchema, collection);
@@ -69,13 +79,16 @@ class AccrualFileController {
 
   // Main function to write collections to CSV
   writeCollectionsToCsv = async () => {
+    mongoose.connect('mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TransferConnectDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
     const stringToday = dateUtil.getFormattedDate();
 
     for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
       console.log('Data retrieved from ' + collection + ':', data);
-      const groups = this.groupData(data);
+      const newData = await this.genRandOutcomeCode(data);
+      console.log('new data: ', newData)
+      const groups = this.groupData(newData);
       await this.writeGroupedDataToCsv(groups, collection);
     }
   }
@@ -104,7 +117,7 @@ class AccrualFileController {
             const csvFilePath = path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`);
             const directoryName = collectionMap[collection];
 
-            await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
+            await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${directoryName}/${partnerCode}_HANDBACK_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
             console.log('File uploaded successfully.');
           } catch (error) {
             console.error('An error occurred while uploading file for collection ' + collection + ':', error);
@@ -126,6 +139,7 @@ class AccrualFileController {
   }
 
   queryFromDBandUpload = async () => {
+    
     await this.clearAccrualFiles();
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();
@@ -133,7 +147,6 @@ class AccrualFileController {
 
 }
 
-const accrualFileController = new AccrualFileController();
-
-module.exports = accrualFileController;
+const accrualToHandbackController = new AccrualToHandbackController();
+module.exports = accrualToHandbackController;
 
