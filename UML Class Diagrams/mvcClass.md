@@ -328,9 +328,24 @@ class InAppNotif{
 ```mermaid
 classDiagram
     AccrualController "1" --> "*" TransactionModel
+    index "1" --> "1" AccrualController
+    clearFolder "1" --> "1" AccrualController
+
+    class index {
+    queryFromDBandUpload(): void
+    }
+
+    class clearFolder {
+        clearFolder(String folderPath): void
+    }
 
     class AccrualController{
-        loyaltyPrograms: List<<list>String>
+        getModel(): mongoose.model
+        getDataFromCollection(): mongoose.model
+        groupData(mongoose.model data): mongoose.model
+        getPartnerCodes(): List partnerCode
+        writeGroupedDataToCsv(mongoose.model groups, mongoose.model collection): void
+        clearAccrualFiles(): void
         writeCollectionsToCsv(): void
         uploadFilesToServer(): void
         queryFromDBandUpload(): void
@@ -339,24 +354,37 @@ classDiagram
 
   class TransactionModel{
         membershipId: String,
-        membershipName: String,
+        memberName: String,
         transferDate: String,
         transferAmount: Number,
         referenceNumber: String,
         partnerCode: String,
         outcomeCode: String,
+        notificationMethod: Number,
+        emailAddress: String,
+        phoneNumber: String,
+        systemId: String
     }
     
 ```
 ### Receive Transfer Fulfilment Handback File 
 ```mermaid
 classDiagram
-HandbackController "1" --> "*" ConfirmationModel
+HandbackController "1" --> "*" TransactionModel
 index "1"--> "1" HandbackController
 date "1" --> "1" HandbackController
+clearFolder "1" --> "1" HandbackController
 
 class date {
     getFormattedDate(String format): Date
+}
+
+class convertDateFormat {
+    convertDateFormat(String date): String
+}
+
+class clearFolder {
+    clearFolder(String folderPath): void
 }
 
 class index {
@@ -364,19 +392,27 @@ class index {
 }
 
 class HandbackController{
-    -confirmedTransactions: List<<list>ConfirmationModel>
+    -confirmedTransactions: List<<list>TransactionModel>
     -getModelForLP(String loyaltyProgram): mongoose.model[loyaltyProgram]
     -retrieveFromServer(Date targetDate): void
     -extractDataFromCsv(String filePath): String partnerCode, object results
     -uploadFilesToMongoDB(Date targetDate): void
 }
 
-class ConfirmationModel{
-    -transferDate: String
-    -transferAmount: Number
-    -referenceNumber: String
-    -outcomeCode: String
-}
+class TransactionModel{
+        membershipId: String,
+        memberName: String,
+        transferDate: String,
+        transferAmount: Number,
+        referenceNumber: String,
+        partnerCode: String,
+        outcomeCode: String,
+        notificationMethod: Number,
+        emailAddress: String,
+        phoneNumber: String,
+        systemId: String
+    }
+
 ```
 
 # Sequence Diagrams
