@@ -144,7 +144,10 @@ class TransferForm extends Component {
   
   referenceNumberDisplay = (referenceNumber) => {
     if (referenceNumber) {
-      return `Your reference number is ${referenceNumber}.`;
+      return (
+        <div id="referenceNumberDisplay" data-testid="reference-number-display">
+        Your reference number is {referenceNumber}.
+      </div>);
     }
     else {
       return '';
