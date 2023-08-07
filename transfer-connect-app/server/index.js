@@ -20,7 +20,7 @@ mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology
 
 // createMongoDBCollection.createNewCollection();
 // accrualFileController.queryFromDBandUpload();
-handbackFileController.testHandbackFileFns();
+//handbackFileController.testHandbackFileFns();
 
 
 // to allow request from different origins (domain, port etc)

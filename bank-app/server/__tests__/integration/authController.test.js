@@ -3,6 +3,7 @@ const app = require('../../index');
 const UserCredentials = require('../../models/userCredentials');
 const jwt = require('jsonwebtoken');
 const { SECRET_CODE } = require('../../utils/config');
+const { randomBytes } = require('crypto');
 
 // Mock UserCredentials.findOne
 jest.mock('../../models/userCredentials'); 
@@ -99,5 +100,19 @@ describe('AuthManagerController - userAuthentication', () => {
     expect(res.statusCode).toEqual(401);
     expect(res.body).toHaveProperty('auth');
     expect(res.body.auth).toBe(false);
+  });
+});
+
+describe('Fuzz testing', () => {
+  it('should handle random loginId and password', async () => {
+    const randomLoginId = randomBytes(20).toString('hex');
+    const randomPassword = randomBytes(20).toString('hex');
+
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: randomLoginId, password: randomPassword })
+      .expect(200);
+
+    expect(response.text).toBe("\"User not found\"");
   });
 });

@@ -7,6 +7,7 @@ const File = require('files.com/lib/models/File').default;
 const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const { CronJob } = require('cron');
+const webhookController = require('./webhookController');
 
 // Importing Config Files + Schemas
 require('dotenv').config({ path: __dirname + '/../.env' });
@@ -186,7 +187,10 @@ class HandbackFileController {
             if (doc) {
               doc.set(mappedResult);
               await doc.save();
-              //webhookController.processRoute(mappedResult.referenceNumber, partnerCode, mappedResult.transferAmount, config.collections[i]);
+              if (partnerCodeOut == "DBSSG"){
+                console.log(mappedResult.referenceNumber, partnerCodeOut, mappedResult.transferAmount, lp);
+                webhookController.processRoute(mappedResult.referenceNumber, partnerCodeOut, mappedResult.transferAmount, lp);
+              };
             } else {
               await Model.create(mappedResult);
             }
