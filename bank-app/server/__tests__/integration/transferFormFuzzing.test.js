@@ -3,7 +3,6 @@ const transferFormController = require('../../controllers/transferFormController
 const createTransferForm = require('../../models/transferForm');
 const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
 const fc = require('fast-check'); // Import fast-check
-const fs = require('fs');
 // fc.configureGlobal({ numRuns: 1000 });
 const loyaltyProgramId = "integrationTestFuzzMock";
 
@@ -32,7 +31,7 @@ describe('transferFormController', () => {
     })
 
     afterAll(async () => {
-        
+
       }
     )
 
@@ -58,7 +57,7 @@ describe('transferFormController', () => {
         partnerCode: fc.string(),
       });
   
-      const testIterations = 300;
+      const testIterations = 1000;
   
       // TODO: Statistics object to track the test results
   
