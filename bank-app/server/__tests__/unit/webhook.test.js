@@ -3,51 +3,68 @@ const webhookController = require('../../controllers/webhookController');
 
 
 // =========== Setting up Mock Data ==========// 
+class MockResponse {
+  constructor() {
+    this.status;
+    this.data;
+  }
 
-const mockTransactionData = 
-    {
-        "membershipId": "123oij",
-        "memberName": "LX",
-        "transferDate": "11-11-11",
-        "transferAmount": 12345,
-        "referenceNumber": "0000",
-        "partnerCode": "DBSSG",
-        "notificationMethod": 1,
-        "emailAddress": "leelxuan@gmail.com",
-        "phoneNumber": "+6588669619",
-        "systemId": "0000",
-        "userId": "1",
-        "outcomeCode": "9999"
-      };
+  status(statusCode) {
+    this.status = statusCode;
+    return this;
+  }
+
+  json(data) {
+    this.data = data;
+    return this;
+  }
+}
+
+
+const mockTransactionData =
+{
+  "membershipId": "123oij",
+  "memberName": "LX",
+  "transferDate": "11-11-11",
+  "transferAmount": 12345,
+  "referenceNumber": "0000",
+  "partnerCode": "DBSSG",
+  "notificationMethod": 1,
+  "emailAddress": "leelxuan@gmail.com",
+  "phoneNumber": "+6588669619",
+  "systemId": "0000",
+  "userId": "1",
+  "outcomeCode": "9999"
+};
 
 const mockRequestData = {
-    params: {
-        loyaltyProgramId: 'GOPOINTS', // The value of the loyaltyProgramId extracted using destructuring
-        // Other parameters, if any, passed in the request
-      },
-    body:  [
-        {
-            "membershipId": "123oij",
-            "memberName": "LX",
-            "transferDate": "11-11-11",
-            "transferAmount": 12345,
-            "referenceNumber": "0000",
-            "partnerCode": "DBSSG",
-            "notificationMethod": 1,
-            "emailAddress": "leelxuan@gmail.com",
-            "phoneNumber": "+6588669619",
-            "systemId": "0000",
-            "userId": "1",
-            "outcomeCode": "9999"
-          }],
+  params: {
+    loyaltyProgramId: 'GOPOINTS', // The value of the loyaltyProgramId extracted using destructuring
+    // Other parameters, if any, passed in the request
+  },
+  body: [
+    {
+      "membershipId": "123oij",
+      "memberName": "LX",
+      "transferDate": "11-11-11",
+      "transferAmount": 12345,
+      "referenceNumber": "0000",
+      "partnerCode": "DBSSG",
+      "notificationMethod": 1,
+      "emailAddress": "leelxuan@gmail.com",
+      "phoneNumber": "+6588669619",
+      "systemId": "0000",
+      "userId": "1",
+      "outcomeCode": "9999"
+    }],
 };
 
 const mockRequestNullData = {
-    params: {
-        loyaltyProgramId: 'GOPOINTS', // The value of the loyaltyProgramId extracted using destructuring
-        // Other parameters, if any, passed in the request
-      },
-    body:  [],
+  params: {
+    loyaltyProgramId: 'GOPOINTS', // The value of the loyaltyProgramId extracted using destructuring
+    // Other parameters, if any, passed in the request
+  },
+  body: [],
 }
 
 
@@ -138,15 +155,17 @@ describe('Unit Tests for updateDBandNotifs', () => {
 
 describe('Unit Tests for processData', () => {
 
-    test('procesData calls updateDBandNotifs with correct params', async () => {
-  
-        const mockupdateDBandNotifs = jest.spyOn(webhookController, "updateDBandNotifs").mockResolvedValueOnce();
-        await webhookController.processData(mockRequestData, null);
-  
-      expect(webhookController.updateDBandNotifs).toHaveBeenCalledWith(mockTransactionData, "GOPOINTS");
-  
-      mockupdateDBandNotifs.mockRestore();
-    })
+  test('procesData calls updateDBandNotifs with correct params', async () => {
 
+    const response = new MockResponse();
+
+    const mockupdateDBandNotifs = jest.spyOn(webhookController, "updateDBandNotifs").mockResolvedValueOnce();
+    await webhookController.processData(mockRequestData, response);
+
+    expect(webhookController.updateDBandNotifs).toHaveBeenCalledWith(mockTransactionData, "GOPOINTS");
+
+    mockupdateDBandNotifs.mockRestore();
   })
+
+})
 
