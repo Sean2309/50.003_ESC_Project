@@ -35,7 +35,8 @@ class HandbackFileController {
     this.formattedDate = getFormattedDate("compact"); // Example 20200823
     this.sftpHandbackDownloads = 'sftp_handback_downloads'; // SFTP Directory for the downloaded files to be stored in
     this.modelCache = {}; // Cache for storing the created models
-    this.initializeBanks();
+    // this.initializeBanks();
+    this.banks = [];
     // this.startService(); // Starts the Cron Job
   }
 
@@ -48,15 +49,16 @@ class HandbackFileController {
   };
 
 
-  downloadfromSFTPandUpload = async () => {
+  downloadfromSFTPandUpload = async (partnerCodeList) => {
     console.log('handback file controller running')
+    this.banks = partnerCodeList;
     this.clearFolders();
     await this.retrieveFromServer(this.formattedDate);
     await this.uploadFilesToMongoDB(this.formattedDate);
     console.log('handback file controller done');
   }
 
-  testHandbackFileFns = async () => {
+  testHandbackFileFns = async (partnerCodeList) => {
     // This is a test function, with a fixed date for demonstration purposes
     // Dates
     const testDate = `20200812`;
@@ -69,12 +71,12 @@ class HandbackFileController {
     console.log('handback file controller done');
   };
 
-  async initializeBanks() {
-    try {
-      this.banks = await accrualFileController.getPartnerCodes();
-    } catch (error) {
-    }
-  }
+  // async initializeBanks() {
+  //   try {
+  //     this.banks = await accrualFileController.getPartnerCodes();
+  //   } catch (error) {
+  //   }
+  // }
 
 
   // Function that compares the existing model with the new one. If needed, it will replace the existing model with the new one

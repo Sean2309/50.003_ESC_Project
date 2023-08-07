@@ -21,11 +21,11 @@ mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology
 
 createMongoDBCollection.populateTransactions();
 
- const transferConnectSimulation = async () => {
+const transferConnectSimulation = async () => {
     // await createMongoDBCollection.populateTransactions();
-    await accrualFileController.queryFromDBandUpload();
+    const partnerCodeList = await accrualFileController.queryFromDBandUpload();
     await accrualToHandbackController.queryFromDBandUpload();
-    await handbackFileController.downloadfromSFTPandUpload();
+    await handbackFileController.downloadfromSFTPandUpload(partnerCodeList);
 };
 
 transferConnectSimulation();

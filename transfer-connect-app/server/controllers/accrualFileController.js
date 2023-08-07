@@ -142,6 +142,8 @@ class AccrualFileController {
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();
     console.log('accrual file controller done');
+    const partnerCodeList = await this.getPartnerCodes();
+    return partnerCodeList;
   }
 
 }
