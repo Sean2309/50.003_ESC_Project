@@ -2,7 +2,7 @@ const webhookController = require('../controllers/webhookController')
 
 async function testWebhook(req,res) {
    console.log("testWebhook called");
-   webhookController.processRoute("0000", "DBSSG", 12345, "GOPOINTS");
+   webhookController.processRoute("8909890", "DBSSG", 123, "GOPOINTS");
 }
 
 module.exports = testWebhook;
