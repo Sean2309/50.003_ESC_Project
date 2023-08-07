@@ -61,7 +61,7 @@ class AccrualFileController {
           { id: 'memberName', title: 'Member name' },
           { id: 'transferDate', title: 'Transfer date' },
           { id: 'transferAmount', title: 'Transfer Amount' },
-          { id: 'referenceNumber', title: 'Reference number' },
+          { id: 'systemId', title: 'System Id' },
           { id: 'partnerCode', title: 'Partner code' }
         ]
       });
