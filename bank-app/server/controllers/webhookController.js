@@ -20,6 +20,7 @@ class WebhookController {
   
         const { loyaltyProgramId } = request.params; // grab loyaltyProgramId from path params
 
+        console.log(transactionData[0]);
 
         return [transactionData[0], loyaltyProgramId];
 
