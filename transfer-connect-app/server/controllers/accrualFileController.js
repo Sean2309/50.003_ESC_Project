@@ -51,6 +51,22 @@ class AccrualFileController {
     }, {});
   }
 
+  getPartnerCodes = async () => {
+    let partnerCodes = [];
+    const stringToday = dateUtil.getFormattedDate();
+    
+    for (const collection of config.collections) {
+      const Model = this.getModel(collection);
+      const data = await this.getDataFromCollection(Model, stringToday);
+      const groups = this.groupData(data);
+      
+      // Add the partner codes to the list
+      partnerCodes = [...partnerCodes, ...Object.keys(groups)];
+    }
+    
+    // Remove duplicates and return the list
+    return [...new Set(partnerCodes)];
+  }
 
   // Helper function to write grouped data to CSV
   writeGroupedDataToCsv = async (groups, collection) => {
