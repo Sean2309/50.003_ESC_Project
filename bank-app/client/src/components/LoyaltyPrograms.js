@@ -48,7 +48,7 @@ class LoyaltyPrograms extends Component {
 
     // Add in header sentence for number of points
     componentsArray.push(
-      <p key="pointsHeader">
+      <p key="pointsHeader" id="pointsHeader">
         You currently have
         {' '}
         {userProfile.abcPoints}
