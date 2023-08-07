@@ -13,8 +13,8 @@ class WebhookController {
   };
 
   //to run all functions
-  processRoute = async (referenceNumber, partnerCode, transferAmount, loyaltyProgram) => {
-    let transaction1 = await this.findTransaction(referenceNumber, partnerCode, transferAmount, loyaltyProgram);
+  processRoute = async (systemId, partnerCode, transferAmount, loyaltyProgram) => {
+    let transaction1 = await this.findTransaction(systemId, partnerCode, transferAmount, loyaltyProgram);
     this.postTransaction(transaction1, loyaltyProgram, partnerCode);
     let transaction = transaction1[0];
     let userEmail = transaction["emailAddress"];
@@ -34,7 +34,7 @@ class WebhookController {
       };
 
   //find all transaction details from database
-  findTransaction = async (referenceNumber, partnerCode, transferAmount, loyaltyProgram) => {
+  findTransaction = async (systemId, partnerCode, transferAmount, loyaltyProgram) => {
     let collection_connection;
 
     if (mongoose.models[loyaltyProgram]) {
@@ -44,7 +44,7 @@ class WebhookController {
     }
     try{
 
-        let transaction = await collection_connection.find({ "referenceNumber": referenceNumber, "partnerCode": partnerCode, "transferAmount": transferAmount }, { "outcomeCode": 1, "systemId": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress": 1, "transferAmount": 1}).lean().exec()
+        let transaction = await collection_connection.find({ "systemId": systemId, "partnerCode": partnerCode, "transferAmount": transferAmount }, { "outcomeCode": 1, "systemId": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress": 1, "transferAmount": 1}).lean().exec()
         return transaction;
     }
     catch (error) {

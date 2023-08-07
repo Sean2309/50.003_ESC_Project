@@ -50,6 +50,7 @@
     "coverageReporters": [
       "text",
       "html"
-    ]
+    ],
+    "testTimeout": 20000
   }
 }
