@@ -101,3 +101,17 @@ describe('AuthManagerController - userAuthentication', () => {
     expect(res.body.auth).toBe(false);
   });
 });
+
+describe('Fuzz testing', () => {
+  it('should handle random loginId and password', async () => {
+    const randomLoginId = randomBytes(20).toString('hex');
+    const randomPassword = randomBytes(20).toString('hex');
+
+    const response = await request(app)
+      .post('/login')
+      .send({ loginId: randomLoginId, password: randomPassword })
+      .expect(200);
+
+    expect(response.text).toBe("\"User not found\"");
+  });
+});
