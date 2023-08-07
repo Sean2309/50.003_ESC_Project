@@ -7,6 +7,7 @@ const { randomBytes } = require('crypto');
 
 const fuzzaldrin = require('fuzzaldrin');
 const fuzzysort = require('fuzzysort');
+const { faker } = require('@faker-js/faker');
 const assert = require('assert');
 
 // Mock UserCredentials.findOne
@@ -124,12 +125,13 @@ describe('Fuzz testing', () => {
     });
   }
 });
-describe('Fuzz testing for login system', function () {
+
+describe('Fuzz testing for login system using faker', function () {
   it('should not crash under fuzzing', async function () {
-    //this.timeout(5000);
-    for(let i = 0; i < 100; i++) {
-      const fuzzeduserid = fuzzysort.single(Math.random().toString(), "randomuserid");
-      const fuzzedPassword = fuzzysort.single(Math.random().toString(), "randompassword");
+    // this.timeout(5000);
+    for (let i = 0; i < 100; i++) {
+      const fuzzeduserid = faker.internet.userName(); // Generate realistic usernames
+      const fuzzedPassword = faker.internet.password(); // Generate realistic passwords
       const res = await request(app)
         .post('/login')
         .send({ loginId: fuzzeduserid, password: fuzzedPassword });
@@ -137,5 +139,6 @@ describe('Fuzz testing for login system', function () {
     }
   });
 });
+
 
 
