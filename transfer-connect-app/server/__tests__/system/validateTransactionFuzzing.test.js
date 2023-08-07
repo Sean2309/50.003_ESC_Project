@@ -5,7 +5,7 @@ const LoyaltyProgramQueryModel = require('../../models/loyaltyProgramQueryModel'
 const CurrencyRateModel = require('../../models/currencyRateModel');
 const loyaltyProgramId = "mock";
 const MONGODB_URL = "mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TESTDB?retryWrites=true&w=majority";
-const StringFuzzer = require('../StringFuzzer');
+const StringFuzzer = require('../../../fuzzer/StringFuzzer');
 const fc = require('fast-check'); // Import fast-check
 
 // set timeout to 24 hours
