@@ -43,7 +43,6 @@ class TransactionEnquiryController {
       if (user[0] != null) {
         let user1 = user[0];
         outcomeCodes.push(user[0]);
-        console.log("transaction asked", user1);
         this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1.outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
       };
     };
@@ -64,7 +63,6 @@ class TransactionEnquiryController {
 
 
   sendNotification = async (phoneNumber, email, notificationMethod, outcomeCode, bank_name, loyalty_program_name, transferAmount) => {
-    console.log("sendNotif called", notificationMethod);
     if (notificationMethod == 0) {
       //only email
       emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount);

@@ -182,7 +182,6 @@ class HandbackFileController {
         try {
           const [partnerCodeOut, results] = await this.extractDataFromCsv(filePath);     
           const Model = mongoose.model(lp, transactionEnquiryModel, lp);
-          console.log('received result: ', results)
 
           for (const result of results) {
             
@@ -205,7 +204,6 @@ class HandbackFileController {
               doc.set(mappedResult);
               await doc.save();
               if (partnerCodeOut == "DBSSG"){
-                console.log(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
                 webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
               };
             } else {
