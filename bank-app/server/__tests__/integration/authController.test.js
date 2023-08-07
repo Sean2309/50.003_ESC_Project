@@ -5,6 +5,10 @@ const jwt = require('jsonwebtoken');
 const { SECRET_CODE } = require('../../utils/config');
 const { randomBytes } = require('crypto');
 
+const fuzzaldrin = require('fuzzaldrin');
+const fuzzysort = require('fuzzysort');
+const assert = require('assert');
+
 // Mock UserCredentials.findOne
 jest.mock('../../models/userCredentials'); 
 
@@ -120,4 +124,18 @@ describe('Fuzz testing', () => {
     });
   }
 });
+describe('Fuzz testing for login system', function () {
+  it('should not crash under fuzzing', async function () {
+    //this.timeout(5000);
+    for(let i = 0; i < 100; i++) {
+      const fuzzeduserid = fuzzysort.single(Math.random().toString(), "randomuserid");
+      const fuzzedPassword = fuzzysort.single(Math.random().toString(), "randompassword");
+      const res = await request(app)
+        .post('/login')
+        .send({ loginId: fuzzeduserid, password: fuzzedPassword });
+      assert(res.status === 200 || res.status === 400);
+    }
+  });
+});
+
 
