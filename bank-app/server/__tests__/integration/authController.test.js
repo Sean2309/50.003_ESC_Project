@@ -1,17 +1,29 @@
 const request = require('supertest');
-const app = require('../../index'); 
+const express = require('express');
+const app = express();
 const UserCredentials = require('../../models/userCredentials');
 const jwt = require('jsonwebtoken');
 const { SECRET_CODE } = require('../../utils/config');
 const { randomBytes } = require('crypto');
-
+const cookieParser = require('cookie-parser');
 const fuzzaldrin = require('fuzzaldrin');
 const fuzzysort = require('fuzzysort');
 const { faker } = require('@faker-js/faker');
 const assert = require('assert');
+const authManagerRouter = require('../../routes/authManagerRouter');
+const userProfileRouter = require('../../routes/userProfileRouter');
+
+// for purpose of parsing incoming requests 
+app.use(express.json());
+// for setting token as cookie
+app.use(cookieParser());
+
+app.use('/login', authManagerRouter);
+app.use('/api/userprofile', userProfileRouter);
+app.listen('3030');
 
 // Mock UserCredentials.findOne
-jest.mock('../../models/userCredentials'); 
+jest.mock('../../models/userCredentials');
 
 describe('AuthManagerController - userAuthentication', () => {
   it('should return "User is logged in" with correct login credentials', async () => {

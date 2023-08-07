@@ -10,6 +10,7 @@ const { isBrowser } = require('files.com/lib/utils');
 const path = require('path');
 const fs = require('fs');
 const { CronJob } = require('cron');
+const clearFolder = require('./clearFolder').clearFolder;
 
 const accrual_files_dir = path.join(__dirname, 'accrual_files');
 if (!fs.existsSync(accrual_files_dir)) {
@@ -18,7 +19,7 @@ if (!fs.existsSync(accrual_files_dir)) {
 
 class AccrualFileController {
   constructor() {
-    this.startService();
+    // this.startService();
 
   }
   startService = async () => {
@@ -135,20 +136,12 @@ class AccrualFileController {
     }
   }
 
-  clearAccrualFiles = () => {
-    try {
-      fs.readdirSync(accrual_files_dir).forEach(file => fs.unlinkSync(path.join(accrual_files_dir, file)));
-    }
-    catch (error) {
-      // No files, just ignore error
-    }
-  }
-
   queryFromDBandUpload = async () => {
     console.log('accrual file controller running')
-    await this.clearAccrualFiles();
+    await clearFolder('accrual_files');
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();
+    console.log('accrual file controller done');
   }
 
 }
