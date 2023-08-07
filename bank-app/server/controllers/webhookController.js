@@ -12,6 +12,8 @@ class WebhookController {
   processData = async (request, response) => {
     let [transaction, loyaltyProgramId] = await this.processResponse(request, response);
     await this.updateDBandNotifs(transaction, loyaltyProgramId);
+    
+    return response.status(201).json({ message: 'updated transaction' });
   } 
 
   processResponse = async (request, response) => {
