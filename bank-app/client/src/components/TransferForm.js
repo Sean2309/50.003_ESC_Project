@@ -12,7 +12,8 @@ class TransferForm extends Component {
       membershipIdConfirmation: '',
       transferAmount: '',
       isOpen: false, // to render form as popup
-      submissionStatus: ''
+      submissionStatus: '',
+      referenceNumber: ''
     };
   }
 
@@ -80,7 +81,9 @@ class TransferForm extends Component {
       // 
       axios.post(`http://localhost:3001/api/transferformsubmit/${loyaltyProgramId}`, form, { withCredentials: true })
         .then((response) => {
+          const transaction = response.data;
           this.setState({ submissionStatus: 'success' });
+          this.setState({ referenceNumber: transaction.referenceNumber });
           updateUserProfile();
         })
         .catch((error) => {
@@ -138,10 +141,20 @@ class TransferForm extends Component {
       </div>
     );
   }
+  
+  referenceNumberDisplay = (referenceNumber) => {
+    if (referenceNumber) {
+      return `Your reference number is ${referenceNumber}.`;
+    }
+    else {
+      return '';
+    }
+    
+  }
 
   renderForm = () => {
     const {
-      memberName, membershipId, membershipIdConfirmation, transferAmount, isOpen,
+      memberName, membershipId, membershipIdConfirmation, transferAmount, isOpen, referenceNumber
     } = this.state;
     if (!isOpen) {
       return <button onClick={this.openModal} type="button">Transfer</button>;
@@ -219,6 +232,7 @@ class TransferForm extends Component {
           <button onClick={this.closeModal} type="button">Close</button>
 
           {this.renderSuccess()}
+          {this.referenceNumberDisplay(referenceNumber)}
         </dialog>
       </div>
 

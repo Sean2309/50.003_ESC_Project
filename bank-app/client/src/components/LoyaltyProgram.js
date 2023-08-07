@@ -19,10 +19,7 @@ function LoyaltyProgram(props) {
       </p>
       {/* Display exchange rate */}
       <p>
-        1000 ABC Points =
-        {loyaltyProgramData.currencyRate * 1000}
-        {' '}
-        {loyaltyProgramData.currencyName}
+        1000 ABC Points = {loyaltyProgramData.currencyRate * 1000} {loyaltyProgramData.currencyName}
       </p>
       <p>
         <a href={loyaltyProgramData.enrollmentLink}>Enrollment Link</a>
