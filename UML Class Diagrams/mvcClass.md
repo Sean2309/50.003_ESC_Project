@@ -35,6 +35,15 @@ class AuthManagerController{
     authorizeUser(): response
 }
 
+class UserProfileController {
+    + authenticateToken(request, response, next)
+    + getUserProfile(request, response)
+    + updateSuccessfulTransaction(request, response)
+  }
+  
+
+  UserProfileController "1" --> "*" UserProfileModel
+
 ```
 ### Query Loyalty Program Details (Loyalty Points Marketplace)
 
