@@ -53,6 +53,7 @@ class HandbackFileController {
     console.log('handback file controller running')
     this.banks = partnerCodeList;
     this.clearFolders();
+    console.log('Banks: ', this.banks)
     await this.retrieveFromServer(this.formattedDate);
     await this.uploadFilesToMongoDB(this.formattedDate);
     console.log('handback file controller done');
@@ -64,6 +65,7 @@ class HandbackFileController {
     const testDate = `20200812`;
 
     // Running the functions
+    this.banks = partnerCodeList;
     this.clearFolders();
     await this.retrieveFromServer(testDate);
 

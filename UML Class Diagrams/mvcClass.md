@@ -388,10 +388,6 @@ class date {
     getFormattedDate(String format): Date
 }
 
-class convertDateFormat {
-    convertDateFormat(String date): String
-}
-
 class clearFolder {
     clearFolder(String folderPath): void
 }
@@ -403,9 +399,12 @@ class index {
 class HandbackController{
     -confirmedTransactions: List<<list>TransactionModel>
     -getModelForLP(String loyaltyProgram): mongoose.model[loyaltyProgram]
+    -clearFolders(): void
     -retrieveFromServer(Date targetDate): void
     -extractDataFromCsv(String filePath): String partnerCode, object results
     -uploadFilesToMongoDB(Date targetDate): void
+    -downloadfromSFTPandUpload(List partnerCodeList): void
+    -testHandbackFileFns(List partnerCodeList): void
 }
 
 class TransactionModel{
