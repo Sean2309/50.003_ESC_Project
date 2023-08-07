@@ -104,15 +104,20 @@ describe('AuthManagerController - userAuthentication', () => {
 });
 
 describe('Fuzz testing', () => {
-  it('should handle random loginId and password', async () => {
-    const randomLoginId = randomBytes(20).toString('hex');
-    const randomPassword = randomBytes(20).toString('hex');
+  const numIterations = 10; // Change this to the desired number of iterations
 
-    const response = await request(app)
-      .post('/login')
-      .send({ loginId: randomLoginId, password: randomPassword })
-      .expect(200);
+  for (let i = 0; i < numIterations; i++) {
+    it(`should handle random loginId and password - Iteration ${i + 1}`, async () => {
+      const randomLoginId = randomBytes(20).toString('hex');
+      const randomPassword = randomBytes(20).toString('hex');
 
-    expect(response.text).toBe("\"User not found\"");
-  });
+      const response = await request(app)
+        .post('/login')
+        .send({ loginId: randomLoginId, password: randomPassword })
+        .expect(200);
+
+      expect(response.text).toBe("\"User not found\"");
+    });
+  }
 });
+
