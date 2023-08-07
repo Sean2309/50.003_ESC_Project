@@ -93,7 +93,7 @@ class AccrualFileController {
     for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
-      console.log('Data retrieved from ' + collection + ':', data);
+      // console.log('Data retrieved from ' + collection + ':', data);
       const groups = this.groupData(data);
       await this.writeGroupedDataToCsv(groups, collection);
     }
@@ -124,12 +124,12 @@ class AccrualFileController {
             const directoryName = collectionMap[collection];
 
             await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Accrual/${directoryName}/${partnerCode}_ACCRUAL_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
-            console.log('File uploaded successfully.');
+            // console.log('File uploaded successfully.');
           } catch (error) {
-            console.error('An error occurred while uploading file for collection ' + collection + ':', error);
+            // console.error('An error occurred while uploading file for collection ' + collection + ':', error);
           }
         } else {
-          console.log('File upload skipped because it is running in a browser environment.');
+          // console.log('File upload skipped because it is running in a browser environment.');
         }
       }
     }
@@ -145,6 +145,7 @@ class AccrualFileController {
   }
 
   queryFromDBandUpload = async () => {
+    console.log('accrual file controller running')
     await this.clearAccrualFiles();
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();

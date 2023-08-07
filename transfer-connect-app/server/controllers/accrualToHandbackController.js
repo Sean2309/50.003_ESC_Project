@@ -85,9 +85,8 @@ class AccrualToHandbackController {
     for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
-      console.log('Data retrieved from ' + collection + ':', data);
+      // console.log('Data retrieved from ' + collection + ':', data);
       const newData = await this.genRandOutcomeCode(data);
-      console.log('new data: ', newData)
       const groups = this.groupData(newData);
       await this.writeGroupedDataToCsv(groups, collection);
     }
@@ -118,12 +117,12 @@ class AccrualToHandbackController {
             const directoryName = collectionMap[collection];
 
             await File.uploadFile(`/transfer_connect_sutd_case_study_2023/c4i1/Handback/${directoryName}/${partnerCode}_HANDBACK_${formattedDate}.csv`, csvFilePath, { mkdir_parents: true });
-            console.log('File uploaded successfully.');
+            // console.log('File uploaded successfully.');
           } catch (error) {
-            console.error('An error occurred while uploading file for collection ' + collection + ':', error);
+            // console.error('An error occurred while uploading file for collection ' + collection + ':', error);
           }
         } else {
-          console.log('File upload skipped because it is running in a browser environment.');
+          // console.log('File upload skipped because it is running in a browser environment.');
         }
       }
     }
@@ -139,7 +138,7 @@ class AccrualToHandbackController {
   }
 
   queryFromDBandUpload = async () => {
-    
+    console.log('accrual to handback controller running')
     await this.clearAccrualFiles();
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();
