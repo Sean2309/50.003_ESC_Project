@@ -16,6 +16,7 @@ class TransactionEnquiryController {
     }
     // for easy debug, clear all transactions on each startup
     this.clearTransactions();
+    this.populateTransactions();
   }
   
   clearTransactions = async () => {
@@ -35,46 +36,46 @@ class TransactionEnquiryController {
 
     const transactionsGOPOINTS = [
       {
-        "membershipId": "123oij",
-        "memberName": "LX",
-        "transferDate": "11-11-11",
-        "transferAmount": 12345,
-        "referenceNumber": "0000",
+        "membershipId": "987654321A",
+        "memberName": "johnny",
+        "transferDate": "2023-08-08",
+        "transferAmount": 123,
+        "referenceNumber": "8909890",
         "partnerCode": "DBSSG",
         "notificationMethod": 1,
         "emailAddress": "leelxuan@gmail.com",
         "phoneNumber": "+6588669619",
-        "systemId": "0000",
+        "systemId": "666666",
         "userId": "1"
       },
       {
-        "memberName": "keve",
-        "membershipId": "123456789A",
-        "transferDate": "2023-08-05",
-        "transferAmount": 3000,
-        "referenceNumber": "3410692",
+        "membershipId": "987654321A",
+        "memberName": "johnny",
+        "transferDate": "2023-08-08",
+        "transferAmount": 789,
+        "referenceNumber": "8909111",
         "partnerCode": "DBSSG",
-        "notificationMethod": "1",
-        "emailAddress": "lowweikangkeith@gmail.com",
-        "phoneNumber": "89083135",
-        "systemId": "6802389",
-        "userId" : "1"
-      },
+        "notificationMethod": 1,
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "666611",
+        "userId": "1"
+      }
     ]
 
     const transactionsASIAMILES = [
       {
-        "membershipId": "2342345bc",
-        "memberName": "Thomas Doe",
-        "transferDate": "2023/08/05",
-        "transferAmount": 100000,
-        "referenceNumber": "3av456b",
+        "membershipId": "98765432110",
+        "memberName": "johnny",
+        "transferDate": "2023-08-08",
+        "transferAmount": 77,
+        "referenceNumber": "7777777",
         "partnerCode": "DBSSG",
         "notificationMethod": 1,
-        "emailAddress": "thomasdoe@email.com",
-        "phoneNumber": "+1234567890",
-        "systemId": "system1234",
-        "userId" : "1"
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "666655",
+        "userId": "1"
       }
       ]
 
@@ -230,7 +231,7 @@ class TransactionEnquiryController {
 
 }
 
-const transactionEnquiryController = new TransactionEnquiryController(startInterval = false);
+const transactionEnquiryController = new TransactionEnquiryController(startInterval = true);
 
 
 module.exports = transactionEnquiryController;

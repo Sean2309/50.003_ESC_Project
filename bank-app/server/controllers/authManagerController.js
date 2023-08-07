@@ -84,8 +84,8 @@ class AuthManagerController {
       firstName: 'John',
       lastName: 'Yeet',
       abcPoints: 10000,
-      emailAddress: 'johnyeet@gmail.com',
-      phoneNumber: '88889912',
+      emailAddress: 'leelxuan@gmail.com',
+      phoneNumber: '+6588669619',
       notificationMethod: '1',
       userId: userCredentials.userId,
     });
