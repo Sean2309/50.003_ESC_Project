@@ -22,9 +22,7 @@ async function sendEmail(user_email, bank_name, loyalty_program_name, outcomeCod
     subject: "Loyalty Points Transaction Status", // Subject line
     //will be refined to include message of outcome code
     text: `Status of transaction of ${transferAmount} from ${bank_name} to ${loyalty_program_name}: ${outcomeCode} `, // plain text body
-  });
-
-  console.log("Message sent: %s", info.messageId);}
+  });}
   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
 

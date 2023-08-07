@@ -14,7 +14,6 @@ class WebhookController {
 
   //to run all functions
   processRoute = async (referenceNumber, partnerCode, transferAmount, loyaltyProgram) => {
-    console.log("webhook processRoute");
     let transaction1 = await this.findTransaction(referenceNumber, partnerCode, transferAmount, loyaltyProgram);
     this.postTransaction(transaction1, loyaltyProgram, partnerCode);
     let transaction = transaction1[0];

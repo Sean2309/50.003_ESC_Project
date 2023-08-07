@@ -31,14 +31,13 @@ class WebhookController {
   //to update bank-app database
   updateDBandNotifs = async (data, loyaltyProgram) => {
     if (data == null || data == undefined || data.length == 0) {
-      console.log(`response_data for ${loyaltyProgram} is null`)
+      return;
     }
     else {
       let systemId = data["systemId"];
       let outcome_code = data["outcomeCode"];
       let userId = await this.updateOutcomeCodes(systemId, outcome_code, loyaltyProgram);
 
-      console.log(`Updated ${systemId} of ${loyaltyProgram} with outcomeCode ${outcome_code}`);
       //userId used for WebSocket connection
       this.sendPushNotification(userId, outcome_code);
       };
@@ -60,7 +59,6 @@ class WebhookController {
 
   //send web push notif to user whose transaction was just updated
   sendPushNotification = async (userId, outcomeCode) => {
-    console.log("membershipID: " + userId);
     sendMessagetoClient(clients, userId, outcomeCode, 0);
   };
 

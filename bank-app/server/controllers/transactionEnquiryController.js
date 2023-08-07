@@ -15,18 +15,9 @@ class TransactionEnquiryController {
       this.startEnquiry();
     }
     // for easy debug, clear all transactions on each startup
-    this.clearTransactions();
     this.populateTransactions();
   }
   
-  clearTransactions = async () => {
-    const transactionModelGOPOINTS = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
-    const transactionModelASIAMILES = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
-
-    await transactionModelGOPOINTS.deleteMany({});
-    await transactionModelASIAMILES.deleteMany({});
-  }
-
   populateTransactions = async () => {
     const transactionModelGOPOINTS = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
     const transactionModelASIAMILES = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
@@ -114,11 +105,8 @@ class TransactionEnquiryController {
       //find those that don't have outcomeCode declared or values are empty
       let transactions = await collection_connection.find({ "outcomeCode": { $exists: false } }, { "systemId": 1, "_id": 0 });
       if (transactions.length != 0) {
-        console.log(`Found reference numbers for ${loyaltyProgram}:`, transactions);
         systemIds = (transactions.map(transaction => transaction['systemId']));
-      } else {
-        console.log(`No reference numbers found for ${loyaltyProgram}`);
-      }
+      };
     }
     catch (error) {
       console.error(`Error finding reference numbers for ${loyaltyProgram}:`, error);
@@ -133,7 +121,6 @@ class TransactionEnquiryController {
 
     //return if no transaction to poll for
     if (id_list.length === 0) {
-      console.log(`${loyaltyProgram} id_list is null`)
       return;
     }
     var response;
@@ -144,16 +131,12 @@ class TransactionEnquiryController {
     ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
     let url = TRANSFER_CONNECT_API_URL + '/api/transactionenquiry/check/' + PARTNERCODE + '/' + loyaltyProgram;
     url = url + "/" + string_ids;
-    console.log(url);
     try {
       response = await axios.get(url); // Await the API response
       if (response.data == null || response.data == undefined) {
-        console.log("API request response is null");
         return;
       }
       else {
-        console.log("returning response.data");
-        //console.log(response.data);
         return response.data;
       }
 
@@ -167,7 +150,7 @@ class TransactionEnquiryController {
   //to update bank-app database
   updateDBandNotifs = async (response_data, loyaltyProgram) => {
     if (response_data == null || response_data == undefined || response_data.length == 0) {
-      console.log(`response_data for ${loyaltyProgram} is null`)
+      return;
     }
     else {
       for (const data of response_data) {
@@ -175,7 +158,6 @@ class TransactionEnquiryController {
         let outcome_code = data["outcomeCode"];
         let userId = await this.updateOutcomeCodes(systemId, outcome_code, loyaltyProgram);
 
-        console.log(`Updated ${systemId} of ${loyaltyProgram} with outcomeCode ${outcome_code}`);
         //userId used for WebSocket connection
         this.sendPushNotification(userId, outcome_code);
       };
@@ -190,7 +172,6 @@ class TransactionEnquiryController {
     const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1 });
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
-    console.log(userId)
     collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
     return userId;
   }
@@ -198,7 +179,6 @@ class TransactionEnquiryController {
 
   //send web push notif to user whose transaction was just updated
   sendPushNotification = async (userId, outcomeCode) => {
-    console.log("membershipID: " + userId);
     sendMessagetoClient(clients, userId, outcomeCode, 0);
   }
 
@@ -218,7 +198,7 @@ class TransactionEnquiryController {
           //console.error(error);
           return error;
         };
-        console.log('\n');
+        
       }
     }, 5 * 1000); // 5 seconds
   }
