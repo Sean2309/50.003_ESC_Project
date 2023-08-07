@@ -7,6 +7,10 @@ import axios from 'axios';
 
 jest.mock('axios');
 
+// the tests pass fine
+// unfortunately, there will be issues with the act warning
+// due to a bug from react that is not yet fixed
+// https://github.com/testing-library/react-testing-library/issues/1061
 describe('TransferForm Component', () => {
   const mockedUserProfile = {
     abcPoints : 12367,
@@ -153,7 +157,7 @@ describe('TransferForm Component', () => {
       await expect(spy).toHaveBeenCalled();
     });
 
-    it('fuzzing random format membershipId (membershipIdConfirmation is the same value)', async () => {
+    it('membershipValidation: fuzzing random format membershipId (membershipIdConfirmation is the same value)', async () => {
 
       const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
       const fuzzMembershipId = fuzzer.generateRandomMembershipId(Math.random()*50);
@@ -202,8 +206,7 @@ describe('TransferForm Component', () => {
           });
     });
 
-    it('fuzzing random format membershipId and membershipIdConfirmation', async () => {
-
+    it('membershipValidation: fuzzing random format membershipId and membershipIdConfirmation', async () => {
       const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
       const fuzzMembershipId = fuzzer.generateRandomMembershipId(Math.random()*50);
       const fuzzMembershipIdConfirmation = fuzzer.generateRandomMembershipId(Math.random()*50);
@@ -253,7 +256,7 @@ describe('TransferForm Component', () => {
       });
     });
 
-    it('fuzzing transfer amount input, allowing invalid inputs such as alphabets', async () => {
+    it('point validation: fuzzing transfer amount input, allowing invalid inputs such as alphabets', async () => {
 
       const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
       const fuzzTransferAmountInput = fuzzer.generateRandomPointInput(Math.random()*50);
@@ -303,8 +306,7 @@ describe('TransferForm Component', () => {
           });
     });
 
-    it('fuzzing transfer amount input, only integer values', async () => {
-
+    it('point validation: fuzzing transfer amount input, only integer values', async () => {
       const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
       const fuzzTransferAmountInput = fuzzer.generateRandomIntegerInput(Math.random()*50);
       // number only checker
