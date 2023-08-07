@@ -66,5 +66,42 @@ describe('Loyalty Programs', () => {
       cy.get('[data-testid="submit-button"]').click();
       cy.get('.overlay').should('be.visible').contains('div', 'Membership ID did not match.');
     });
+
+    it('transaction history should display the transaction', () => {
+      
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
+     
+      cy.contains('Login').click();
+
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
+      cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
+      cy.get('@loyaltyBox').contains("Transfer").click();
+      cy.get("#memberName").type("john");
+      cy.get("#membershipId").type("123456789A");
+      cy.get("#membershipIdConfirmation").type("123456789A");
+      cy.get("#transferAmount").type("1");
+      cy.get('[data-testid="submit-button"]').click();
+      cy.get('#referenceNumberDisplay').should('be.visible')
+      
+      
+
+      let referencenumber;
+      cy.get('[data-testid="reference-number-display"]').invoke('text').then((text) => {
+        const regex = /(\d+)/;
+        const match = text.match(regex);
+        if (match) {
+        referencenumber = match[0];
+        
+        cy.contains("Close").click();
+        cy.contains('Transactions').click();
+    
+        // Check if the reference number is displayed on the transaction history page
+        cy.get('[data-testid="marketplace-container-test"]').contains(referencenumber).should('be.visible');
+        }
+      });
+      
+    });
   });
   
