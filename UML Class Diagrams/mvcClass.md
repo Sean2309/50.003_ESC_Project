@@ -567,9 +567,9 @@ sequenceDiagram
     %% TransferFile Sending API
     loop Every day 
         activate TransferConnectApp
-        TransferConnectApp ->> TransferConnectApp: downloadFilesFromMongoDB()
+        TransferConnectApp ->> TransferConnectApp: writeCollectionsToCsv()
         deactivate TransferConnectApp
-        TransferConnectApp ->> LoyaltyProgram: sendToServer()
+        TransferConnectApp ->> LoyaltyProgram: uploadFilesToServer()
     end
 
     %% TransferFile Retrieving API
