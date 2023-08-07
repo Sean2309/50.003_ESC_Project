@@ -109,7 +109,6 @@ class TransactionEnquiryController {
       };
     }
     catch (error) {
-      console.error(`Error finding reference numbers for ${loyaltyProgram}:`, error);
       return error;
     };
     return systemIds;
