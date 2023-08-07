@@ -2,9 +2,20 @@ const transferFormRouter = require('express').Router();
 const transferFormController = require('../controllers/transferFormController');
 const validateTransaction = require('../utils/validateTransaction');
 const userProfileController = require('../controllers/userProfileController');
+const { Mutex } = require('async-mutex');
+const routeMutex = new Mutex();
+
+const mutexMiddleware = (request, response, next) => {
+    routeMutex.acquire().then(release => {
+    response.on('finish', release); // Release the mutex lock when the response is finished
+    next();
+  });
+}
+
 
 // Route for creating a new transfer form, with path parameter to different loyaltyProgram
 transferFormRouter.post('/:loyaltyProgramId',
+    mutexMiddleware,
     userProfileController.authenticateToken,
     validateTransaction,
     transferFormController.submitTransferForm,
