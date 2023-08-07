@@ -461,7 +461,7 @@ participant MongoDBBank as "MongoDB (Bank App)"
 Client->>BankClientApp: Submit TransactionData
 activate BankClientApp
 
-BankClientApp ->> BankClientApp: ValidateTransactionData()
+BankClientApp ->> BankClientApp: RegexValidation(MembershipFormatid)
 alt TransactionData Validation Success
     deactivate BankClientApp
 
@@ -541,7 +541,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    TransactionEnquiryAPI -->> NotifController: TransactionStatus_Updated == True
+    TransferConnectApp -->> NotifController: TransactionStatus_Updated == True
     activate NotifController
     NotifController ->> NotifController:getTransactionDetails()
     deactivate NotifController
