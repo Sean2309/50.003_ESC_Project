@@ -11,7 +11,7 @@ app.listen = jest.fn(() => ({
   }));
 
 app.get('/api/loyaltyPrograms', (req, res) => {
-    res.json({ loyaltyPrograms: ['Program A', 'Program B'] });
+    res.json({ loyaltyPrograms: ['Program A'] });
   });
 
 
@@ -29,9 +29,7 @@ beforeEach(async () => {
 afterEach(async () => {
   const MockLoyaltyProgramsModel = LoyaltyPrograms;
   await MockLoyaltyProgramsModel.deleteMany({});
-  // try {
-  //   await MockLoyaltyProgramsModel.collection.drop();
-  // } catch (error) {}
+
 });
 
 describe('LoyaltyProgramsController - API Integration', () => {
@@ -39,7 +37,7 @@ describe('LoyaltyProgramsController - API Integration', () => {
         const response = await request(app).get('/api/loyaltyPrograms');
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('loyaltyPrograms');
-        expect(response.body.loyaltyPrograms).toHaveLength(2);   
+        expect(response.body.loyaltyPrograms).toHaveLength(1);   
 });
 
 
