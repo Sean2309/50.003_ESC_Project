@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
 
 // async..await is not allowed in global scope, must use a wrapper
 async function sendEmail(user_email, bank_name, loyalty_program_name, outcomeCode, transferAmount) {
+  try{
   // send mail with defined transport object
   const info = await transporter.sendMail({
     from: '"TransferConnect" <transferconnect2@gmail.com>', // sender address
@@ -22,7 +23,11 @@ async function sendEmail(user_email, bank_name, loyalty_program_name, outcomeCod
     subject: "Loyalty Points Transaction Status", // Subject line
     //will be refined to include message of outcome code
     text: `Status of transaction of ${transferAmount} from ${bank_name} to ${loyalty_program_name}: ${outcomeCode} `, // plain text body
-  });}
+  });
+  }
+  catch (error){
+    return error;
+  }}
   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
 
