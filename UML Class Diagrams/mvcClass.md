@@ -34,6 +34,7 @@ class AuthManagerController{
     authenticateUserDetails(): boolean
     authorizeUser(): response
 }
+
 ```
 ### Query Loyalty Program Details (Loyalty Points Marketplace)
 
@@ -55,6 +56,7 @@ class LoyaltyProgramsModel {
     membershipFormat:String
 }
 
+
 class LoyaltyProgramsController {
   loyaltyProgramsModel: LoyaltyProgramsModel
   getLoyaltyPrograms(): void
@@ -65,6 +67,7 @@ class MarketplaceView {
   renderMarketplace():void
   popupTransferFormView(): TransferFormView
 }
+
 ```
 
 
@@ -123,12 +126,12 @@ class TransferFormController {
   membershipIdValidation(): boolean
 }
 
-
-
 class TransferFormView {
   renderForm(): void
   submitTransferForm(): void
 }
+
+
 ```
 
 ### Enquire Transaction Status
@@ -166,37 +169,36 @@ class TransactionModel{
 ```mermaid
 
 classDiagram
+QueryModel "1" <-- "1" LoyaltyProgramModel
+QueryController"1" <-- "1"  QueryModel
+QueryModel "1" <-- "1"  CurrencyRatesModel
 
-LoyaltyProgramQueryModel "1"  <-- "1" LoyaltyProgramQueryController
-CurrencyRateModel "1"  <-- "1" LoyaltyProgramQueryController
-
-
-class LoyaltyProgramQueryController {
-   
-    database: TransConnectDb
-    loyaltyProgramsdata:LoyaltyProgramModel
-    currencyRateData:currencyRateModel
-  getLoyaltyPrograms(): void  
+class QueryModel{
+    -loyaltyProgList: List<<LP>LoyaltyProgramModel>
+    -CurrencyRatesList: List <<LP>CurrencyRatesModel>
 }
 
-class LoyaltyProgramQueryModel {
-  programID: String
-  programName: String
-  currencyName: String
-  processingTime: String
-  description: String
-  enrollmentLink: String
-  tncLink: String
-  membershipFormat: String
+class LoyaltyProgramModel{
+    -ProgramId: String
+    -ProgramName: String
+    -currencyName: String
+    -ProcessingTime: String
+    -description: String 
+    -enrollmentLink: String
+}
+ 
+
+class CurrencyRatesModel{
+    -ProgramId: String
+  -currencyRates: Number
 }
 
-class CurrencyRateModel {
-  currencyRate: String,
-  programID: String,
-  appName: String
+class QueryController{
+    -queryFromDb: void()   
+    -handleRes: void()
 }
+
 ```
-# Transaction Enquiry API
 
 ### Enquire Transaction Status
 
@@ -222,6 +224,8 @@ class TransactionModel{
     partnerCode: String,
     outcomeCode: String
 }
+
+
 ```
 
 ### Notify Transaction Status
@@ -257,6 +261,8 @@ class InAppNotif{
     -sendNotif(): void
     -updateStatus(): void
 }
+
+
 ```
 ### Send Transfer Fulfilment Accrual Files 
 
@@ -271,7 +277,8 @@ classDiagram
         queryFromDBandUpload(): void
     }
 
-    class TransactionModel{
+
+  class TransactionModel{
         membershipId: String,
         membershipName: String,
         transferDate: String,
@@ -280,35 +287,94 @@ classDiagram
         partnerCode: String,
         outcomeCode: String,
     }
+    
 ```
 ### Receive Transfer Fulfilment Handback File 
 ```mermaid
 classDiagram
-HandbackController "1" --> "*" TransactionModel 
+HandbackController "1" --> "*" ConfirmationModel
+index "1"--> "1" HandbackController
+date "1" --> "1" HandbackController
+
+class date {
+    getFormattedDate(String format): Date
+}
+
+class index {
+    downloadfromSFTPandUpload(): void
+}
 
 class HandbackController{
     -confirmedTransactions: List<<list>ConfirmationModel>
-    -convertDateFormat(String date): String date
     -getModelForLP(String loyaltyProgram): mongoose.model[loyaltyProgram]
     -retrieveFromServer(Date targetDate): void
     -extractDataFromCsv(String filePath): String partnerCode, object results
     -uploadFilesToMongoDB(Date targetDate): void
 }
 
-class TransactionModel{
-    membershipId: String,
-    membershipName: String,
-    transferDate: String,
-    transferAmount: Number,
-    referenceNumber: String,
-    partnerCode: String,
-    outcomeCode: String,
+class ConfirmationModel{
+    -transferDate: String
+    -transferAmount: Number
+    -referenceNumber: String
+    -outcomeCode: String
 }
 ```
 
 # Sequence Diagrams
-### Daily interactions between TransferConnect App and Bank App to supply information about Loyalty Programs
+### Transaction submission flow between BA client,BA server, BA database, TC server and TC database.
+BA- Bank app.
+TC - Transfer connect app
 
+```mermaid
+sequenceDiagram
+
+participant Client as Client
+participant BankClientApp as "Bank Client App"
+participant BankServerApp as "Bank Server App"
+participant TCApp as "TC App"
+participant MongoDBTC as "MongoDB (TC)"
+participant MongoDBBank as "MongoDB (Bank App)"
+
+Client->>BankClientApp: Submit TransactionData
+activate BankClientApp
+
+BankClientApp ->> BankClientApp: ValidateTransactionData()
+alt TransactionData Validation Success
+    deactivate BankClientApp
+
+    BankClientApp -->> BankServerApp: postRequest(TransactionData)
+    activate BankServerApp
+
+    BankServerApp ->> BankServerApp: Validate(TransactionData)
+    deactivate BankServerApp
+
+    alt TransactionData Validation Success - BA server
+        BankServerApp ->> TCApp: postRequest(TransactionData, partnerCode)
+        activate TCApp
+        TCApp ->> TCApp: Validate(TransactionData, partnerCode)
+        deactivate TCApp
+
+        alt TransactionData Validation Success - TC server
+            TCApp ->> MongoDBTC: Save TransactionData
+            TCApp -->> BankServerApp: Success response 
+            
+            BankServerApp ->> MongoDBBank: Save transactionData
+           
+            MongoDBBank -->> BankServerApp: Success response
+        else TransactionData Validation Failure - TC server
+            TCApp -->> BankServerApp: Error Response
+        end
+
+       
+    else TransactionData Validation Failure - BA server
+        BankServerApp -->> BankClientApp: Error response
+    end
+else TransactionData Validation Failure
+    BankClientApp -->> Client: Respond with error
+end
+
+```
+### Daily interactions between TransferConnect App and Bank App to supply information about Loyalty Programs
 ```mermaid
 sequenceDiagram
 
@@ -320,46 +386,11 @@ TransferConnectDatabase->>-TransferConnectApp: response
 
 TransferConnectApp->>-BankApp: 
 alt Data obtained successfully
-    TransferConnectApp->>BankApp:pushLoyaltyProgramProviders()
+    TransferConnectApp->>BankApp:pushLoyaltyProgramData()
 else Failed to obtain data
   TransferConnectApp->>BankApp:pushError404()
 end
-```
-### Daily interactions between TransferConnect App, Bank App and different Loyalty Programs to fulfil transactions
-```mermaid
-sequenceDiagram
 
-    %% Initialising Actors
-    participant BankApp
-    participant TransferConnectApp
-    participant LoyaltyProgram
-
-    %% Connections
-
-    %% Transaction Enquiry API
-    loop Every hour
-        BankApp ->> TransferConnectApp: transactionEnquiryAPI()
-    activate TransferConnectApp
-    TransferConnectApp ->> TransferConnectApp: transactionEnquiryAPI()
-    deactivate TransferConnectApp
-    TransferConnectApp -->> BankApp: transactionEnquiryAPI()
-    end
-    
-    %% TransferFile Sending API
-    loop Every day 
-        activate TransferConnectApp
-        TransferConnectApp ->> TransferConnectApp: downloadFilesFromMongoDB()
-        deactivate TransferConnectApp
-        TransferConnectApp ->> LoyaltyProgram: sendToServer()
-    end
-
-    %% TransferFile Retrieving API
-    loop Every day
-        TransferConnectApp ->> LoyaltyProgram: retrieveFromServer()
-        activate TransferConnectApp
-        TransferConnectApp ->> TransferConnectApp: uploadFilesToMongoDB()
-        deactivate TransferConnectApp
-    end
 ```
 
 ### Interactions between Bank App and TransferConnect App to support Bank App transaction enquiries
@@ -388,6 +419,7 @@ sequenceDiagram
 
 
 ### Interactions between TransactionEnquiry API provided by TransferConnect App and Notif Controller in Bank App to support notifications to Bank App/Bank App User
+
 
 ```mermaid
 sequenceDiagram
