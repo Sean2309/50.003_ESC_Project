@@ -141,6 +141,7 @@ class AccrualFileController {
     await clearFolder('accrual_files');
     await this.writeCollectionsToCsv();
     await this.uploadFilesToServer();
+    console.log('accrual file controller done');
   }
 
 }

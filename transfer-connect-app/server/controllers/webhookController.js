@@ -26,7 +26,11 @@ class WebhookController {
 
     // this function posts transaction details to Bank App API endpoint
     postTransaction = async (transactionData, loyaltyProgramId, partnerCode) => {
+      try{
         await axios.post(`${this.submissionRoute}${partnerCode}/${loyaltyProgramId}`, transactionData);
+      } catch (error){
+        return error;
+      }
       };
 
   //find all transaction details from database

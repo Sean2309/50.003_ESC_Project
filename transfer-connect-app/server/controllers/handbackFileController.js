@@ -53,6 +53,7 @@ class HandbackFileController {
     this.clearFolders();
     await this.retrieveFromServer(this.formattedDate);
     await this.uploadFilesToMongoDB(this.formattedDate);
+    console.log('handback file controller done');
   }
 
   testHandbackFileFns = async () => {
@@ -65,6 +66,7 @@ class HandbackFileController {
     await this.retrieveFromServer(testDate);
 
     await this.uploadFilesToMongoDB(testDate);
+    console.log('handback file controller done');
   };
 
   async initializeBanks() {
@@ -176,15 +178,18 @@ class HandbackFileController {
         try {
           const [partnerCodeOut, results] = await this.extractDataFromCsv(filePath);     
           const Model = mongoose.model(lp, transactionEnquiryModel, lp);
+          console.log('received result: ', results)
 
           for (const result of results) {
+            
             let mappedResult = {
-              transferDate: convertDateFormat(result['Transfer date']),
+              transferDate: result['Transfer date'],
               partnerCode: partnerCodeOut,
               systemId: result['System Id'],
               outcomeCode: result['Outcome Code'],
               transferAmount: parseInt(result['Transfer Amount']),
             };
+            // console.log('mapped results: ', mappedResult)
             
             let doc = await Model.findOne({
               $and: [
@@ -192,11 +197,12 @@ class HandbackFileController {
                 { transferDate: mappedResult.transferDate }]
               }); // Must match the referenceNumber and transferDate to update
             if (doc) {
+              // console.log('doc: ', doc)
               doc.set(mappedResult);
               await doc.save();
-              if (partnerCodeOut == "DBSSG"){
-                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
-              };
+              // if (partnerCodeOut == "DBSSG"){
+              //   webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
+              // };
             } else {
               await Model.create(mappedResult);
             }
