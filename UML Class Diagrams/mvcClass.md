@@ -424,6 +424,26 @@ class TransactionModel{
 ```
 
 # Sequence Diagrams
+
+### Daily interactions between TransferConnect App and Bank App to supply information about Loyalty Programs
+```mermaid
+sequenceDiagram
+
+BankApp->>+TransferConnectApp: HTTP Request 
+
+TransferConnectApp->>+TransferConnectDatabase: mongoose.connect()
+
+TransferConnectDatabase->>-TransferConnectApp: response
+
+TransferConnectApp->>-BankApp: 
+alt Data obtained successfully
+    TransferConnectApp->>BankApp:pushLoyaltyProgramData()
+else Failed to obtain data
+  TransferConnectApp->>BankApp:pushError404()
+end
+
+```
+
 ### Transaction submission flow between BA client,BA server, BA database, TC server and TC database.
 BA- Bank app.
 TC - Transfer connect app
@@ -477,72 +497,6 @@ else TransactionData Validation Failure
 end
 
 ```
-### Daily interactions between TransferConnect App and Bank App to supply information about Loyalty Programs
-```mermaid
-sequenceDiagram
-
-BankApp->>+TransferConnectApp: HTTP Request 
-
-TransferConnectApp->>+TransferConnectDatabase: mongoose.connect()
-
-TransferConnectDatabase->>-TransferConnectApp: response
-
-TransferConnectApp->>-BankApp: 
-alt Data obtained successfully
-    TransferConnectApp->>BankApp:pushLoyaltyProgramData()
-else Failed to obtain data
-  TransferConnectApp->>BankApp:pushError404()
-end
-
-```
-
-### Interactions between Bank App and TransferConnect App to support Bank App transaction enquiries
-
-```mermaid
-
-sequenceDiagram
-    activate BankApp
-    BankApp ->> BankApp: getReferenceNumbers()
-    BankApp -->> TransferConnectApp: makeApiRequest()
-    deactivate BankApp
-    activate TransferConnectApp
-    TransferConnectApp ->> TransferConnectApp: processRoute()
-    deactivate TransferConnectApp
-    activate TransferConnectApp
-    TransferConnectApp ->> TransferConnectApp: getOutcomeCode()
-    TransferConnectApp -->> BankApp: return
-    deactivate TransferConnectApp
-    activate BankApp
-    BankApp ->> BankApp: updateOutcomeCodes()
-    deactivate BankApp
-
-    TransferConnectApp->>BankApp: 
-    alt OutcomeCode updated
-    TransferConnectApp->>BankApp: webhookPost()
-    end
-    
-```
-
-   
-
-
-
-### Interactions between TransactionEnquiry API provided by TransferConnect App and Notif Controller in Bank App to support notifications to Bank App/Bank App User
-
-
-```mermaid
-sequenceDiagram
-    TransactionEnquiryAPI -->> NotifController: TransactionStatus_Updated == True
-    activate NotifController
-    NotifController ->> NotifController:getTransactionDetails()
-    deactivate NotifController
-    
-    activate NotifController
-    NotifController ->> NotifController:getUserNotifMode()
-    NotifController ->> User: sendNotif()
-    deactivate NotifController
-
-```
 
 # Backend API
 ```mermaid
@@ -582,3 +536,45 @@ sequenceDiagram
     end
 ```
 
+### Interactions between TransactionEnquiry API provided by TransferConnect App and Notif Controller in Bank App to support notifications to Bank App/Bank App User
+
+
+```mermaid
+sequenceDiagram
+    TransactionEnquiryAPI -->> NotifController: TransactionStatus_Updated == True
+    activate NotifController
+    NotifController ->> NotifController:getTransactionDetails()
+    deactivate NotifController
+    
+    activate NotifController
+    NotifController ->> NotifController:getUserNotifMode()
+    NotifController ->> User: sendNotif()
+    deactivate NotifController
+
+```
+### Interactions between Bank App and TransferConnect App to support Bank App transaction enquiries
+
+```mermaid
+
+sequenceDiagram
+    activate BankApp
+    BankApp ->> BankApp: getReferenceNumbers()
+    BankApp -->> TransferConnectApp: makeApiRequest()
+    deactivate BankApp
+    activate TransferConnectApp
+    TransferConnectApp ->> TransferConnectApp: processRoute()
+    deactivate TransferConnectApp
+    activate TransferConnectApp
+    TransferConnectApp ->> TransferConnectApp: getOutcomeCode()
+    TransferConnectApp -->> BankApp: return
+    deactivate TransferConnectApp
+    activate BankApp
+    BankApp ->> BankApp: updateOutcomeCodes()
+    deactivate BankApp
+
+    TransferConnectApp->>BankApp: 
+    alt OutcomeCode updated
+    TransferConnectApp->>BankApp: webhookPost()
+    end
+    
+```
