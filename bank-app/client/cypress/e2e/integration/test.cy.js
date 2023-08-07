@@ -1,71 +1,71 @@
 describe('Loyalty Programs', () => {
 
-    // it('successful loads', () => {
-    //   cy.visit('http://localhost:3000/login'); // Visit your app's URL
+    it('successful loads', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
   
-    // });
+    });
 
-    // it('successful login', () => {
-    //   cy.visit('http://localhost:3000/login'); // Visit your app's URL
+    it('successful login', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
      
-    //   cy.contains('Login').click();
+      cy.contains('Login').click();
       
-    //   cy.get("#loginId").type("john123");
-    //   cy.get("#password").type("password");
-    //   cy.get('form').submit()
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
       
-    // });
+    });
 
-    // it('successful click transfer button', () => {
-    //   cy.visit('http://localhost:3000/login'); // Visit your app's URL
+    it('successful click transfer button', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
      
-    //   cy.contains('Login').click();
+      cy.contains('Login').click();
       
-    //   cy.get("#loginId").type("john123");
-    //   cy.get("#password").type("password");
-    //   cy.get('form').submit()
-    //   cy.contains("Transfer").click();
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
+      cy.contains("Transfer").click();
       
       
-    // });
+    });
 
-    // it('successful fill up transfer form and click submit', () => {
-    //   cy.visit('http://localhost:3000/login'); // Visit your app's URL
+    it('successful fill up transfer form and click submit', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
      
-    //   cy.contains('Login').click();
+      cy.contains('Login').click();
       
-    //   cy.get("#loginId").type("john123");
-    //   cy.get("#password").type("password");
-    //   cy.get('form').submit()
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
 
-    //   cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
-    //   cy.get('@loyaltyBox').contains("Transfer").click();
-    //   cy.get("#memberName").type("john");
-    //   cy.get("#membershipId").type("123456789A");
-    //   cy.get("#membershipIdConfirmation").type("123456789A");
-    //   cy.get("#transferAmount").type("1");
-    //   cy.get('[data-testid="submit-button"]').click();
-    //   cy.get('.overlay').should('be.visible').contains('div', 'Transaction submitted successfully! You have ');
-    // });
+      cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
+      cy.get('@loyaltyBox').contains("Transfer").click();
+      cy.get("#memberName").type("john");
+      cy.get("#membershipId").type("123456789A");
+      cy.get("#membershipIdConfirmation").type("123456789A");
+      cy.get("#transferAmount").type("1");
+      cy.get('[data-testid="submit-button"]').click();
+      cy.get('.overlay').should('be.visible').contains('div', 'Transaction submitted successfully! You have ');
+    });
 
-    // it('filling wrong membership ID should fail submission', () => {
-    //   cy.visit('http://localhost:3000/login'); // Visit your app's URL
+    it('filling wrong membership ID should fail submission', () => {
+      cy.visit('http://localhost:3000/login'); // Visit your app's URL
      
-    //   cy.contains('Login').click();
+      cy.contains('Login').click();
       
-    //   cy.get("#loginId").type("john123");
-    //   cy.get("#password").type("password");
-    //   cy.get('form').submit()
+      cy.get("#loginId").type("john123");
+      cy.get("#password").type("password");
+      cy.get('form').submit()
 
-    //   cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
-    //   cy.get('@loyaltyBox').contains("Transfer").click();
-    //   cy.get("#memberName").type("john");
-    //   cy.get("#membershipId").type("123456789A");
-    //   cy.get("#membershipIdConfirmation").type("123456789B");
-    //   cy.get("#transferAmount").type("1");
-    //   cy.get('[data-testid="submit-button"]').click();
-    //   cy.get('.overlay').should('be.visible').contains('div', 'Membership ID did not match.');
-    // });
+      cy.get('.loyalty-box h3').contains('GoJet Points').parent().as('loyaltyBox');
+      cy.get('@loyaltyBox').contains("Transfer").click();
+      cy.get("#memberName").type("john");
+      cy.get("#membershipId").type("123456789A");
+      cy.get("#membershipIdConfirmation").type("123456789B");
+      cy.get("#transferAmount").type("1");
+      cy.get('[data-testid="submit-button"]').click();
+      cy.get('.overlay').should('be.visible').contains('div', 'Membership ID did not match.');
+    });
 
     it('transaction history should display the transaction', () => {
       
@@ -85,9 +85,7 @@ describe('Loyalty Programs', () => {
       cy.get('[data-testid="submit-button"]').click();
       cy.get('#referenceNumberDisplay').should('be.visible')
       
-      // cy.contains("Close").click();
-      // cy.contains('Transactions').click();
-      // cy.get('[data-testid="marketplace-container-test"]');
+      
 
       let referencenumber;
       cy.get('[data-testid="reference-number-display"]').invoke('text').then((text) => {
@@ -96,9 +94,6 @@ describe('Loyalty Programs', () => {
         if (match) {
         referencenumber = match[0];
         
-    
-        // Perform any additional actions or assertions here
-        // For example, you can navigate to the transaction history page
         cy.contains("Close").click();
         cy.contains('Transactions').click();
     
