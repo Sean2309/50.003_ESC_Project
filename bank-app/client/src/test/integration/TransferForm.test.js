@@ -74,6 +74,30 @@ describe('TransferForm Component', () => {
     expect(screen.queryByTestId("transfer-amount")).not.toBeInTheDocument();
   });
 
+  it('form can be closed by pressing close button', async () => {
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
+    // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+    // User can see the transfer form button at the bottom page of the loyalty program
+    const transferButton = screen.getByRole('button');
+    fireEvent.click(transferButton);
+
+    const [submitButton, closeButton] = screen.getAllByRole('button');
+    await fireEvent.click(closeButton);
+
+    expect(screen.queryByTestId("member-name")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("member-id")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("member-confirm")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("transfer-amount")).not.toBeInTheDocument();
+  });
+
   it('renders form when button is clicked', async () => {
     await act(async () => {
       render(<TransferForm 
@@ -137,8 +161,6 @@ describe('TransferForm Component', () => {
     
     
       await waitFor(() => {
-
-
           expect(axios.post).not.toHaveBeenCalled();
         });
     // https://github.com/jestjs/jest/issues/3821
@@ -235,8 +257,6 @@ describe('TransferForm Component', () => {
     
     
       await waitFor(() => {
-
-
           expect(axios.post).not.toHaveBeenCalled();
         });
     // https://github.com/jestjs/jest/issues/3821

@@ -23,7 +23,7 @@ class AccrualFileController {
   }
   startService = async () => {
     let job = new CronJob(
-      '30 * * * * *',
+      '* 0 * * * *',
       this.queryFromDBandUpload,
     )
 
@@ -57,12 +57,10 @@ class AccrualFileController {
       const csvWriter = createCsvWriter({
         path: path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`),
         header: [
-          { id: 'membershipId', title: 'Membership ID' },
-          { id: 'memberName', title: 'Member name' },
           { id: 'transferDate', title: 'Transfer date' },
           { id: 'transferAmount', title: 'Transfer Amount' },
           { id: 'systemId', title: 'System Id' },
-          { id: 'partnerCode', title: 'Partner code' }
+          { id: 'outcomeCode', title: 'Outcome Code' }
         ]
       });
       await csvWriter.writeRecords(groups[partnerCode]);
