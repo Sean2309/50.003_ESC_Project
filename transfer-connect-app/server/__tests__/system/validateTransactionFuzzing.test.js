@@ -57,6 +57,10 @@ beforeAll(async () => {
     await mongoose.connect(MONGODB_URL, MONGODB_OPTIONS);
 })
 
+afterAll(async () => {
+  await mongoose.disconnect();
+})
+
 beforeEach(async () => {
     const mockLoyaltyProgram = new LoyaltyProgramQueryModel(mockLoyaltyProgramData);
     
