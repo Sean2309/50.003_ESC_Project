@@ -136,7 +136,10 @@ class HandbackFileController {
 
     return new Promise((resolve, reject) => {
       // Parses the string to extract partnerCode data
-      const str1 = filePath.split('\\');
+      var str1 = filePath.split('\\');
+      if (str1.length == 1) {
+        str1 = filePath.split('/');
+      }
       const splitStr = str1[str1.length - 1].split(/_/);
       const partnerCode = splitStr[0];
 
