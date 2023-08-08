@@ -1,7 +1,8 @@
 #!/bin/bash
 
-
-# To run, chmod +x validateTransferFuzzing.sh
+# For POSIX-compliant OS
+# To run, first go to this folder on a shell
+# and chmod +x validateTransferFuzzing.sh to turn it into an executable
 # and then ./validateTransferFuzzing.sh
 
 # Defines the test file
