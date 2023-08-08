@@ -190,7 +190,7 @@ class HandbackFileController {
               outcomeCode: result['Outcome Code'],
               systemId: result['System Id'],
             }; 
-            // transferAmount: parseInt(result['Transfer Amount']),
+            let transferAmount = parseInt(result['Transfer Amount']);
             // partnerCode: partnerCodeOut,
             // 
             // console.log('mapped results: ', mappedResult)
@@ -205,7 +205,7 @@ class HandbackFileController {
               doc.set(mappedResult);
               await doc.save();
               if (partnerCodeOut == "DBSSG"){
-                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
+                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, transferAmount, lp);
               };
             } else {
               await Model.create(mappedResult);
