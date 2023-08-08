@@ -3,7 +3,6 @@ const transferFormController = require('../../controllers/transferFormController
 const createTransferForm = require('../../models/transferForm');
 const { MONGODB_URL, MONGODB_OPTIONS } = require('../../utils/config');
 const fc = require('fast-check'); // Import fast-check
-// fc.configureGlobal({ numRuns: 1000 });
 const loyaltyProgramId = "integrationTestFuzzMock";
 
 describe('transferFormController', () => {
@@ -31,17 +30,10 @@ describe('transferFormController', () => {
     })
 
     afterAll(async () => {
-
+        await mongoose.disconnect();
       }
     )
 
-    // let failureId = 0;
-    // function reportFailure(inputs, error) {
-    //     const fileName = `failure-pid${process.pid}-${++failureId}.log`;
-    //     const fileContent = `Counterexample: ${fc.stringify(inputs)}\n\nError: ${error}`;
-    //     fs.writeFile(fileName, fileContent);
-    // }
-  
     it('saveTransactionToDb saves a document to db', async () => {
       // Define a generator for mockTransactionData
       const mockTransactionDataGenerator = fc.record({
@@ -58,8 +50,6 @@ describe('transferFormController', () => {
       });
   
       const testIterations = 1000;
-  
-      // TODO: Statistics object to track the test results
   
       await fc.assert(
         fc.asyncProperty(mockTransactionDataGenerator, async (mockTransactionData) => {
