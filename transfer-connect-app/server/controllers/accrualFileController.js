@@ -143,7 +143,7 @@ class AccrualFileController {
     await this.uploadFilesToServer();
     var partnerCodeList = await this.getPartnerCodes();
     while (partnerCodeList.length == 0) {
-      console.log('didnt get filled partner code')
+      // console.log('didnt get filled partner code')
       partnerCodeList = await this.getPartnerCodes();
     };
     console.log('accrual file controller done');

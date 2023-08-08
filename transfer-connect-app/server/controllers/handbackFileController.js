@@ -187,11 +187,12 @@ class HandbackFileController {
             
             let mappedResult = {
               transferDate: result['Transfer date'],
-              partnerCode: partnerCodeOut,
-              systemId: result['System Id'],
               outcomeCode: result['Outcome Code'],
-              transferAmount: parseInt(result['Transfer Amount']),
-            };
+              systemId: result['System Id'],
+            }; 
+            // transferAmount: parseInt(result['Transfer Amount']),
+            // partnerCode: partnerCodeOut,
+            // 
             // console.log('mapped results: ', mappedResult)
             
             let doc = await Model.findOne({
