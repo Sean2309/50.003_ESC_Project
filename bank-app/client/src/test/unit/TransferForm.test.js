@@ -329,7 +329,7 @@ describe('TransferForm Component', () => {
       const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
       const fuzzTransferAmountInput = fuzzer.generateRandomIntegerInput(Math.random()*50);
       // number only checker
-      const regex = new RegExp("^\\[0-9]+$");
+      const regex = new RegExp(mockedLoyaltyProgramData.membershipFormat);
   
       // since it is not clicked yet, this is still the button at the end of the loyalty program card
       await act(async () => {
