@@ -62,6 +62,20 @@ describe('TransferForm Component', () => {
     jest.clearAllMocks();
   })
 
+      // the tests pass fine
+    // unfortunately, there will be issues with the act warning
+    // due to a bug from react that is not yet fixed
+    // https://github.com/testing-library/react-testing-library/issues/1061
+    // so for clarity purposes we filter out that error
+    const originalError = console.error.bind(console.error)
+    beforeAll(() => {
+      console.error = (msg) => 
+        !msg.toString().includes('act(...)') && originalError(msg)
+    })
+    afterAll(() => {
+      console.error = originalError
+    })
+
   // ensure that the transfer form is not covering the screen
   // until the user decides on one loyalty program's transfer form
   // and actually clicks on it
