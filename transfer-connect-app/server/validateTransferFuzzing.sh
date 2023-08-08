@@ -1,12 +1,16 @@
 #!/bin/bash
 
-# Define the test file
+
+# To run, chmod +x validateTransferFuzzing.sh
+# and then ./validateTransferFuzzing.sh
+
+# Defines the test file
 TEST_FILE="validateTransactionFuzzing.test.js"
 
-# Define the test duration in seconds (24 hours)
+# Defines the test duration in seconds (24 hours)
 TEST_DURATION=$((60 * 60 * 24))
 
-# Define the delay between test executions in seconds
+# Defines the delay between test executions in seconds
 TEST_DELAY=10
 
 # Start time of the test
@@ -21,5 +25,4 @@ while (( $(date +%s) - START_TIME < TEST_DURATION )); do
   sleep $TEST_DELAY
 done
 
-# To run, chmod +x validateTransferFuzzing.sh
-# and then ./validateTransferFuzzing.sh
+
