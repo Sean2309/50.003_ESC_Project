@@ -19,7 +19,7 @@ const app = express();
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
 
-createMongoDBCollection.populateTransactions();
+// createMongoDBCollection.populateTransactions();
 
 const transferConnectSimulation = async () => {
     // await createMongoDBCollection.populateTransactions();
