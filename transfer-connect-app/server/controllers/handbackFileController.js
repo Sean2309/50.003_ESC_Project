@@ -208,7 +208,7 @@ class HandbackFileController {
               doc.set(mappedResult);
               await doc.save();
               if (partnerCodeOut == "DBSSG"){
-                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, mappedResult.transferAmount, lp);
+                webhookController.processRoute(mappedResult.systemId, partnerCodeOut, transferAmount, lp);
               };
             } else {
               await Model.create(mappedResult);
