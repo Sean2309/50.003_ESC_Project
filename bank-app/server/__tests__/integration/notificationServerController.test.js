@@ -23,6 +23,7 @@ describe('WebSocket connection', () => {
 
   test('WebSocket server is connected and can send message to client', async () => {
     const message1 = 'Hello, WebSocket!';
+
     let counter = 0;
 
     ws.on('connection', async (connection, req) => {
@@ -40,6 +41,7 @@ describe('WebSocket connection', () => {
     })
 
     await promise;
+    //counter value will increase if the message is received
     expect(counter).toBe(1);
 
   })
@@ -74,6 +76,7 @@ describe('WebSocket connection', () => {
 
   });
   await promise;
+  //counter value will be 2 if both messages are received
   expect(counter).toBe(2);
 
   client2.close();
@@ -109,7 +112,9 @@ test('Client receives correct WebSocket message', async () => {
 
 describe('WebSocket identifies unique connections', () => {
 
+  //importing websocket server used by the Bank App
   const wss = require('../../controllers/notificationServerController').wss;
+  //clients are the list of unique clients that are connected to the websocket server
   const clients = require('../../controllers/notificationServerController').clients;
 
   test('WebSocket server can store unique client connection', async () => {
@@ -118,6 +123,7 @@ describe('WebSocket identifies unique connections', () => {
     //wait some time for client to connect
     await new Promise((resolve) => setTimeout(resolve, 100));
     
+    //client should be identified by ABC
     const clientPresent = clients.has('ABC');
     expect(clientPresent).toBe(true);
 

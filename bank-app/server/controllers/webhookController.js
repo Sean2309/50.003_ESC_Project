@@ -5,10 +5,12 @@ const transactionSchema = require('../models/transactionEnquiryModel.js').transa
 
 
 class WebhookController {
+
   // to route to transferConnect transaction submission API endpoint
   constructor() {
   }
 
+  //to process the data to update back to database
   processData = async (request, response) => {
     let [transaction, loyaltyProgramId] = await this.processResponse(request, response);
     try {
@@ -21,6 +23,7 @@ class WebhookController {
     return response.status(201).json({ message: 'updated transaction' });
   }
 
+  //to process the POST request from TransferConnect
   processResponse = async (request, response) => {
     try {
       const transactionData = request.body; // see sample data comments above
@@ -55,6 +58,7 @@ class WebhookController {
     //specific loyaltyProgram collection in the bank app database
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
+    //find transaction to be updated using systemId
     const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1, "_id": 0 });
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
@@ -64,6 +68,7 @@ class WebhookController {
 
 
   //send web push notif to user whose transaction was just updated
+  //user is identified using userId
   sendPushNotification = async (userId, outcomeCode) => {
     sendMessagetoClient(clients, userId, outcomeCode, 0);
   };
