@@ -12,19 +12,24 @@ const fs = require('fs');
 const { CronJob } = require('cron');
 const clearFolder = require('./clearFolder').clearFolder;
 
+// Define the directory where accrual files will be stored
 const accrual_files_dir = path.join(__dirname, 'accrual_files');
+
+// Check and create the directory if it doesn't exist
 if (!fs.existsSync(accrual_files_dir)) {
   fs.mkdirSync(accrual_files_dir);
 }
 
 class AccrualFileController {
   constructor() {
-    // this.startService();
+    // Initialization can be done here if needed
+    this.startService();
 
   }
+  // Schedules the main function to run at a specific interval using Cro
   startService = async () => {
     let job = new CronJob(
-      '30 * * * * *',
+      '* * 0 * * *',
       this.queryFromDBandUpload,
     )
 
@@ -32,10 +37,10 @@ class AccrualFileController {
   }
 
 
-  // Helper function to get a Mongoose model by collection name
+  // Retrieves the Mongoose model based on the given collection name
   getModel = (collection) => mongoose.model(collection, transactionSchema, collection);
 
-  // Helper function to get data from a MongoDB collection
+  // Fetches data from the MongoDB collection based on certain filters
   getDataFromCollection = async (Model, stringToday) => {
     return Model.find({
       outcomeCode: { $exists: false },
@@ -43,7 +48,7 @@ class AccrualFileController {
     });
   }
 
-  // Helper function to group data by partnerCode
+  // Organizes the fetched data by the partnerCode attribute
   groupData = (data) => {
     return data.reduce((acc, doc) => {
       let partnerCode = doc.partnerCode;
@@ -52,25 +57,28 @@ class AccrualFileController {
     }, {});
   }
 
+  // Retrieves all partner codes from the database collections
   getPartnerCodes = async () => {
     let partnerCodes = [];
     const stringToday = dateUtil.getFormattedDate();
     
+    // Iterate over each collection, fetch and group data
     for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
       const groups = this.groupData(data);
       
-      // Add the partner codes to the list
+      // Aggregate partner codes
       partnerCodes = [...partnerCodes, ...Object.keys(groups)];
     }
     
-    // Remove duplicates and return the list
+    // Return unique partner codes
     return [...new Set(partnerCodes)];
   }
 
-  // Helper function to write grouped data to CSV
+  // Writes the grouped data into separate CSV files
   writeGroupedDataToCsv = async (groups, collection) => {
+    // Iterate over each partner code and write data to CSV
     for (const partnerCode in groups) {
       const csvWriter = createCsvWriter({
         path: path.join(accrual_files_dir, `${collection}_${partnerCode}.csv`),
@@ -87,20 +95,21 @@ class AccrualFileController {
     }
   }
 
-  // Main function to write collections to CSV
+  // Iterates over collections and writes data to CSV
   writeCollectionsToCsv = async () => {
     const stringToday = dateUtil.getFormattedDate();
 
     for (const collection of config.collections) {
       const Model = this.getModel(collection);
       const data = await this.getDataFromCollection(Model, stringToday);
-      // console.log('Data retrieved from ' + collection + ':', data);
       const groups = this.groupData(data);
       await this.writeGroupedDataToCsv(groups, collection);
     }
   }
 
+  // Uploads the generated CSV files to a server
   uploadFilesToServer = async () => {
+    // Set the server's base URL and API key
     Files.setBaseUrl(config.kaligoURL);
     Files.setApiKey(config.kaligoAPIKey);
 
@@ -111,7 +120,7 @@ class AccrualFileController {
       collectionMap[collection] = config.collections[index];
     });
 
-    // Loop through collections
+    // Iterate over each collection and its partner codes to upload files
     for (const collection of config.collections) {
       // Loop through partner codes within each collection
       const partnerCodes = fs.readdirSync(accrual_files_dir)
@@ -136,6 +145,7 @@ class AccrualFileController {
     }
   }
 
+  // Main function that orchestrates the process of fetching, writing, and uploading data
   queryFromDBandUpload = async () => {
     console.log('accrual file controller running')
     await clearFolder('accrual_files');
