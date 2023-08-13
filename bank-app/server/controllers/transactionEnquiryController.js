@@ -14,7 +14,7 @@ class TransactionEnquiryController {
     if (startInterval) {
       this.startEnquiry();
     }
-    // for easy debug, clear all transactions on each startup
+    // for easy debug, clear and populate all transactions (without outcomeCode) on each startup
     this.populateTransactions();
   }
   
@@ -75,6 +75,7 @@ class TransactionEnquiryController {
 
   }
 
+  //get all transactions of user to display on transactions webpage
   getUserTransactions = async (request, response) => {
     const userId = request.body.userId;
 
@@ -99,9 +100,9 @@ class TransactionEnquiryController {
     //connect to specific collection
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-    //remember to define variables first
     let systemIds = [];
     try {
+
       //find those that don't have outcomeCode declared or values are empty
       let transactions = await collection_connection.find({ "outcomeCode": { $exists: false } }, { "systemId": 1, "_id": 0 });
       if (transactions.length != 0) {
@@ -127,7 +128,7 @@ class TransactionEnquiryController {
     //id_list is obtained from getReferenceNumbers
     let string_ids = (id_list).join();
 
-    ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
+    ///PARTNERCODE is not DBSSG 
     let url = TRANSFER_CONNECT_API_URL + '/api/transactionenquiry/check/' + PARTNERCODE + '/' + loyaltyProgram;
     url = url + "/" + string_ids;
     try {
@@ -140,8 +141,8 @@ class TransactionEnquiryController {
       }
 
     } catch (error) {
+
       // Handle any errors
-      //console.error(error);
       return error;
     };
   }
@@ -194,7 +195,6 @@ class TransactionEnquiryController {
         }
         catch (error) {
           // Handle any errors that occur during the promise chain
-          //console.error(error);
           return error;
         };
         
@@ -210,6 +210,7 @@ class TransactionEnquiryController {
 
 }
 
+//setInterval to true to make the interval run 
 const transactionEnquiryController = new TransactionEnquiryController(startInterval = true);
 
 

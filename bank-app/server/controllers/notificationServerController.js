@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 let userId;
+
 //establishes connection with url to a specific port
 const wss = new WebSocket.Server({ port: 8080 });
 

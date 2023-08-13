@@ -52,7 +52,6 @@ describe('Unit Tests for makeApiRequest', () => {
 
   test('makeApiRequest calls correct URL', async () => {
 
-
     await transactionEnquiryController.makeApiRequest(['0000', '0001'], 'AirAsia');
 
     expect(axios.get).toHaveBeenCalledWith('localhost/api/transactionenquiry/check/undefined/AirAsia/0000,0001');
