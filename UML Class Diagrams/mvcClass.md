@@ -275,11 +275,9 @@ WebhookController "1" --> "*" TransactionModel
 
 class WebhookController{
     transactionSchema: TransactionEnquiryModel
-    processData()
-    processResponse()
-    updateDBandNotifs()
-    updateOutcomeCodes()
-    sendPushNotification()
+    findTransaction()
+    postTransaction()
+    processRoute()
 }
 
 class TransactionModel{
