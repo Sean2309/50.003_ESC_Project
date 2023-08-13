@@ -21,6 +21,7 @@ const testCsvName = `${testPartnerCode}_HANDBACK_${testDate}.csv`;
 const testCsvDir = path.join(__dirname, '../../controllers/testCsvs')
 const testCsvPath = `${testCsvDir}/${testCsvName}`;
 const mongoDBURL = 'mongodb+srv://user1:1234@cluster0.5iybncp.mongodb.net/TransferConnectDB?retryWrites=true&w=majority';
+// Mock Data for testing
 const records = [
   {
     transferDate: '23/9/2021',
@@ -58,16 +59,11 @@ beforeAll(async() => {
 
 
 
-// ======== START OF TESTING ===========================
+// === START OF TESTING ===
+
+// Testing the retrieveFromServer function
 describe('retrieveFromServer function check', () => {
-
-  /*
-  3 Tests: 
-  - Mock Implementation of the retrieveFromServer function
-  - Compares the downloaded file name to the appropriate naming convention => this also tests the file type (.csv)
-  - Compares the column headers within the csv to the expected headers
-  */
-
+  // Mocking the retrieveFromServer function
   test('should return success if retrieveFromServer is executed successfully', async () => {
     // Mock the implementation of retrieveFromServer
     const retrieveFromServerSpy = jest.spyOn(handbackFileController, 'retrieveFromServer').mockReturnValue(100);
@@ -81,33 +77,39 @@ describe('retrieveFromServer function check', () => {
     // Restore the original implementation
     retrieveFromServerSpy.mockRestore();
   });
-  
+
+  // Checking naming convention and downloaded file extension
   test('should return success if naming convention and downloaded file ext is correct', async () => {
-      process.chdir(filePath);
-      const files = fs.readdirSync(`./`);
-      for (let i = 0; i < files.length; i++) {
-          expect(files[i]).toMatch(/^\w+_HANDBACK_\d{8}\.csv$/);
-      }
+    // Navigate into the sftp_handback_downloads folder
+    process.chdir(filePath);
+    const files = fs.readdirSync(`./`);
+    for (let i = 0; i < files.length; i++) {
+      // Iteratively checking all the file names in the directory
+      expect(files[i]).toMatch(/^\w+_HANDBACK_\d{8}\.csv$/);
+    }
   });
 
+  // Checking if CSV headers are correct
   test('should return success if csv headers are correct', (done) => {
-      const expectedHeaders = ['Transfer date', 'Transfer Amount', 'System Id', 'Outcome Code'];
-      let completed = 0;
-      process.chdir(filePath);
-      const files = fs.readdirSync(`./`);
-          for (let i = 0; i < files.length; i++) {
-              fs.createReadStream(path.join(filePath, files[i]))
-              .pipe(csvParser())
-              .on('headers', (headers) => {
-                  expect(headers).toEqual(expectedHeaders);
-                  completed++;
-                  if (completed === files.length) {
-                  done();
-                  }
-          });
-      }
-      });
+    // Expected headers to be found in the CSV
+    const expectedHeaders = ['Transfer date', 'Transfer Amount', 'System Id', 'Outcome Code'];
+    let completed = 0;
+    process.chdir(filePath);
+    const files = fs.readdirSync(`./`);
+    for (let i = 0; i < files.length; i++) {
+      fs.createReadStream(path.join(filePath, files[i]))
+        .pipe(csvParser())
+        .on('headers', (headers) => {
+          // Comparing headers with expected headers
+          expect(headers).toEqual(expectedHeaders);
+          completed++;
+          if (completed === files.length) {
+            done();
+          }
+        });
+    }
   });
+});
 
 describe('extractDataFromCSV function check', () => {
 
@@ -117,6 +119,7 @@ describe('extractDataFromCSV function check', () => {
   */
 
   test('should return success if extractDataFromCSV is executed successfully', async () => {
+    // Loop through each of collections
     for (let i = 0; i < config.collections.length; i++) {
       const filePathIter = path.join(filePath, `/${testPartnerCode}_HANDBACK_${testDate}.csv`);
       const [partnerCode, results] = await handbackFileController.extractDataFromCsv(filePathIter);
@@ -156,7 +159,7 @@ describe('uploadFilesToMongoDB function check', () => {
 
   test('should return success if updates or creates a document in the test collection in mongodb', async () => {
     return new Promise((resolve, reject) => {
-      // Writing to mongo db
+      // Connecting to Mongo DB
       mongoose.connect(mongoDBURL, { useNewUrlParser: true, useUnifiedTopology: true });
       const Model = mongoose.model('testhandbacks', transactionEnquiryModel, 'testhandbacks');
   
@@ -168,7 +171,7 @@ describe('uploadFilesToMongoDB function check', () => {
         })
         .on('end', async () => {
           try {
-            // Update or create a document in the collection
+            // Creating a schema to store data extracted from the CSV
             for (let row of rawdataFromCSV) {
               const convertedDate = convertDateFormat(row['Transfer date']);
               row['Transfer date'] = convertedDate;
@@ -178,6 +181,7 @@ describe('uploadFilesToMongoDB function check', () => {
                 outcomeCode: row['Outcome Code'],
                 transferAmount: parseInt(row['Transfer Amount']),
               }
+             // If the systemID and transferDate matches => Update with the mappedResult data
               let doc = await Model.findOne({
                 $and: [
                   { systemId: mappedResult.systemId },
@@ -185,8 +189,10 @@ describe('uploadFilesToMongoDB function check', () => {
               });
               if (doc) {
                 doc.set(mappedResult);
+                // Saving the data in Mongo DB
                 await doc.save();
               } else {
+                // If Document in Mongo DB not found => Create a new Document in the collection
                 await Model.create(mappedResult);
               }
             };
@@ -204,7 +210,7 @@ describe('uploadFilesToMongoDB function check', () => {
               outcomeCode: rawdataFromCSV[0]['Outcome Code'],
             }];
   
-            // Assertions
+            // Assertions => Comparing the data between the Extracted Data from CSV and the Queried Data from Mongo DB
             expect(dataFromDB).toEqual(expect.arrayContaining([expect.objectContaining(dataFromCSV[0])]));
             // Close the MongoDB connection
             mongoose.connection.close();
