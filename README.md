@@ -1,95 +1,37 @@
-# 50.003_ESC_Project
+# 50.003 ESC Project
 
-## Changing Database
+## Project: Ascenda Loyalty Points Marketplace
 
-To change MongoDB server, edit MONGODB_URL in .env. 
+    Our team repository for 50.003 ESC Project 2023. 
 
-Edit index.js with the specific database name. 
-```javascript
-mongoose.connect(config.MONGODB_URL,  {
-    dbName: 'transferconnect', // Specify the database name, edit this accordingly
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }).then((res) => console.log('connected')).catch((err) => console.error('error'))
+### Team C4I1 Members:
+
+    Ong Zheng Han 
+    Low Wei Kang, Keith 
+    Lee Le Xuan 
+    Teng Tjin Yang 
+    Mubaraquali Muhammed Sufyanali 
+    Daniel Yuen Jun Rong 
+    Michelle Chrisalyn Djunaidi 
+    Sean Phay Wei Xiang
+
+### System Architecture
+
+```mermaid
+sequenceDiagram
+    Bank App Frontend ->> Bank App Backend: (API) query loyalty program details
+    Bank App Frontend ->> Bank App Backend: (API) query user profile details
+    Bank App Frontend ->> Bank App Backend: (API) post login request
+    Bank App Frontend ->> Bank App Backend: (API) query user authorization for routes
+    Bank App Frontend ->> Bank App Backend: (API) validate transfer form details
+    Bank App Backend ->> Bank App Frontend: (API) websocket to notify transaction outcomes
+    
+    Bank App Backend ->> TransferConnect: (API) query loyalty program details
+    Bank App Backend ->> TransferConnect: (API) validate transaction details
+    Bank App Backend ->> TransferConnect: (API) submit transactions
+    Bank App Backend ->> TransferConnect: (API) query transaction status updates
+    TransferConnect ->> Bank App Backend: (API) webhooks to notify transaction status updates
+    
+    TransferConnect ->> Loyalty Programs: (SFTP) submit accrual transaction files
+    Loyalty Programs ->> TransferConnect: (SFTP) receive and process transaction resolved handback files
 ```
-
-Edit Schemas and collection name in models/transactionEnquiryModels.js
-```javascript
-//edit fields according to handback file 
-const transaction = new Schema({
-  "Reference number": String,
-  "Transfer date": Date,
-  "Outcome code": String,
-  "Amount": Number,
-})
-
-//change 'handback' to collection name
-const handback = mongoose.model('handback', transaction, 'handback'); 
-```
-
-## Localhost
-
-To change localhost ports and links, edit PORT and TRANSFER_CONNECT_API_URL in .env.
-
-Currently runs with link:
-http://localhost:3002/transferconnect/
-
-## Flow
-### Bank-app
-
-TransactionEnquiryAPI on bank-app side will first get reference numbers of transactions whose outcome codes are not updated yet, i.e. "Outcome updated" = false.
-Stored in this form:
-
-```javascript
-{
-  "_id": {
-    "$oid": "649ff46f028bd0526487adc1"
-  },
-  "Reference number": "0001",
-  "Outcome code": "0001",
-  "Outcome updated": true
-}
-```
-
-Then getReferenceNumbers will pass the data to makeAPICall, which will call the TransactionEnquiryAPI on the TransferConnect side and retrieves the data from the TransferConnectDB. 
-
-The data is then passed back to updateOutcomeCodes which will update the database on Bank-App side appropriately. 
-
-It is currently querying every 5s, you can change the duration in controllers/transactionEnquiryController.js
-
-```javascript
-setInterval(() => {
-  getReferenceNumbers()
-    .then(id_list => makeApiRequest(id_list))
-    .then(response_data => updateOutcomeCodes(response_data))
-    .catch(error => {
-      // Handle any errors that occur during the promise chain
-      console.error(error);
-    });
-}, 5 * 1000); // 5 seconds
-```
-
-### TransferConnect
-
-Database currently stores the handback file data in this format:
-```javascript
-{
-  "_id": {
-    "$oid": "649c7a77aa20c98e3f47baec"
-  },
-  "Transfer date": {
-    "$date": "2020-01-01T00:00:00.000Z" //Date
-  },
-  "Amount": 10000, //Number
-  "Reference number": "0001",
-  "Outcome code": "0001"
-}
-```
-
-getOutcomeCode accepts a list of reference numbers.
-
-Link e.g.:
-http://localhost:3002/transferconnect/check/0000,0001
-
-submitTransaction is only for testing purposes to check connection to database.
-
