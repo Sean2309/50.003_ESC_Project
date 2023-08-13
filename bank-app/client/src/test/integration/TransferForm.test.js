@@ -3,10 +3,6 @@ import { render, fireEvent, screen, act, waitFor } from '@testing-library/react'
 import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
-// the tests pass fine
-// unfortunately, there will be issues with the act warning
-// due to a bug from react that is not yet fixed
-// https://github.com/testing-library/react-testing-library/issues/1061
 jest.mock('axios');
 
 describe('TransferForm Component', () => {
@@ -33,6 +29,20 @@ describe('TransferForm Component', () => {
 
   const submissionDate = new Date().toISOString().split('T')[0];
 
+  // the tests pass fine
+  // unfortunately, there will be issues with the act warning
+  // due to a bug from react that is not yet fixed
+  // https://github.com/testing-library/react-testing-library/issues/1061
+  // so for clarity purposes we filter out that warn
+  const originalWarn = console.warn.bind(console.warn)
+  beforeAll(() => {
+    console.warn = (msg) => 
+      !msg.toString().includes('act(...)') && originalWarn(msg)
+  })
+  afterAll(() => {
+    console.warn = originalWarn
+  })
+
   // simulate successful response from sending POST request to TransferConnect API endpoint
   const mockServerSuccessfulResponse = {
     status: 201,
@@ -51,6 +61,20 @@ describe('TransferForm Component', () => {
   afterEach(() => {
     jest.clearAllMocks();
   })
+
+      // the tests pass fine
+    // unfortunately, there will be issues with the act warning
+    // due to a bug from react that is not yet fixed
+    // https://github.com/testing-library/react-testing-library/issues/1061
+    // so for clarity purposes we filter out that error
+    const originalError = console.error.bind(console.error)
+    beforeAll(() => {
+      console.error = (msg) => 
+        !msg.toString().includes('act(...)') && originalError(msg)
+    })
+    afterAll(() => {
+      console.error = originalError
+    })
 
   // ensure that the transfer form is not covering the screen
   // until the user decides on one loyalty program's transfer form

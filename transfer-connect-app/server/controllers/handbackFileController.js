@@ -35,7 +35,6 @@ class HandbackFileController {
     this.formattedDate = getFormattedDate("compact"); // Example 20200823
     this.sftpHandbackDownloads = 'sftp_handback_downloads'; // SFTP Directory for the downloaded files to be stored in
     this.modelCache = {}; // Cache for storing the created models
-    // this.initializeBanks();
     this.banks = [];
     // this.startService(); // Starts the Cron Job
   }
@@ -72,14 +71,6 @@ class HandbackFileController {
     await this.uploadFilesToMongoDB(testDate);
     console.log('handback file controller done');
   };
-
-  // async initializeBanks() {
-  //   try {
-  //     this.banks = await accrualFileController.getPartnerCodes();
-  //   } catch (error) {
-  //   }
-  // }
-
 
   // Function that compares the existing model with the new one. If needed, it will replace the existing model with the new one
   getModelForLP = (loyaltyProgram) => {

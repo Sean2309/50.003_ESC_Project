@@ -1,3 +1,6 @@
+# Use Case Diagrams
+
+### Submit Transaction Accrual Files
 
 ```mermaid
 graph LR
@@ -13,14 +16,20 @@ graph LR
 
 ```
 
+<div class="page"/>
+
+# Use Case Diagrams
+
+### Login 
+
 ```mermaid
 graph LR
 
         style LU fill-opacity:0, stroke-opacity:0;
         style LS fill-opacity:0, stroke-opacity:0;
         style LI fill-opacity:0, stroke-opacity:0;
-        style LS_UP fill-opacity:0, stroke-opacity:0;
         direction LR  %%
+
         LU([fa:fa-user Bank App User]) --- childLU_1([enter user credentials])
         LU([fa:fa-user Bank App User]) --- childLU_3([press submit button])
 
@@ -36,10 +45,23 @@ graph LR
         LS([fa:fa-user Login Backend]) --- childLS_6([hash and provide security features to user information like name and password])
         LS([fa:fa-user Login Backend]) --- childLS_7([load in user profile])
 
-        LS_UP([fa:fa-user User Profile Backend]) --- childUP_1([store user email])
-        LS_UP([fa:fa-user User Profile Backend]) --- childUP_2([store user notification preferences])
-        LS_UP([fa:fa-user User Profile Backend]) --- childUP_3([store user phone number])
 ```
+
+<div class="page"/>
+
+# Use Case Diagrams
+
+### Login 
+
+![alt](./login.png)
+
+
+<div class="page"/>
+
+# Use Case Diagrams
+
+### Notify Transaction Status Updates
+
 ```mermaid
 graph LR
 
@@ -51,6 +73,12 @@ graph LR
         NS([fa:fa-user Notification System]) --- childNS_3([notify Bank App about transaction status])
         NS([fa:fa-user Notification System]) --- childNS_4([notify registered bank customer about transaction status])
 ```
+<div class="page"/>
+
+# Use Case Diagrams
+
+### View Loyalty Points Marketplace
+
 ```mermaid
 graph LR
 
@@ -74,6 +102,12 @@ graph LR
 
         
 ```
+<div class="page"/>
+
+# Use Case Diagrams
+
+### Show Credit Transfer Form
+
 ```mermaid
 graph LR
 
@@ -94,6 +128,14 @@ graph LR
         CF([fa:fa-user Form Backend]) --- childCF_4([post transactions and store transaction into Bank Application Database])
         CF([fa:fa-user Form Backend]) --- childCF_3([query TransferConnect API])
 ```
+![alt](./transaction.png)
+
+<div class="page"/>
+
+# Use Case Diagrams
+
+### Query Loyalty Program details
+
 ```mermaid
 graph LR
 

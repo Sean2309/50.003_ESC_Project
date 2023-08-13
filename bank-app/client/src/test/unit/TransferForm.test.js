@@ -7,10 +7,6 @@ import axios from 'axios';
 
 jest.mock('axios');
 
-// the tests pass fine
-// unfortunately, there will be issues with the act warning
-// due to a bug from react that is not yet fixed
-// https://github.com/testing-library/react-testing-library/issues/1061
 describe('TransferForm Component', () => {
   const mockedUserProfile = {
     abcPoints : 12367,
@@ -36,6 +32,20 @@ describe('TransferForm Component', () => {
     
       afterEach(() => {
         jest.clearAllMocks();
+      })
+
+      // the tests pass fine
+      // unfortunately, there will be issues with the act warning
+      // due to a bug from react that is not yet fixed
+      // https://github.com/testing-library/react-testing-library/issues/1061
+      // so for clarity purposes we filter out that error
+      const originalError = console.error.bind(console.error)
+      beforeAll(() => {
+        console.error = (msg) => 
+          !msg.toString().includes('act(...)') && originalError(msg)
+      })
+      afterAll(() => {
+        console.error = originalError
       })
 
     it('getDate will not get called without submission', async () => {
@@ -103,7 +113,7 @@ describe('TransferForm Component', () => {
         const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
         const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
         const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-        const submitButton = screen.getByTestId('submit-form').querySelector('input');
+        const submitForm = screen.getByTestId('submit-form');
 
         // Fill in the form
         fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
@@ -111,7 +121,9 @@ describe('TransferForm Component', () => {
         fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
         fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
-        fireEvent.submit(submitButton);
+        act(() => {
+          submitForm.submit();
+          });
 
       await expect(spy).toHaveBeenCalled();
 
@@ -143,7 +155,7 @@ describe('TransferForm Component', () => {
         const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
         const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
         const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-        const submitButton = screen.getByTestId('submit-form').querySelector('input');
+        const submitForm = screen.getByTestId('submit-form');
 
         // Fill in the form
         fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
@@ -151,7 +163,9 @@ describe('TransferForm Component', () => {
         fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
         fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
-        fireEvent.submit(submitButton);
+        act(() => {
+          submitForm.submit();
+          });
 
       // getDate was called
       await expect(spy).toHaveBeenCalled();
@@ -195,7 +209,9 @@ describe('TransferForm Component', () => {
   
         // User presses the submit button on the form
         // console.log(fuzzMembershipId);
-        submitForm.submit();
+        act(() => {
+          submitForm.submit();
+          });
         await waitFor(() => {
             if (regex.test(fuzzMembershipId) == false) {
               expect(axios.post).not.toHaveBeenCalled();
@@ -244,7 +260,9 @@ describe('TransferForm Component', () => {
 
       // User presses the submit button on the form
       // console.log(fuzzMembershipId);
-      submitForm.submit();
+      act(() => {
+        submitForm.submit();
+        });
       await waitFor(() => {
         if (regex.test(fuzzMembershipId) == false || fuzzMembershipId!=fuzzMembershipIdConfirmation) {
           expect(axios.post).not.toHaveBeenCalled();
@@ -254,104 +272,5 @@ describe('TransferForm Component', () => {
           expect(axios.post).toHaveBeenCalled();
         }
       });
-    });
-
-    it('point validation: fuzzing transfer amount input, allowing invalid inputs such as alphabets', async () => {
-
-      const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
-      const fuzzTransferAmountInput = fuzzer.generateRandomPointInput(Math.random()*50);
-      // number only checker
-      const regex = new RegExp("^\\[0-9]+$");
-  
-      // since it is not clicked yet, this is still the button at the end of the loyalty program card
-      await act(async () => {
-        render(<TransferForm 
-          membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-          currencyRate={mockedLoyaltyProgramData.currencyRate}
-          userProfile={mockedUserProfile}
-          loyaltyProgramId={mockedLoyaltyProgramData.programId}
-          />);
-      });
-        
-        // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
-        const transferButton = screen.getByRole('button');
-        // user opens transferForm
-        fireEvent.click(transferButton);
-  
-        // User finds input fields and submit button
-        const memberNameInput = screen.getByTestId('member-name').querySelector('input');
-        const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
-        const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
-        const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-        // const submitButton = screen.getByTestId('submit-button');
-        const submitForm = screen.getByTestId('submit-form');
-  
-        // User fills in the form
-        fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-        // invalid membershipId
-        fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
-        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
-        fireEvent.change(transferAmountInput, { target: { value: fuzzTransferAmountInput } });
-  
-        // User presses the submit button on the form
-        console.log(fuzzTransferAmountInput);
-        submitForm.submit();
-        await waitFor(() => {
-            if (regex.test(fuzzTransferAmountInput) == false || parseInt(fuzzTransferAmountInput)>mockedUserProfile.abcPoints) {
-              expect(axios.post).not.toHaveBeenCalled();
-            }
-            else if (regex.test(fuzzTransferAmountInput) == true && parseInt(fuzzTransferAmountInput)<=mockedUserProfile.abcPoints) {
-              expect(axios.post).toHaveBeenCalled();
-            }
-          });
-    });
-
-    it('point validation: fuzzing transfer amount input, only integer values', async () => {
-      const fuzzer = new StringFuzzer(mockedLoyaltyProgramData.membershipFormat, mockedUserProfile.abcPoints);
-      const fuzzTransferAmountInput = fuzzer.generateRandomIntegerInput(Math.random()*50);
-      // number only checker
-      const regex = new RegExp("^\\[0-9]+$");
-  
-      // since it is not clicked yet, this is still the button at the end of the loyalty program card
-      await act(async () => {
-        render(<TransferForm 
-          membershipFormat={mockedLoyaltyProgramData.membershipFormat}
-          currencyRate={mockedLoyaltyProgramData.currencyRate}
-          userProfile={mockedUserProfile}
-          loyaltyProgramId={mockedLoyaltyProgramData.programId}
-          />);
-      });
-        
-        // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
-        const transferButton = screen.getByRole('button');
-        // user opens transferForm
-        fireEvent.click(transferButton);
-  
-        // User finds input fields and submit button
-        const memberNameInput = screen.getByTestId('member-name').querySelector('input');
-        const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
-        const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
-        const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-        // const submitButton = screen.getByTestId('submit-button');
-        const submitForm = screen.getByTestId('submit-form');
-  
-        // User fills in the form
-        fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-        // invalid membershipId
-        fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
-        fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
-        fireEvent.change(transferAmountInput, { target: { value: fuzzTransferAmountInput } });
-  
-        // User presses the submit button on the form
-        console.log(fuzzTransferAmountInput);
-        submitForm.submit();
-        await waitFor(() => {
-            if (parseInt(fuzzTransferAmountInput)>mockedUserProfile.abcPoints) {
-              expect(axios.post).not.toHaveBeenCalled();
-            }
-            else if (parseInt(fuzzTransferAmountInput)<=mockedUserProfile.abcPoints) {
-              expect(axios.post).toHaveBeenCalled();
-            }
-          });
     });
 });

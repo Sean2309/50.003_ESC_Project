@@ -1,0 +1,39 @@
+@startuml Login
+' ======= the actors =========
+
+actor :Hacker: as Right1 << Human >>
+actor :User: as Left2 << Human >> #eaf0f9
+
+actor :System Authentication: as Left3 << System >> #eaf0f9
+
+
+rectangle "Login System" #C0C0C0 {
+    left to right direction
+
+    ' ====== the use cases =========
+
+    (Steal user credentials) as (UseCaseA) #83d3f6
+    (Steal user data) as (UseCaseD) #83d3f6
+
+    (Enter user credentials) as (UseCaseF) #7a97ca
+    (Login) as (UseCaseG) #7a97ca
+
+    (Validate user credentials) as (UseCaseI) #ffcb0c
+    (Verify user token) as (UseCaseH) #ffcb0c
+
+    ' ====== the use case links =========
+
+    Left2 -- (UseCaseF)
+    Left2 -- (UseCaseG)
+    (UseCaseF) <.. (UseCaseA) : << threatens >>
+    (UseCaseG) <.. (UseCaseA) : << threatens >>
+
+    Left3 -- (UseCaseI)
+    Left3 -- (UseCaseH)
+    (UseCaseI) ..> (UseCaseA) : << prevents >>
+    (UseCaseH) ..> (UseCaseD) : << prevents >>
+
+    (UseCaseA) -- Right1
+    (UseCaseD) -- Right1
+}
+@enduml
