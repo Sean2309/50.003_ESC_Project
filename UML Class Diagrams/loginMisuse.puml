@@ -1,0 +1,66 @@
+@startuml Login
+' ======= the actors =========
+
+actor :Hacker: as Right1 << Human >>
+actor :User: as Left2 << Human >> #eaf0f9
+
+actor :System Authentication: as Left3 << System >> #eaf0f9
+
+
+rectangle "Login System" #C0C0C0 {
+    left to right direction
+
+    ' ====== the use cases =========
+
+    (Steal user credentials) as (UseCaseA) #83d3f6
+    (Steal user data) as (UseCaseD) #83d3f6
+
+    (Enter user credentials) as (UseCaseF) #7a97ca
+    (Login) as (UseCaseG) #7a97ca
+
+    (Validate user credentials) as (UseCaseI) #ffcb0c
+    (Verify user token) as (UseCaseH) #ffcb0c
+
+    ' ====== the use case links =========
+
+    Left2 -- (UseCaseF)
+    Left2 -- (UseCaseG)
+    (UseCaseF) <.. (UseCaseA) : << threatens >>
+    (UseCaseG) <.. (UseCaseA) : << threatens >>
+
+    Left3 -- (UseCaseI)
+    Left3 -- (UseCaseH)
+    (UseCaseI) ..> (UseCaseA) : << prevents >>
+    (UseCaseH) ..> (UseCaseD) : << prevents >>
+
+    'TODO: These last 2 should be positioned on the right hand side. How to do it?
+    'Right1 -- (UseCaseA)
+    'Right2 -- (UseCaseD)
+
+    'These do not work. PlantUML will put the Actors far away at the bottom
+    (UseCaseA) -- Right1
+    (UseCaseD) -- Right1
+}
+@enduml
+
+' ```mermaid
+' graph LR
+'         LU([fa:fa-user Bank App User]) --- childLU_1([enter user credentials])
+'         LU([fa:fa-user Bank App User]) --- childLU_3([press submit button])
+
+'         LI([fa:fa-user Login Interface]) --- childLI_1([display username input field])
+'         LI([fa:fa-user Login Interface]) --- childLI_2([display password input field])
+'         LI([fa:fa-user Login Interface]) --- childLI_3([store user input])
+
+'         LS([fa:fa-user Login Backend]) --- childLS_1([receive user credentials])
+'         LS([fa:fa-user Login Backend]) --- childLS_2([validate login request])
+'         LS([fa:fa-user Login Backend]) --- childLS_3([fetch stored credentials])
+'         LS([fa:fa-user Login Backend]) --- childLS_4([verify inputted credentials])
+'         LS([fa:fa-user Login Backend]) --- childLS_5([generate authentication token])
+'         LS([fa:fa-user Login Backend]) --- childLS_6([hash and provide security features to user information like name and password])
+'         LS([fa:fa-user Login Backend]) --- childLS_7([load in user profile])
+
+'         LS_UP([fa:fa-user User Profile Backend]) --- childUP_1([store user email])
+'         LS_UP([fa:fa-user User Profile Backend]) --- childUP_2([store user notification preferences])
+'         LS_UP([fa:fa-user User Profile Backend]) --- childUP_3([store user phone number])
+' ```
