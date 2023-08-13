@@ -1,5 +1,8 @@
+# Entity-Relationship Diagram
+This entity-relationship diagram describes entity-relationship flows between the bank user, bank application, TransferConnect and the Loyalty Program providers.
+```mermaid
 erDiagram
-    user ||..|{ transferForm : SUBMITS
+    user ||..|{ transferForm : submits 
     userProfile {
         object UserID
         int abcPoints
@@ -83,3 +86,4 @@ currencyRate{
 }
 
 loyaltyProgram }o -- o{ loyaltyProgramProviders: gets
+```
