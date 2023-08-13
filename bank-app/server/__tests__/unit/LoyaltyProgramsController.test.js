@@ -57,7 +57,7 @@ describe('Test getLoyaltyPrograms function', () => {
       expect(response.json).toHaveBeenCalled();
     });
 
-
+// Test: Check if loyalty programs are returned in JSON format
     test ('2. loyalty programs are in json format', async() => {
       const loyaltyProgramsPromise =[
         {
@@ -80,7 +80,7 @@ describe('Test getLoyaltyPrograms function', () => {
       expect(response.json).toHaveBeenCalledWith({ loyaltyPrograms: loyaltyProgramsPromise });
 
     });
-
+ // Test: Check if updateLoyaltyPrograms fetches data and updates the database
     test ('3. updateloyaltyprograms should fetch data and update the db', async() => {
       const loyaltyProgramsPromise = Promise.resolve([
         {
@@ -104,7 +104,7 @@ describe('Test getLoyaltyPrograms function', () => {
 
     });
 
-
+// Test: Check if updateLoyaltyPrograms handles errors
     test('4. updateLoyaltyPrograms should handle errors ', async () => {
       const errorMessage = 'API Error';
   
@@ -123,7 +123,7 @@ describe('Test getLoyaltyPrograms function', () => {
       // Check if create was not called since there was an error
       expect(loyaltyProgramsModel.create).not.toHaveBeenCalled();
     });  
-
+ // Test: Check if populateDb function works
     test('5. populatedb works ', async () => {
       const mockLoyaltyPrograms = [
         {

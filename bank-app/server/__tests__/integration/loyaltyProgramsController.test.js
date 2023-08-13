@@ -31,7 +31,7 @@ afterEach(async () => {
   await MockLoyaltyProgramsModel.deleteMany({});
 
 });
-
+// Test: Check if the /api/loyaltyPrograms endpoint responds with a 200 status code
 describe('LoyaltyProgramsController - API Integration', () => {
     test('1. api/loyaltyPrograms should respond with 200 status code', async () => {
         const response = await request(app).get('/api/loyaltyPrograms');
@@ -42,7 +42,7 @@ describe('LoyaltyProgramsController - API Integration', () => {
 
 
 
-
+// Test: Check if updateLoyaltyPrograms function saves data to the database
 
 test('2. updateloyaltyprogram saves to db', async () => {
   const mockloyaltyProgramsPromise = Promise.resolve([
