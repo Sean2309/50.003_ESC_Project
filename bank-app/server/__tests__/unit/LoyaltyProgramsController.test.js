@@ -57,7 +57,7 @@ describe('Test getLoyaltyPrograms function', () => {
       expect(response.json).toHaveBeenCalled();
     });
 
-
+// Test: Check if loyalty programs are returned in JSON format
     test ('2. loyalty programs are in json format', async() => {
       const loyaltyProgramsPromise =[
         {
