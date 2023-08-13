@@ -15,6 +15,7 @@ const {clearFolder} = require('../../controllers/clearFolder')
 const accrualFileController = require('../../controllers/accrualFileController');
 const accrual_files_dir = path.join(__dirname, '../../controllers/accrual_files');
 
+// Mocking the `fs` module to mimic file operations for testing purposes.
 jest.mock('fs', () => {
   return {
     mkdirSync: jest.fn(),
@@ -26,6 +27,7 @@ jest.mock('fs', () => {
     unlinkSync: jest.fn(),
   };
 });
+// Mocking other dependencies.
 jest.mock('mongoose');
 jest.mock('../../utils/config');
 jest.mock('csv-writer', () => ({
@@ -43,7 +45,7 @@ jest.mock('files.com/lib/models/File', () => ({
 }));
 
 
-// Mock Mongoose document
+// Defines a Mock Mongoose document class.
 class MockDocument {
     constructor(data) {
       Object.assign(this, data);
@@ -54,7 +56,7 @@ class MockDocument {
     }
 }
 
-// Mock data
+// Sample mock data to be used in tests.
 const mockData = {
   'collection1': [
     {
@@ -108,8 +110,10 @@ const mockData = {
   ]
 };
 
+// Group of unit tests.
 describe('Unit tests', () => {
   beforeEach(() => {
+    // Set up before each test: Mocking mongoose connection object.
     mongoose.connection = { // Mock mongoose.connection object
       close: jest.fn(),
     };
@@ -118,9 +122,11 @@ describe('Unit tests', () => {
   });
 
   afterEach(() => {
+    // Reset all mock implementations after each test.
     jest.resetAllMocks();    
   });
 
+  // Test the getModel function.
   test('getModel function should return a Mongoose model', () => {
     // Mock the mongoose.model method to return a model with the given collection name
     mongoose.model = jest.fn((collection, schema) => {
@@ -148,13 +154,13 @@ describe('Unit tests', () => {
     });
   });
   
-  
-  
+  // Test edge case for getModel function.
   test('should return undefined if the collection name is not provided', () => {
     const model = getModel();
     expect(model).toBeUndefined();
   });
 
+  // Test the getDataFromCollection function.
   test('getDataFromCollection function should query the correct collection', async () => {
     // This mocks the "find" function to mimic the behavior of MongoDB's find operation
     const mockFind = jest.fn().mockImplementation((query) => {
@@ -219,6 +225,7 @@ describe('Unit tests', () => {
     expect(result).toEqual(expectedResultGetData);
   });
   
+  // Test data grouping by partnerCode.
   test('groupData function should group data by partnerCode', () => {
     // Convert array of docs to a single array to mimic getDataFromCollection's output
     const ungroupedData = [].concat(...Object.values(mockData)).map((document) => new MockDocument(document));
@@ -280,6 +287,7 @@ describe('Unit tests', () => {
     expect(result).toMatchObject(expectedResultGroup);
   });
 
+  // Test if clearFolder function deletes all files in a directory.
   test('should delete all files in a directory', async () => {
     // Mock fs.readdirSync to return an array of 5 files
     fs.readdirSync.mockReturnValue(['file1', 'file2', 'file3', 'file4', 'file5']);
@@ -299,6 +307,7 @@ describe('Unit tests', () => {
   });
 });
 
+// Group of integration tests.
 describe('Integration tests', () => {
   describe('writeGroupedDataToCsv function check', () => {
     const testGroupedData = {

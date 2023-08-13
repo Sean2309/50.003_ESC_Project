@@ -36,12 +36,12 @@ class HandbackFileController {
     this.sftpHandbackDownloads = 'sftp_handback_downloads'; // SFTP Directory for the downloaded files to be stored in
     this.modelCache = {}; // Cache for storing the created models
     this.banks = [];
-    // this.startService(); // Starts the Cron Job
+    this.startService(); // Starts the Cron Job
   }
 
   startService = async () => {
     let job = new CronJob(
-      '30 * * * * *', // Runs at the 30th Second of the 30th Minute of every hour
+      '* * 2 * * *', // Runs at the 2nd hour every day
       this.downloadfromSFTPandUpload,
     )
     job.start();
