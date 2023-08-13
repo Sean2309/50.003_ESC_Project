@@ -26,18 +26,33 @@ class UserProfileController {
   getUserProfile = async (request, response) => {
     try {
       const userId = request.body.userId;
-  
+
       const userProfile = await UserProfile.findOne({ userId: userId });
-  
+
       if (!userProfile) {
         return response.status(404).json({ message: 'User not found.' });
       }
-  
+
       response.json(userProfile);
     } catch (error) {
       response.status(500).json({ message: 'Server error' });
     }
   };
+
+  updateSuccessfulTransaction = async (request, response) => {
+    const { userId, transferAmount } = request.body;
+
+    // First, find the amount of points the user has
+    try {
+      const userProfile = await UserProfile.findOne({ userId: userId });
+      userProfile.abcPoints -= transferAmount;
+      await userProfile.save();
+      response.status(201).json(request.body);
+    }
+    catch (error) {
+      throw error;
+    }
+  }
 }
 
 const userProfileController = new UserProfileController();

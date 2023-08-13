@@ -1,0 +1,48 @@
+@startuml Transaction
+' ======= the actors =========
+
+actor :Hacker: as Right1 << Human >>
+actor :User: as Left2 << Human >> #eaf0f9
+
+actor :TransferForm Authentication: as Left3 << System >> #eaf0f9
+
+
+rectangle "TransferForm Transaction" #C0C0C0 {
+    left to right direction
+
+    ' ====== the use cases =========
+
+    (Bruteforce membership ID detail) as (UseCaseA) #83d3f6
+    (Alter transfer form details) as (UseCaseB) #83d3f6
+    (Alter user points) as (UseCaseD) #83d3f6
+
+    (Enter membership ID) as (UseCaseF) #7a97ca
+    (Enter transfer amount) as (UseCaseG) #7a97ca
+    (Submit transfer form) as (UseCaseJ) #7a97ca
+
+    (Validate membership ID) as (UseCaseI) #ffcb0c
+    (Verify user point amount) as (UseCaseK) #ffcb0c
+    (Verify transfer request) as (UseCaseH) #ffcb0c
+
+    ' ====== the use case links =========
+
+    (UseCaseA) -- Right1
+    (UseCaseB) -- Right1
+    (UseCaseD) -- Right1
+
+    Left2 -- (UseCaseF)
+    Left2 -- (UseCaseG)
+    Left2 -- (UseCaseJ)
+    (UseCaseF) <.. (UseCaseA) : << threatens >>
+    (UseCaseG) <.. (UseCaseD) : << threatens >>
+    (UseCaseJ) <.. (UseCaseB) : << threatens >>
+
+    Left3 -- (UseCaseI)
+    Left3 -- (UseCaseH)
+    Left3 -- (UseCaseK)
+    (UseCaseI) ..> (UseCaseA) : << prevents >>
+    (UseCaseH) ..> (UseCaseB) : << prevents >>
+    (UseCaseK) ..> (UseCaseD) : << prevents >>
+
+}
+@enduml

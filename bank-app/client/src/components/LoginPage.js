@@ -50,6 +50,7 @@ class LoginPage extends Component {
             name="loginId"
             value={loginId}
             onChange={this.handleChange}
+            required
           />
           <br />
 
@@ -60,6 +61,7 @@ class LoginPage extends Component {
             name="password"
             value={password}
             onChange={this.handleChange}
+            required
           />
           <br />
 

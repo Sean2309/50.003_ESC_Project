@@ -5,6 +5,7 @@ const { SECRET_CODE } = require('../utils/config');
 
 class AuthManagerController {
   constructor() {
+    // this.createUser();
   }
 
   // Handle the POST request to authenticate a user
@@ -84,9 +85,9 @@ class AuthManagerController {
       firstName: 'John',
       lastName: 'Yeet',
       abcPoints: 10000,
-      emailAddress: 'johnyeet@gmail.com',
-      phoneNumber: '88889912',
-      notificationMethod: '1',
+      emailAddress: 'leelxuan@gmail.com',
+      phoneNumber: '+6588669619',
+      notificationMethod: '2',
       userId: userCredentials.userId,
     });
 

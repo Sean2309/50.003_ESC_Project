@@ -1,6 +1,6 @@
 function getFormattedDate(format = "standard") {
     const date = new Date();
-    date.setDate(date.getDate() - 1); // Subtract a day if requested
+    date.setDate(date.getDate()); // Subtract a day if requested
     let month = date.getMonth() + 1; // getMonth() is zero-indexed
     let day = date.getDate();
   
@@ -10,7 +10,7 @@ function getFormattedDate(format = "standard") {
     if (format === "compact") {
       return `${date.getFullYear()}${month}${day}`;
     } else { // "standard" format
-      return `${date.getFullYear()}/${month}/${day}`;
+      return `${date.getFullYear()}-${month}-${day}`;
     }
   }
 

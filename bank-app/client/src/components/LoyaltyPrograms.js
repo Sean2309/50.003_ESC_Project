@@ -23,9 +23,13 @@ class LoyaltyPrograms extends Component {
       const loyaltyProgramsQueryData = loyaltyProgramsQueryResponse.data?.loyaltyPrograms || [];
       this.setState({ loyaltyProgramsData: loyaltyProgramsQueryData });
     } catch (error) {
-      console.error('Error fetching loyalty programs:', error);
+      
     }
   };
+  
+  updateUserProfile = () => {
+    this.getUserProfile();
+  }
 
   getUserProfile = async () => {
     try {
@@ -33,7 +37,7 @@ class LoyaltyPrograms extends Component {
       const userProfileQueryData = userProfileQueryResponse.data || {};
       this.setState({ userProfile: userProfileQueryData });
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      
     }
   };
 
@@ -44,7 +48,7 @@ class LoyaltyPrograms extends Component {
 
     // Add in header sentence for number of points
     componentsArray.push(
-      <p key="pointsHeader">
+      <p key="pointsHeader" id="pointsHeader">
         You currently have
         {' '}
         {userProfile.abcPoints}
@@ -58,16 +62,20 @@ class LoyaltyPrograms extends Component {
             logic to pass on to actual render: if getLoyaltyPrograms is not yet successful,
             render Loading... else pass each data to a LoyaltyProgram component
         */
-    if (loyaltyProgramsData === [] || userProfile === {}) {
-      return (<p>Loading...</p>);
-    }
+    // note that with current implementation, PropType will throw error first LMAO
+    // if (loyaltyProgramsData === [] || userProfile === {}) {
+    //   return (<p>Loading...</p>);
+    // }
 
+    // for element loyaltyProgramData in state-stored loyaltyProgramsData
+    // push...
     loyaltyProgramsData.map((loyaltyProgramData) => (
       componentsArray.push(
         <LoyaltyProgram
           key={loyaltyProgramData.programId}
           loyaltyProgramData={loyaltyProgramData}
           userProfile={userProfile}
+          updateUserProfile={this.updateUserProfile}
         />,
       )
     ));
@@ -78,7 +86,7 @@ class LoyaltyPrograms extends Component {
   render() {
     return (
       <div>
-        <div className="marketplace-page-bg" data-testid="loyaltyprograms-test">
+        <div className="marketplace-page-bg">
           <h2>Loyalty Programs</h2>
           {this.renderLoyaltyPrograms()}
         </div>

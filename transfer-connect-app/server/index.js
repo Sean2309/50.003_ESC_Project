@@ -8,20 +8,28 @@ const transactionRouter = require('./routes/transactionRouter');
 const loyaltyProgramQueryRouter = require("./routes/loyaltyProgramQueryRouter")
 const transactionEnquiryRouter = require('./routes/transactionEnquiryRouter');
 const accrualFileController = require('./controllers/accrualFileController');
+const webhookTestRouter = require('./routes/webhookTestRouter');
 const handbackFileController = require('./controllers/handbackFileController');
 const transactionEnquiryModel = require('./models/transactionEnquiryModel');
+const createMongoDBCollection = require('./controllers/createMongoDBCollection');
+const accrualToHandbackController = require('./controllers/accrualToHandbackController');
 
 const app = express();
 
-// createMongoDBCollection.createNewCollection();
-// accrualFileController.queryFromDBandUpload();
-handbackFileController.testHandbackFileFns();
-
 // connect to mongoDB cloud
 mongoose.connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true}).catch((err) => console.error('error'));
-// mongoose.connect('mongodb+srv://test:4321@test.j9ugyp5.mongodb.net/Dtest?retryWrites=true&w=majority').then((res) => console.log('connected')).catch((err) => console.error('error'))
 
-// enable CORS for all routes
+// createMongoDBCollection.populateTransactions();
+
+const transferConnectSimulation = async () => {
+    // await createMongoDBCollection.populateTransactions();
+    const partnerCodeList = await accrualFileController.queryFromDBandUpload();
+    await accrualToHandbackController.queryFromDBandUpload();
+    await handbackFileController.downloadfromSFTPandUpload(partnerCodeList);
+    console.log('Finished running all functions');
+};
+
+transferConnectSimulation();
 
 
 // to allow request from different origins (domain, port etc)
@@ -36,7 +44,9 @@ app.use('/api/transactions', transactionRouter)
 // routes based on bankapp to to retrieve loyalty program information
 app.use('/api/loyaltyprograms', loyaltyProgramQueryRouter);
 
-app.use('/api/transactionenquiry', transactionEnquiryRouter)
+app.use('/api/transactionenquiry', transactionEnquiryRouter);
+
+app.use('/api/webhook', webhookTestRouter);
 
 app.listen(config.PORT);
 

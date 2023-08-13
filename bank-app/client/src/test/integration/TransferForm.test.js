@@ -1,46 +1,80 @@
 import React from 'react';
 import { render, fireEvent, screen, act, waitFor } from '@testing-library/react';
-// import axiosMock from './axiosMock'; // Mock axios for testing purposes
 import TransferForm from '../../components/TransferForm';
 import axios from 'axios';
 
-// https://jestjs.io/docs/en/api#describename-fn
-// good testing practices
+jest.mock('axios');
 
 describe('TransferForm Component', () => {
 
   const mockedUserProfile = {
     abcPoints : 12367,
     emailAddress: "abc@gmail.com",
-    phoneNumber: "3267352",
+    phoneNumber: "88100110",
     notificationMethod: "Bank",
   };
 
-  const mockedTransferProps =
-    {
-        membershipFormat: "^\\d{9}[a-zA-Z]$",
-        loyaltyProgramId: "GOPOINTS",
-        userProfile: mockedUserProfile,
-        currencyRate: 1.2
+  const mockedLoyaltyProgramData = 
+  {
+    programId: "GOPOINTS",
+    programName: "GoJet Points",
+    currencyName: "GoPoints",
+    processingTime: "Instant",
+    description: "Feel free to adjust this",
+    enrollmentLink: "https://www.gojet.com/member/",
+    tncLink: "https://www.gojet.com/aa/about-us/en/gb/terms-and-conditions.html",
+    membershipFormat: "^\\d{9}[a-zA-Z]$",
+    currencyRate: 1.2
+  }
+
+  const submissionDate = new Date().toISOString().split('T')[0];
+
+  // the tests pass fine
+  // unfortunately, there will be issues with the act warning
+  // due to a bug from react that is not yet fixed
+  // https://github.com/testing-library/react-testing-library/issues/1061
+  // so for clarity purposes we filter out that warn
+  const originalWarn = console.warn.bind(console.warn)
+  beforeAll(() => {
+    console.warn = (msg) => 
+      !msg.toString().includes('act(...)') && originalWarn(msg)
+  })
+  afterAll(() => {
+    console.warn = originalWarn
+  })
+
+  // simulate successful response from sending POST request to TransferConnect API endpoint
+  const mockServerSuccessfulResponse = {
+    status: 201,
+    data: {
+      membershipId: '123456789S',
+      memberName: 'John Doe',
+      transferDate: submissionDate,
+      transferAmount: "50",
+      emailAddress: "abc@gmail.com",
+      notificationMethod: "Bank",
+      phoneNumber: "88100110",
+
     }
-  ;
-  
-  beforeEach(() => {
-    jest.mock('axios');
-    // Mock the axios.get function to return responses according to url called
-    axios.get = jest.fn().mockResolvedValue((url) => {
-      if (url === 'http://localhost:3001/api/userprofile') {
-        return { data: mockedUserProfile };
-      } else if (url === 'http://localhost:3001/api/loyaltyprograms') {
-        return { data: { loyaltyPrograms: mockedLoyaltyPrograms } };
-      }
-      return Promise.reject(new Error('Invalid URL'));
-    });
-  });
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
   })
+
+      // the tests pass fine
+    // unfortunately, there will be issues with the act warning
+    // due to a bug from react that is not yet fixed
+    // https://github.com/testing-library/react-testing-library/issues/1061
+    // so for clarity purposes we filter out that error
+    const originalError = console.error.bind(console.error)
+    beforeAll(() => {
+      console.error = (msg) => 
+        !msg.toString().includes('act(...)') && originalError(msg)
+    })
+    afterAll(() => {
+      console.error = originalError
+    })
 
   // ensure that the transfer form is not covering the screen
   // until the user decides on one loyalty program's transfer form
@@ -48,10 +82,10 @@ describe('TransferForm Component', () => {
   it('fail to render form when button is not yet clicked', async () => {
     await act(async () => {
       render(<TransferForm 
-        membershipFormat={mockedTransferProps.membershipFormat}
-        currencyRate={mockedTransferProps.currencyRate}
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
         userProfile={mockedUserProfile}
-        loyaltyProgramId={mockedTransferProps.programId}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
         />);
     });
 
@@ -64,13 +98,37 @@ describe('TransferForm Component', () => {
     expect(screen.queryByTestId("transfer-amount")).not.toBeInTheDocument();
   });
 
+  it('form can be closed by pressing close button', async () => {
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
+    // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+    // User can see the transfer form button at the bottom page of the loyalty program
+    const transferButton = screen.getByRole('button');
+    fireEvent.click(transferButton);
+
+    const [submitButton, closeButton] = screen.getAllByRole('button');
+    await fireEvent.click(closeButton);
+
+    expect(screen.queryByTestId("member-name")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("member-id")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("member-confirm")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("transfer-amount")).not.toBeInTheDocument();
+  });
+
   it('renders form when button is clicked', async () => {
     await act(async () => {
       render(<TransferForm 
-        membershipFormat={mockedTransferProps.membershipFormat}
-        currencyRate={mockedTransferProps.currencyRate}
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
         userProfile={mockedUserProfile}
-        loyaltyProgramId={mockedTransferProps.programId}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
         />);
     });
 
@@ -86,19 +144,19 @@ describe('TransferForm Component', () => {
     expect(screen.getByTestId("transfer-amount")).toBeInTheDocument();
   });
 
-  // this is an indirect openModal testing
-  // from the viewpoint of a user
-  it('user can submit the transfer form, no errors are logged', async () => {
-    const spy = jest.spyOn(console, 'error');
+  it('submission will not be posted if membershipID is not valid', async () => {
+    axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
 
-    // this is still the button at the end of the loyalty program card
-    const transferForm =
+    // since it is not clicked yet, this is still the button at the end of the loyalty program card
+    await act(async () => {
       render(<TransferForm 
-        membershipFormat={mockedTransferProps.membershipFormat}
-        currencyRate={mockedTransferProps.currencyRate}
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
         userProfile={mockedUserProfile}
-        loyaltyProgramId={mockedTransferProps.loyaltyProgramId}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
         />);
+    });
+
 
       
       // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
@@ -111,19 +169,182 @@ describe('TransferForm Component', () => {
       const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
       const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
       const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
-      const submitButton = screen.getByTestId('submit-form').querySelector('input');
+      // const submitButton = screen.getByTestId('submit-button');
+      const submitForm = screen.getByTestId('submit-form');
 
       // User fills in the form
       fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
-      fireEvent.change(membershipIdInput, { target: { value: '123456' } });
-      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456' } });
+      // invalid membershipId
+      fireEvent.change(membershipIdInput, { target: { value: '12345' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '12345' } });
       fireEvent.change(transferAmountInput, { target: { value: '50' } });
 
       // User presses the submit button on the form
-      fireEvent.submit(submitButton);
-    
-    await waitFor(() => expect(spy).not.toHaveBeenCalled());
+      submitForm.submit();
 
+    
+    
+      await waitFor(() => {
+          expect(axios.post).not.toHaveBeenCalled();
+        });
+    // https://github.com/jestjs/jest/issues/3821
+  
+  });
+
+  it('disallows user from entering transfer amount above owned points', async () => {
+    axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
+
+    // since it is not clicked yet, this is still the button at the end of the loyalty program card
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
+
+      
+      // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+      const transferButton = screen.getByRole('button');
+      // user opens transferForm
+      fireEvent.click(transferButton);
+
+      // User finds input fields and submit button
+      const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+      const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+      const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+      const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+      // const submitButton = screen.getByTestId('submit-button');
+      const submitForm = screen.getByTestId('submit-form');
+
+      // User fills in the form
+      fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+      // invalid membershipId
+      fireEvent.change(membershipIdInput, { target: { value: '12345' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '12345' } });
+      fireEvent.change(transferAmountInput, { target: { value: '13000' } });
+
+      // User presses the submit button on the form
+      submitForm.submit();
+
+    
+    
+      await waitFor(() => {
+
+
+          expect(axios.post).not.toHaveBeenCalled();
+        });
+    // https://github.com/jestjs/jest/issues/3821
+  
+  });
+
+  it('disallows user from entering 0 points', async () => {
+    axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
+
+    // since it is not clicked yet, this is still the button at the end of the loyalty program card
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
+
+      
+      // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+      const transferButton = screen.getByRole('button');
+      // user opens transferForm
+      fireEvent.click(transferButton);
+
+      // User finds input fields and submit button
+      const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+      const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+      const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+      const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+      // const submitButton = screen.getByTestId('submit-button');
+      const submitForm = screen.getByTestId('submit-form');
+
+      // User fills in the form
+      fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+      // invalid membershipId
+      fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
+      fireEvent.change(transferAmountInput, { target: { value: '0' } });
+
+      // User presses the submit button on the form
+      submitForm.submit();
+
+    
+    
+      await waitFor(() => {
+          expect(axios.post).not.toHaveBeenCalled();
+        });
+    // https://github.com/jestjs/jest/issues/3821
+  
+  });
+
+    it('form submission sends axios POST request to transferConnect endpoint', async () => {
+    axios.post.mockResolvedValueOnce(mockServerSuccessfulResponse);
+
+    // since it is not clicked yet, this is still the button at the end of the loyalty program card
+    await act(async () => {
+      render(<TransferForm 
+        membershipFormat={mockedLoyaltyProgramData.membershipFormat}
+        currencyRate={mockedLoyaltyProgramData.currencyRate}
+        userProfile={mockedUserProfile}
+        loyaltyProgramId={mockedLoyaltyProgramData.programId}
+        />);
+    });
+
+
+      
+      // https://stackoverflow.com/questions/66043164/testing-click-event-in-react-testing-library
+      const transferButton = screen.getByRole('button');
+      // user opens transferForm
+      fireEvent.click(transferButton);
+
+      // User finds input fields and submit button
+      const memberNameInput = screen.getByTestId('member-name').querySelector('input');
+      const membershipIdInput = screen.getByTestId('member-id').querySelector('input');
+      const membershipIdConfirmationInput = screen.getByTestId('member-confirm').querySelector('input');
+      const transferAmountInput = screen.getByTestId('transfer-amount').querySelector('input');
+      // const submitButton = screen.getByTestId('submit-button');
+      const submitForm = screen.getByTestId('submit-form');
+
+      // User fills in the form
+      fireEvent.change(memberNameInput, { target: { value: 'John Doe' } });
+      fireEvent.change(membershipIdInput, { target: { value: '123456789S' } });
+      fireEvent.change(membershipIdConfirmationInput, { target: { value: '123456789S' } });
+      fireEvent.change(transferAmountInput, { target: { value: '50' } });
+
+      // User presses the submit button on the form
+      submitForm.submit();
+
+    
+    await act(async () => {
+      await waitFor(() => {
+        //check if axios posted with the correct details
+        expect(axios.post).toHaveBeenCalledWith(
+          `http://localhost:3001/api/transferformsubmit/${mockedLoyaltyProgramData.programId}`,
+          {
+            membershipId: '123456789S',
+            memberName: 'John Doe',
+            transferDate: submissionDate,
+            transferAmount: "50",
+            emailAddress: "abc@gmail.com",
+            phoneNumber: "88100110",
+            notificationMethod: "Bank",
+          },
+          { withCredentials: true }
+        );
+
+          expect(axios.post).toHaveBeenCalledTimes(1);
+        });
+      });
     // https://github.com/jestjs/jest/issues/3821
   
   });

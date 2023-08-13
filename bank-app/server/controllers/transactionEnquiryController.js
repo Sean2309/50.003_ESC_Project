@@ -14,73 +14,70 @@ class TransactionEnquiryController {
     if (startInterval) {
       this.startEnquiry();
     }
+    // for easy debug, clear and populate all transactions (without outcomeCode) on each startup
+    this.populateTransactions();
   }
-
+  
   populateTransactions = async () => {
-    const transactionModelAirAsia = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
-    const transactionModelGoJet = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
+    const transactionModelGOPOINTS = mongoose.model("GOPOINTS", transactionSchema, "GOPOINTS");
+    const transactionModelASIAMILES = mongoose.model("ASIAMILES", transactionSchema, "ASIAMILES");
 
-    await transactionModelAirAsia.deleteMany({});
-    await transactionModelGoJet.deleteMany({});
+    await transactionModelGOPOINTS.deleteMany({});
+    await transactionModelASIAMILES.deleteMany({});
 
-    const transactionsAirAsia = [
+    const transactionsGOPOINTS = [
       {
-        "userId": "100430043889",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 300,
-        "referenceNumber": "10023",
+        "membershipId": "987654321A",
+        "memberName": "johnny",
+        "transferDate": "2023-08-08",
+        "transferAmount": 123,
+        "referenceNumber": "8909890",
         "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "1",
+        "notificationMethod": 2,
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "666666",
         "userId": "1"
       },
       {
-        "userId": "100430043889",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 250,
-        "referenceNumber": "10001",
+        "membershipId": "987654321A",
+        "memberName": "johnny",
+        "transferDate": "2023-08-08",
+        "transferAmount": 789,
+        "referenceNumber": "8909111",
         "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "3",
-        "userId": "1"
-      },
-    ]
-
-    const transactionsGoJet = [
-      {
-        "userId": "1200302J",
-        "memberName": "keith low",
-        "transferDate": "11-11-11",
-        "transferAmount": 100,
-        "referenceNumber": "12422",
-        "partnerCode": "DBSSG",
-        "outcomeCode": "1",
-        "notificationMethod": "0",
-        "emailAddress": "email@address.com",
-        "phoneNumber": "88910101",
-        "systemId": "2",
+        "notificationMethod": 2,
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "666611",
         "userId": "1"
       }
     ]
 
-    await transactionModelGoJet.create(transactionsGoJet);
-    await transactionModelAirAsia.create(transactionsAirAsia);
+    const transactionsASIAMILES = [
+      {
+        "membershipId": "98765432110",
+        "memberName": "johnny",
+        "transferDate": "2023-08-08",
+        "transferAmount": 77,
+        "referenceNumber": "7777777",
+        "partnerCode": "DBSSG",
+        "notificationMethod": 2,
+        "emailAddress": "leelxuan@gmail.com",
+        "phoneNumber": "+6588669619",
+        "systemId": "666655",
+        "userId": "1"
+      }
+      ]
+
+    await transactionModelASIAMILES.create(transactionsASIAMILES);
+    await transactionModelGOPOINTS.create(transactionsGOPOINTS);
 
   }
 
+  //get all transactions of user to display on transactions webpage
   getUserTransactions = async (request, response) => {
     const userId = request.body.userId;
-
-    // mock transactions ids in userProfile by systemId
-    this.populateTransactions();
 
     const allTransactions = {};
 
@@ -103,20 +100,16 @@ class TransactionEnquiryController {
     //connect to specific collection
     const collection_connection = mongoose.model(loyaltyProgram, transactionSchema, loyaltyProgram);
 
-    //remember to define variables first
     let systemIds = [];
     try {
+
       //find those that don't have outcomeCode declared or values are empty
       let transactions = await collection_connection.find({ "outcomeCode": { $exists: false } }, { "systemId": 1, "_id": 0 });
       if (transactions.length != 0) {
-        console.log(`Found reference numbers for ${loyaltyProgram}:`, transactions);
         systemIds = (transactions.map(transaction => transaction['systemId']));
-      } else {
-        console.log(`No reference numbers found for ${loyaltyProgram}`);
-      }
+      };
     }
     catch (error) {
-      console.error(`Error finding reference numbers for ${loyaltyProgram}:`, error);
       return error;
     };
     return systemIds;
@@ -128,7 +121,6 @@ class TransactionEnquiryController {
 
     //return if no transaction to poll for
     if (id_list.length === 0) {
-      console.log(`${loyaltyProgram} id_list is null`)
       return;
     }
     var response;
@@ -136,25 +128,21 @@ class TransactionEnquiryController {
     //id_list is obtained from getReferenceNumbers
     let string_ids = (id_list).join();
 
-    ///DBS since we set our bank-app currently to be DBS, can be changed accordingly in .env
+    ///PARTNERCODE is not DBSSG 
     let url = TRANSFER_CONNECT_API_URL + '/api/transactionenquiry/check/' + PARTNERCODE + '/' + loyaltyProgram;
     url = url + "/" + string_ids;
-    console.log(url);
     try {
       response = await axios.get(url); // Await the API response
       if (response.data == null || response.data == undefined) {
-        console.log("API request response is null");
         return;
       }
       else {
-        console.log("returning response.data");
-        //console.log(response.data);
         return response.data;
       }
 
     } catch (error) {
+
       // Handle any errors
-      //console.error(error);
       return error;
     };
   }
@@ -162,7 +150,7 @@ class TransactionEnquiryController {
   //to update bank-app database
   updateDBandNotifs = async (response_data, loyaltyProgram) => {
     if (response_data == null || response_data == undefined || response_data.length == 0) {
-      console.log(`response_data for ${loyaltyProgram} is null`)
+      return;
     }
     else {
       for (const data of response_data) {
@@ -170,7 +158,6 @@ class TransactionEnquiryController {
         let outcome_code = data["outcomeCode"];
         let userId = await this.updateOutcomeCodes(systemId, outcome_code, loyaltyProgram);
 
-        console.log(`Updated ${systemId} of ${loyaltyProgram} with outcomeCode ${outcome_code}`);
         //userId used for WebSocket connection
         this.sendPushNotification(userId, outcome_code);
       };
@@ -185,7 +172,6 @@ class TransactionEnquiryController {
     const userIdCollection = await collection_connection.find({ "systemId": systemId }, { "userId": 1 });
     const userIdObject = userIdCollection[0];
     const userId = userIdObject["userId"];
-    console.log(userId)
     collection_connection.updateOne({ "systemId": systemId }, { $set: { "outcomeCode": outcome_code } }).exec();
     return userId;
   }
@@ -193,7 +179,6 @@ class TransactionEnquiryController {
 
   //send web push notif to user whose transaction was just updated
   sendPushNotification = async (userId, outcomeCode) => {
-    console.log("membershipID: " + userId);
     sendMessagetoClient(clients, userId, outcomeCode, 0);
   }
 
@@ -210,10 +195,9 @@ class TransactionEnquiryController {
         }
         catch (error) {
           // Handle any errors that occur during the promise chain
-          //console.error(error);
           return error;
         };
-        console.log('\n');
+        
       }
     }, 5 * 1000); // 5 seconds
   }
@@ -226,7 +210,8 @@ class TransactionEnquiryController {
 
 }
 
-const transactionEnquiryController = new TransactionEnquiryController();
+//setInterval to true to make the interval run 
+const transactionEnquiryController = new TransactionEnquiryController(startInterval = true);
 
 
 module.exports = transactionEnquiryController;

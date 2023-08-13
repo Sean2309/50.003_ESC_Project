@@ -4,6 +4,7 @@ import NotificationStyle from "./NotificationStyle";
 const Notification = ({ children, id }) => {
 
   useEffect(() => {
+    //connect to WebSocket server in bank app server
     const url = `ws://localhost:8080?uuid=${id}`; 
     const socket = new WebSocket(url);
     

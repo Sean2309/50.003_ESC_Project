@@ -8,6 +8,8 @@ class NotificationStyle extends Component{
         this.showNotification = this.showNotification.bind(this);
     }
 
+    //check if browser supports desktop notification
+    //if it doesnt support, ask for permission
     componentDidMount() {
         if (!("Notification" in window)) {
             console.log("Browser does not support desktop notification");
@@ -18,6 +20,7 @@ class NotificationStyle extends Component{
     };
     }
 
+    //this is to show web notification
     showNotification(message) {
         let messageBody = message.messageBody;
         let messageType = message.messageType;

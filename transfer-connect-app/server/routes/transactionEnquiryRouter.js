@@ -9,9 +9,6 @@ transactionEnquiryRouter.get('/check/:bank_app/:loyalty_program/:systemId', asyn
   if (id == null){
       return;
   }
-  console.log(id.loyalty_program);
-  console.log(id.bank_app);
-  console.log(id.systemId);
   transactionController.processRoute(req,res);
 });
 

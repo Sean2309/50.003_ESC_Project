@@ -1,11 +1,29 @@
 const request = require('supertest');
-const app = require('../../index'); 
+const express = require('express');
+const app = express();
 const UserCredentials = require('../../models/userCredentials');
 const jwt = require('jsonwebtoken');
 const { SECRET_CODE } = require('../../utils/config');
+const { randomBytes } = require('crypto');
+const cookieParser = require('cookie-parser');
+const fuzzaldrin = require('fuzzaldrin');
+const fuzzysort = require('fuzzysort');
+const { faker } = require('@faker-js/faker');
+const assert = require('assert');
+const authManagerRouter = require('../../routes/authManagerRouter');
+const userProfileRouter = require('../../routes/userProfileRouter');
+
+// for purpose of parsing incoming requests 
+app.use(express.json());
+// for setting token as cookie
+app.use(cookieParser());
+
+app.use('/login', authManagerRouter);
+app.use('/api/userprofile', userProfileRouter);
+app.listen('3030');
 
 // Mock UserCredentials.findOne
-jest.mock('../../models/userCredentials'); 
+jest.mock('../../models/userCredentials');
 
 describe('AuthManagerController - userAuthentication', () => {
   it('should return "User is logged in" with correct login credentials', async () => {
@@ -101,3 +119,38 @@ describe('AuthManagerController - userAuthentication', () => {
     expect(res.body.auth).toBe(false);
   });
 });
+
+describe('Fuzz testing', () => {
+  const numIterations = 10; // Change this to the desired number of iterations
+
+  for (let i = 0; i < numIterations; i++) {
+    it(`should handle random loginId and password - Iteration ${i + 1}`, async () => {
+      const randomLoginId = randomBytes(20).toString('hex');
+      const randomPassword = randomBytes(20).toString('hex');
+
+      const response = await request(app)
+        .post('/login')
+        .send({ loginId: randomLoginId, password: randomPassword })
+        .expect(200);
+
+      expect(response.text).toBe("\"User not found\"");
+    });
+  }
+});
+
+describe('Fuzz testing for login system using faker', function () {
+  it('should not crash under fuzzing', async function () {
+    // this.timeout(5000);
+    for (let i = 0; i < 100; i++) {
+      const fuzzeduserid = faker.internet.userName(); // Generate realistic usernames
+      const fuzzedPassword = faker.internet.password(); // Generate realistic passwords
+      const res = await request(app)
+        .post('/login')
+        .send({ loginId: fuzzeduserid, password: fuzzedPassword });
+      assert(res.status === 200 || res.status === 400);
+    }
+  });
+});
+
+
+

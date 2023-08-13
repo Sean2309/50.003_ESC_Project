@@ -9,15 +9,12 @@ class TransactionEnquiryController {
   constructor() {
   }
 
-  //processRoute
+  //process GET request
   processRoute = async (req, res) => {
     const id = req.params;
     if (id == null) {
       return;
     }
-    console.log(id.loyalty_program);
-    console.log(id.bank_app);
-    console.log(id.systemId);
 
     //connections to specific DB and collection
     var bank_name = id.bank_app;
@@ -31,67 +28,58 @@ class TransactionEnquiryController {
     }
     //pass in reference numbers
     const id_list = id.systemId.split(",");
-    console.log(id_list);
     const transactions = await this.getOutcomeCode(collection_connection, id_list, bank_name, loyalty_program_name);
 
     res.send(transactions);
     return [bank_name, loyalty_program_name, id_list];
   }
 
-
+  //retrieve outcomeCode of transaction from TransferConnect database
   getOutcomeCode = async (collection_connection, id_list, bank_name, loyalty_program_name) => {
-    console.log(id_list);
     let outcomeCodes = [];
     //use of instead of in - in makes 0000 into 0 
     for (let id of id_list) {
-      console.log(id);
       let user = await this.find_transaction(collection_connection, id, bank_name);
       if (user[0] != null) {
         let user1 = user[0];
-        console.log('Found transactions:', user);
         outcomeCodes.push(user[0]);
+        //send email or message notification to user
         this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1.outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
-      }
-      else {
-        console.log('Outcome code not updated or transaction not found.');
-      }
-    }
+      };
+    };
+    //to be sent to Bank App
     return outcomeCodes;
   };
 
+  //function to use .find for mongoDB
+  //separated for ease of testing
   find_transaction = async (collection_connection, id, bank_name) => {
     //use .lean().exec() to return an obj instead of document
     //check if systemId has outcomeCode field + not empty
     try {
-      console.log("find_transaction")
-      console.log(id)
       let user = await collection_connection.find({ "systemId": id, "outcomeCode": { $exists: true, $ne: "" }, "partnerCode": bank_name }, { "outcomeCode": 1, "systemId": 1, "_id": 0, "notificationMethod": 1, "phoneNumber": 1, "emailAddress": 1, "transferAmount": 1, "membershipId": 1 }).lean().exec()
       return user;
     } catch (error) {
       //can change this to throw status code
-      console.log(error)
       return error
     }
   }
 
 
+  //send notification by email or message or both 
   sendNotification = async (phoneNumber, email, notificationMethod, outcomeCode, bank_name, loyalty_program_name, transferAmount) => {
     if (notificationMethod == 0) {
       //only email
-      console.log('sent email');
       emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount);
     }
     else if (notificationMethod == 1) {
       //only phone number
-      console.log("sent message")
       messageNotification.sendMessages(phoneNumber, bank_name, loyalty_program_name, outcomeCode, transferAmount);
     }
     else {
       //both
-      console.log('sent email');
       emailNotification.sendEmail(email, bank_name, loyalty_program_name, outcomeCode, transferAmount);
 
-      console.log("sent message")
       messageNotification.sendMessages(phoneNumber, bank_name, loyalty_program_name, outcomeCode, transferAmount);
     }
   }

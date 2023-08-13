@@ -26,7 +26,7 @@ const TransactionsDisplay = (props) => {
   useEffect(() => {
     // Call the renderTransactions function to create the components array
     setComponentsArray(renderTransactions());
-    
+
     // To prevent duplicate state
     return () => {
       setComponentsArray([]);
@@ -39,7 +39,7 @@ const TransactionsDisplay = (props) => {
     // Loop through each transaction array along with loyaltyProgramId as key, and map them to Transaction components
     Object.entries(transactions).forEach(([key, transactionArray]) => {
       const transactionsRendered = transactionArray.map((transaction) => (
-        <Transaction key={transaction.systemId} transaction={transaction} loyaltyProgramId={key}/>
+        <Transaction key={transaction.systemId} transaction={transaction} loyaltyProgramId={key} />
       ));
       array.push(...transactionsRendered);
     });
@@ -48,7 +48,11 @@ const TransactionsDisplay = (props) => {
     return array;
   };
 
-  return <div>{Object.keys(transactions).length > 0 && componentsArray}</div>;
+  return <div>{Object.keys(transactions).length > 0 && componentsArray.length !== 0 ? (
+    componentsArray
+  ) : (
+    <div> No transactions to be found :( </div>
+  )}</div>;
 };
 
 export default TransactionsDisplay;
