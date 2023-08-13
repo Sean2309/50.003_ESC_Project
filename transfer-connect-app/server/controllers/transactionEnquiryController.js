@@ -9,7 +9,7 @@ class TransactionEnquiryController {
   constructor() {
   }
 
-  //processRoute
+  //process GET request
   processRoute = async (req, res) => {
     const id = req.params;
     if (id == null) {
@@ -34,7 +34,7 @@ class TransactionEnquiryController {
     return [bank_name, loyalty_program_name, id_list];
   }
 
-
+  //retrieve outcomeCode of transaction from TransferConnect database
   getOutcomeCode = async (collection_connection, id_list, bank_name, loyalty_program_name) => {
     let outcomeCodes = [];
     //use of instead of in - in makes 0000 into 0 
@@ -43,12 +43,16 @@ class TransactionEnquiryController {
       if (user[0] != null) {
         let user1 = user[0];
         outcomeCodes.push(user[0]);
+        //send email or message notification to user
         this.sendNotification(user1.phoneNumber, user1.emailAddress, user1.notificationMethod, user1.outcomeCode, bank_name, loyalty_program_name, user1.transferAmount);
       };
     };
+    //to be sent to Bank App
     return outcomeCodes;
   };
 
+  //function to use .find for mongoDB
+  //separated for ease of testing
   find_transaction = async (collection_connection, id, bank_name) => {
     //use .lean().exec() to return an obj instead of document
     //check if systemId has outcomeCode field + not empty
@@ -62,6 +66,7 @@ class TransactionEnquiryController {
   }
 
 
+  //send notification by email or message or both 
   sendNotification = async (phoneNumber, email, notificationMethod, outcomeCode, bank_name, loyalty_program_name, transferAmount) => {
     if (notificationMethod == 0) {
       //only email
