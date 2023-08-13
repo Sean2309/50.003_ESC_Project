@@ -33,34 +33,7 @@ rectangle "Login System" #C0C0C0 {
     (UseCaseI) ..> (UseCaseA) : << prevents >>
     (UseCaseH) ..> (UseCaseD) : << prevents >>
 
-    'TODO: These last 2 should be positioned on the right hand side. How to do it?
-    'Right1 -- (UseCaseA)
-    'Right2 -- (UseCaseD)
-
-    'These do not work. PlantUML will put the Actors far away at the bottom
     (UseCaseA) -- Right1
     (UseCaseD) -- Right1
 }
 @enduml
-
-' ```mermaid
-' graph LR
-'         LU([fa:fa-user Bank App User]) --- childLU_1([enter user credentials])
-'         LU([fa:fa-user Bank App User]) --- childLU_3([press submit button])
-
-'         LI([fa:fa-user Login Interface]) --- childLI_1([display username input field])
-'         LI([fa:fa-user Login Interface]) --- childLI_2([display password input field])
-'         LI([fa:fa-user Login Interface]) --- childLI_3([store user input])
-
-'         LS([fa:fa-user Login Backend]) --- childLS_1([receive user credentials])
-'         LS([fa:fa-user Login Backend]) --- childLS_2([validate login request])
-'         LS([fa:fa-user Login Backend]) --- childLS_3([fetch stored credentials])
-'         LS([fa:fa-user Login Backend]) --- childLS_4([verify inputted credentials])
-'         LS([fa:fa-user Login Backend]) --- childLS_5([generate authentication token])
-'         LS([fa:fa-user Login Backend]) --- childLS_6([hash and provide security features to user information like name and password])
-'         LS([fa:fa-user Login Backend]) --- childLS_7([load in user profile])
-
-'         LS_UP([fa:fa-user User Profile Backend]) --- childUP_1([store user email])
-'         LS_UP([fa:fa-user User Profile Backend]) --- childUP_2([store user notification preferences])
-'         LS_UP([fa:fa-user User Profile Backend]) --- childUP_3([store user phone number])
-' ```
