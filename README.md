@@ -37,11 +37,11 @@ http://localhost:3002/transferconnect/
 ## Flow
 ### Bank-app
 
-## Login
-UserID : john123
+### Login Credentials
+UserID : john123<br>
 Password : password
 
-
+### Transaction Enquiry
 TransactionEnquiryAPI on bank-app side will first get reference numbers of transactions whose outcome codes are not updated yet, i.e. "Outcome updated" = false.
 Stored in this form:
 
