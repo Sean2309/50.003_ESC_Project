@@ -2,7 +2,7 @@ const transactionEnquiryController = require('../../controllers/transactionEnqui
 const webhookController = require('../../controllers/webhookController');
 const axios = require('axios');
 
-// =========== Mock data for getOutcomeCodes ==========// 
+// =========== Mock data for findTransaction ==========// 
 
 const transactionData = [{
     "membershipId": "123oij",

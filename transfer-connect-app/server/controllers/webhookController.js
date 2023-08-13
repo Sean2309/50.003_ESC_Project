@@ -14,13 +14,16 @@ class WebhookController {
 
   //to run all functions
   processRoute = async (systemId, partnerCode, transferAmount, loyaltyProgram) => {
+    //use findTransaction to find the transaction that was updated in the handback file in the TransferConnect DB
     let transaction1 = await this.findTransaction(systemId, partnerCode, transferAmount, loyaltyProgram);
+    //send POST request to Bank App - request contains new outcomeCode and other details of the updated transaction
     this.postTransaction(transaction1, loyaltyProgram, partnerCode);
     let transaction = transaction1[0];
     let userEmail = transaction["emailAddress"];
     let userNumber = transaction["phoneNumber"];
     let notificationMethod = transaction["notificationMethod"];
     let outcomeCode = transaction["outcomeCode"];
+    //send notification when transaction outcomeCode is updated
     await transactionEnquiryController.sendNotification(userNumber, userEmail, notificationMethod, outcomeCode, partnerCode, loyaltyProgram, transferAmount);
   };
 
